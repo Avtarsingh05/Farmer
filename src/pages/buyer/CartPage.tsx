@@ -5,7 +5,7 @@ import type { CartItem } from '@/types';
 import {
   ShoppingCart, Trash2, Loader2, Minus, Plus, AlertCircle,
   CheckCircle2, ShieldCheck, ArrowRight, Banknote, Smartphone,
-  Truck, Store, Sparkles
+  Truck, Store, Sparkles, MapPin
 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -13,6 +13,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { createOrder } from '@/services/orderService';
 import { formatCurrency, formatPricePerUnit } from '@/utils/currency';
 import { getPlatformSettings } from '@/services/settingsService';
+import { clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
+const cn = (...args: (string | undefined | null | false)[]) => twMerge(clsx(args));
 
 const deliveryAddressSchema = z.object({
   name: z.string().min(2, 'Name is required'),
@@ -135,46 +139,46 @@ export default function CartPage() {
   // Order Success Screen
   if (placedOrderId) {
     return (
-      <div className="container-content py-16 max-w-xl text-center">
-        <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6 text-emerald-600 shadow-sm animate-bounce">
-          <CheckCircle2 className="w-10 h-10" />
+      <div className="container-content py-20 max-w-2xl text-center animate-fade-up">
+        <div className="w-28 h-28 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-8 text-emerald-600 shadow-xl shadow-emerald-100">
+          <CheckCircle2 className="w-14 h-14" />
         </div>
-        <h1 className="text-3xl font-extrabold text-neutral-900 mb-2">Order Confirmed!</h1>
-        <p className="text-neutral-600 mb-6 leading-relaxed">
-          Your direct farm harvest order <strong className="text-neutral-900 font-mono">#{placedOrderId}</strong> has been transmitted directly to the farmer. You will receive real-time dispatch and harvesting status updates.
+        <h1 className="text-4xl font-extrabold text-neutral-900 mb-4 tracking-tight">Order Confirmed! 🎉</h1>
+        <p className="text-neutral-500 text-lg mb-10 max-w-lg mx-auto">
+          Your direct farm harvest order <strong className="text-neutral-900 font-mono bg-neutral-100 px-2 py-1 rounded">#{placedOrderId}</strong> has been sent to the farmer.
         </p>
 
-        <div className="bg-neutral-50 rounded-xl p-5 border border-neutral-200 text-left text-sm space-y-2 mb-8">
-          <div className="flex justify-between">
-            <span className="text-neutral-500">Order Reference:</span>
-            <span className="font-mono font-bold text-neutral-900">{placedOrderId}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-neutral-500">Payment Status:</span>
-            <span className="font-semibold text-emerald-700">
-              {paymentMethod === 'upi' ? 'Paid via UPI' : 'Pay on Delivery (COD)'}
+        <div className="bg-white rounded-3xl p-8 shadow-xl border border-neutral-100 text-left space-y-4 mb-10 transform hover:-translate-y-1 transition-transform">
+          <h3 className="font-bold text-neutral-900 border-b border-neutral-100 pb-4 mb-4">Order Summary</h3>
+          <div className="flex justify-between items-center">
+            <span className="text-neutral-500 font-medium">Payment</span>
+            <span className="font-bold bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full text-sm">
+              {paymentMethod === 'upi' ? 'Paid via UPI' : 'Pay on Delivery'}
             </span>
           </div>
-          <div className="flex justify-between">
-            <span className="text-neutral-500">Delivery Method:</span>
-            <span className="font-semibold text-neutral-800 capitalize">{deliveryType}</span>
+          <div className="flex justify-between items-center">
+            <span className="text-neutral-500 font-medium">Method</span>
+            <span className="font-bold text-neutral-800 capitalize flex items-center gap-1">
+              {deliveryType === 'delivery' ? <Truck className="w-4 h-4" /> : <Store className="w-4 h-4" />}
+              {deliveryType}
+            </span>
           </div>
-          <div className="flex justify-between border-t border-neutral-200 pt-2 font-bold text-base">
-            <span>Total Payable:</span>
-            <span className="text-primary">{formatCurrency(finalTotal)}</span>
+          <div className="flex justify-between items-center border-t border-dashed border-neutral-200 pt-4 mt-2">
+            <span className="font-bold text-neutral-900">Total Payable</span>
+            <span className="font-extrabold text-2xl text-primary">{formatCurrency(finalTotal)}</span>
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <button
             onClick={() => navigate('/buyer/orders')}
-            className="btn-primary btn-lg inline-flex items-center justify-center gap-2"
+            className="bg-neutral-900 text-white px-8 py-4 rounded-full font-bold hover:bg-neutral-800 transition-colors flex items-center justify-center gap-2 shadow-lg"
           >
-            Track Order Status <ArrowRight className="w-4 h-4" />
+            Track Order <ArrowRight className="w-5 h-5" />
           </button>
           <Link
             to="/market"
-            className="btn-secondary btn-lg inline-flex items-center justify-center"
+            className="bg-white border-2 border-neutral-200 text-neutral-800 px-8 py-4 rounded-full font-bold hover:border-primary hover:text-primary transition-colors flex items-center justify-center"
           >
             Continue Shopping
           </Link>
@@ -186,15 +190,18 @@ export default function CartPage() {
   // Empty State
   if (items.length === 0) {
     return (
-      <div className="container-content py-20 flex flex-col items-center justify-center text-center">
-        <div className="w-24 h-24 bg-neutral-100 rounded-full flex items-center justify-center mb-6 text-neutral-400">
-          <ShoppingCart className="w-12 h-12" />
+      <div className="container-content py-24 flex flex-col items-center justify-center text-center animate-fade-up">
+        <div className="relative mb-8">
+          <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full scale-150"></div>
+          <div className="relative w-32 h-32 bg-white rounded-[2.5rem] shadow-2xl flex items-center justify-center border border-neutral-100 rotate-3">
+            <ShoppingCart className="w-14 h-14 text-neutral-300 -rotate-3" />
+          </div>
         </div>
-        <h2 className="text-2xl sm:text-3xl font-bold text-neutral-900 mb-2">Your cart is empty</h2>
-        <p className="text-neutral-500 mb-8 max-w-md">
+        <h2 className="text-3xl sm:text-4xl font-extrabold text-neutral-900 mb-4 tracking-tight">Your cart is empty</h2>
+        <p className="text-neutral-500 text-lg mb-10 max-w-md">
           Explore fresh produce straight from verified farms across India with transparent pricing.
         </p>
-        <Link to="/market" className="btn-primary btn-lg inline-flex items-center gap-2 shadow-md">
+        <Link to="/market" className="bg-primary text-white px-8 py-4 rounded-full font-bold text-lg hover:shadow-xl hover:shadow-primary/30 hover:-translate-y-1 transition-all flex items-center gap-2">
           Browse Farm Market <ArrowRight className="w-5 h-5" />
         </Link>
       </div>
@@ -202,58 +209,58 @@ export default function CartPage() {
   }
 
   return (
-    <div className="container-content py-8 max-w-6xl">
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+    <div className="container-content py-8 sm:py-12 max-w-7xl">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8 animate-fade-up">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-neutral-900">
-            Shopping Cart ({itemCount} {itemCount === 1 ? 'item' : 'items'})
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-neutral-900 tracking-tight">
+            Checkout
           </h1>
-          <p className="text-sm text-neutral-500 mt-0.5">
-            Direct harvest items dispatched from farm origin.
+          <p className="text-neutral-500 mt-2 font-medium">
+            {itemCount} {itemCount === 1 ? 'item' : 'items'} in your cart
           </p>
         </div>
         <button
           onClick={clearCart}
-          className="text-xs text-neutral-500 hover:text-red-600 transition-colors"
+          className="text-sm font-bold text-neutral-500 hover:text-red-600 transition-colors flex items-center gap-1 bg-neutral-100 px-4 py-2 rounded-full w-fit"
         >
-          Clear Cart
+          <Trash2 className="w-4 h-4" /> Clear Cart
         </button>
       </div>
 
       {error && (
-        <div className="mb-6 p-4 bg-red-50 text-red-700 rounded-xl flex items-start gap-3 border border-red-200">
-          <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
-          <p className="text-sm font-medium">{error}</p>
+        <div className="mb-8 p-5 bg-red-50 text-red-700 rounded-2xl flex items-start gap-3 border border-red-100 shadow-sm animate-fade-up">
+          <AlertCircle className="w-6 h-6 shrink-0 mt-0.5" />
+          <p className="font-semibold">{error}</p>
         </div>
       )}
 
-      <div className="grid lg:grid-cols-3 gap-8">
+      <div className="grid lg:grid-cols-12 gap-8 lg:gap-12">
         {/* Left Column: Grouped Items */}
-        <div className="lg:col-span-2 space-y-6">
-          {Object.keys(groupedItems).map((farmerId) => {
+        <div className="lg:col-span-7 xl:col-span-8 space-y-8">
+          {Object.keys(groupedItems).map((farmerId, idx) => {
             const farmerGroup = groupedItems[farmerId];
             const farmerName = farmerGroup[0]?.farmerName || 'Verified Farm';
 
             return (
-              <div key={farmerId} className="card p-0 overflow-hidden shadow-sm border border-neutral-200">
+              <div key={farmerId} className="bg-white rounded-3xl overflow-hidden shadow-sm border border-neutral-100 animate-fade-up" style={{ animationDelay: `${idx * 100}ms` }}>
                 {/* Farmer Group Header */}
-                <div className="px-5 py-3.5 bg-gradient-to-r from-neutral-50 to-white border-b border-neutral-200 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
-                    <span className="font-semibold text-neutral-800 text-sm">
-                      Produce from: <strong className="text-neutral-900">{farmerName}</strong>
+                <div className="px-6 py-4 bg-neutral-50/80 border-b border-neutral-100 flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0" />
+                    <span className="font-bold text-neutral-800">
+                      Dispatched by <span className="text-neutral-900">{farmerName}</span>
                     </span>
                   </div>
-                  <span className="text-xs text-neutral-500 bg-white px-2 py-0.5 rounded border border-neutral-200">
-                    Direct Farm Gate
+                  <span className="text-xs font-bold text-primary bg-primary/10 px-3 py-1 rounded-full uppercase tracking-wider">
+                    Farm Direct
                   </span>
                 </div>
 
                 {/* Items List */}
-                <div className="divide-y divide-neutral-100">
+                <div className="divide-y divide-neutral-50">
                   {farmerGroup.map((item) => (
-                    <div key={item.productId} className="p-4 sm:p-5 flex gap-4 sm:gap-6 items-center">
-                      <div className="w-20 h-20 sm:w-24 sm:h-24 bg-neutral-100 rounded-xl overflow-hidden shrink-0 border border-neutral-200">
+                    <div key={item.productId} className="p-6 flex flex-col sm:flex-row gap-6 items-start sm:items-center hover:bg-neutral-50/50 transition-colors">
+                      <div className="w-full sm:w-28 aspect-square bg-neutral-100 rounded-2xl overflow-hidden shrink-0 border border-neutral-200/50">
                         <img
                           src={item.imageUrl || 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=400&auto=format&fit=crop&q=80'}
                           alt={item.productName}
@@ -264,55 +271,55 @@ export default function CartPage() {
                         />
                       </div>
 
-                      <div className="flex-1 min-w-0 flex flex-col justify-between h-full space-y-2">
-                        <div className="flex justify-between items-start gap-2">
+                      <div className="flex-1 min-w-0 w-full flex flex-col justify-between h-full space-y-4">
+                        <div className="flex justify-between items-start gap-4">
                           <div>
                             <Link
                               to={`/products/${item.productId}`}
-                              className="font-bold text-neutral-900 text-base sm:text-lg line-clamp-1 hover:text-primary transition-colors"
+                              className="font-extrabold text-neutral-900 text-lg sm:text-xl line-clamp-1 hover:text-primary transition-colors mb-1"
                             >
                               {item.productName}
                             </Link>
-                            <p className="text-neutral-500 text-xs sm:text-sm">
+                            <p className="text-neutral-500 font-medium">
                               {formatPricePerUnit(item.unitPrice, item.unit)}
                             </p>
                           </div>
-                          <span className="font-extrabold text-neutral-900 text-base sm:text-lg">
+                          <span className="font-extrabold text-neutral-900 text-xl">
                             {formatCurrency(item.unitPrice * item.quantity)}
                           </span>
                         </div>
 
                         {/* Quantity & Delete */}
-                        <div className="flex items-center justify-between pt-1">
-                          <div className="flex items-center border border-neutral-300 rounded-lg overflow-hidden bg-white shadow-sm">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center bg-neutral-100 rounded-xl overflow-hidden p-1">
                             <button
                               type="button"
                               onClick={() => updateQty(item.productId, item.quantity - 1)}
-                              className="p-1.5 sm:p-2 hover:bg-neutral-100 text-neutral-600 transition-colors"
+                              className="w-8 h-8 flex items-center justify-center bg-white rounded-lg shadow-sm text-neutral-600 hover:text-primary transition-colors"
                               aria-label="Decrease quantity"
                             >
-                              <Minus className="w-3.5 h-3.5" />
+                              <Minus className="w-4 h-4" />
                             </button>
-                            <span className="w-10 text-center text-sm font-bold text-neutral-900">
+                            <span className="w-12 text-center text-sm font-bold text-neutral-900">
                               {item.quantity}
                             </span>
                             <button
                               type="button"
                               onClick={() => updateQty(item.productId, item.quantity + 1)}
-                              className="p-1.5 sm:p-2 hover:bg-neutral-100 text-neutral-600 transition-colors"
+                              className="w-8 h-8 flex items-center justify-center bg-white rounded-lg shadow-sm text-neutral-600 hover:text-primary transition-colors"
                               aria-label="Increase quantity"
                             >
-                              <Plus className="w-3.5 h-3.5" />
+                              <Plus className="w-4 h-4" />
                             </button>
                           </div>
 
                           <button
                             type="button"
                             onClick={() => removeItem(item.productId)}
-                            className="text-neutral-400 hover:text-red-500 p-2 rounded-md transition-colors"
-                            aria-label="Remove item"
+                            className="flex items-center gap-1.5 text-sm font-bold text-neutral-400 hover:text-red-500 px-3 py-2 rounded-lg hover:bg-red-50 transition-colors"
                           >
                             <Trash2 className="w-4 h-4" />
+                            <span className="hidden sm:inline">Remove</span>
                           </button>
                         </div>
                       </div>
@@ -325,171 +332,161 @@ export default function CartPage() {
         </div>
 
         {/* Right Column: Checkout Panel */}
-        <div className="lg:col-span-1">
-          <div className="card p-6 sticky top-24 shadow-sm border border-neutral-200">
-            <h2 className="text-xl font-bold text-neutral-900 mb-4 pb-3 border-b border-neutral-100">
-              Order Summary
+        <div className="lg:col-span-5 xl:col-span-4 relative">
+          <div className="bg-white rounded-[2rem] p-6 sm:p-8 sticky top-24 shadow-2xl shadow-neutral-200/50 border border-neutral-100 animate-fade-up" style={{ animationDelay: '200ms' }}>
+            <h2 className="text-2xl font-extrabold text-neutral-900 mb-6">
+              Summary
             </h2>
 
-            <div className="space-y-3 mb-6 text-sm">
-              <div className="flex justify-between text-neutral-600">
-                <span>Produce Subtotal</span>
-                <span className="font-semibold text-neutral-900">{formatCurrency(total)}</span>
+            <div className="space-y-4 mb-8">
+              <div className="flex justify-between text-neutral-600 font-medium">
+                <span>Subtotal</span>
+                <span className="font-bold text-neutral-900">{formatCurrency(total)}</span>
               </div>
-              <div className="flex justify-between text-neutral-600">
-                <span>Direct Delivery Fee</span>
-                <span>{deliveryFee === 0 ? <strong className="text-emerald-600 font-semibold">FREE (Pickup)</strong> : formatCurrency(deliveryFee)}</span>
+              <div className="flex justify-between text-neutral-600 font-medium">
+                <span>Delivery</span>
+                <span>{deliveryFee === 0 ? <strong className="text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded text-sm">FREE</strong> : <span className="font-bold text-neutral-900">{formatCurrency(deliveryFee)}</span>}</span>
               </div>
-              <div className="border-t border-neutral-200 pt-3 flex justify-between font-extrabold text-xl text-neutral-900">
-                <span>Total Amount</span>
-                <span className="text-primary">{formatCurrency(finalTotal)}</span>
+              <div className="border-t border-dashed border-neutral-200 pt-4 flex justify-between items-end">
+                <span className="font-bold text-neutral-900">Total</span>
+                <span className="font-black text-3xl text-primary">{formatCurrency(finalTotal)}</span>
               </div>
             </div>
 
-            <form onSubmit={handleSubmit(handlePlaceOrder)} className="space-y-5">
+            <form onSubmit={handleSubmit(handlePlaceOrder)} className="space-y-6">
               {/* Delivery Type Switch */}
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-neutral-700 uppercase tracking-wider block">
-                  Delivery Option
+              <div className="space-y-3">
+                <label className="text-xs font-bold text-neutral-500 uppercase tracking-wider block">
+                  How to get it?
                 </label>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-3">
                   <button
                     type="button"
                     onClick={() => setDeliveryType('delivery')}
-                    className={`py-2 px-3 rounded-lg border text-xs font-semibold flex items-center justify-center gap-1.5 transition-all ${
+                    className={cn(
+                      "py-3 px-4 rounded-2xl text-sm font-bold flex flex-col items-center justify-center gap-2 transition-all border-2",
                       deliveryType === 'delivery'
-                        ? 'border-primary bg-primary-50 text-primary shadow-sm'
-                        : 'border-neutral-200 text-neutral-600 hover:border-neutral-300 bg-white'
-                    }`}
+                        ? "border-primary bg-primary/5 text-primary shadow-sm"
+                        : "border-neutral-100 text-neutral-500 hover:border-neutral-200 bg-white"
+                    )}
                   >
-                    <Truck className="w-3.5 h-3.5" />
-                    Delivery ({isFreeDelivery ? 'FREE' : formatCurrency(platformSettings.deliveryFlatFee)})
+                    <Truck className={cn("w-6 h-6", deliveryType === 'delivery' ? "text-primary" : "text-neutral-400")} />
+                    <span>Delivery</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => setDeliveryType('pickup')}
-                    className={`py-2 px-3 rounded-lg border text-xs font-semibold flex items-center justify-center gap-1.5 transition-all ${
+                    className={cn(
+                      "py-3 px-4 rounded-2xl text-sm font-bold flex flex-col items-center justify-center gap-2 transition-all border-2",
                       deliveryType === 'pickup'
-                        ? 'border-primary bg-primary-50 text-primary shadow-sm'
-                        : 'border-neutral-200 text-neutral-600 hover:border-neutral-300 bg-white'
-                    }`}
+                        ? "border-primary bg-primary/5 text-primary shadow-sm"
+                        : "border-neutral-100 text-neutral-500 hover:border-neutral-200 bg-white"
+                    )}
                   >
-                    <Store className="w-3.5 h-3.5" />
-                    Farm Pickup
+                    <Store className={cn("w-6 h-6", deliveryType === 'pickup' ? "text-primary" : "text-neutral-400")} />
+                    <span>Farm Pickup</span>
                   </button>
                 </div>
               </div>
 
               {/* Payment Method Switch */}
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-neutral-700 uppercase tracking-wider block">
-                  Payment Method
+              <div className="space-y-3">
+                <label className="text-xs font-bold text-neutral-500 uppercase tracking-wider block">
+                  Payment
                 </label>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-3">
                   <button
                     type="button"
                     onClick={() => setPaymentMethod('cod')}
-                    className={`py-2 px-3 rounded-lg border text-xs font-semibold flex items-center justify-center gap-1.5 transition-all ${
+                    className={cn(
+                      "py-3 px-4 rounded-2xl text-sm font-bold flex flex-col items-center justify-center gap-2 transition-all border-2",
                       paymentMethod === 'cod'
-                        ? 'border-primary bg-primary-50 text-primary shadow-sm'
-                        : 'border-neutral-200 text-neutral-600 hover:border-neutral-300 bg-white'
-                    }`}
+                        ? "border-primary bg-primary/5 text-primary shadow-sm"
+                        : "border-neutral-100 text-neutral-500 hover:border-neutral-200 bg-white"
+                    )}
                   >
-                    <Banknote className="w-3.5 h-3.5" />
-                    Cash on Delivery
+                    <Banknote className={cn("w-6 h-6", paymentMethod === 'cod' ? "text-primary" : "text-neutral-400")} />
+                    <span>Cash / COD</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => setPaymentMethod('upi')}
-                    className={`py-2 px-3 rounded-lg border text-xs font-semibold flex items-center justify-center gap-1.5 transition-all ${
+                    className={cn(
+                      "py-3 px-4 rounded-2xl text-sm font-bold flex flex-col items-center justify-center gap-2 transition-all border-2",
                       paymentMethod === 'upi'
-                        ? 'border-primary bg-primary-50 text-primary shadow-sm'
-                        : 'border-neutral-200 text-neutral-600 hover:border-neutral-300 bg-white'
-                    }`}
+                        ? "border-primary bg-primary/5 text-primary shadow-sm"
+                        : "border-neutral-100 text-neutral-500 hover:border-neutral-200 bg-white"
+                    )}
                   >
-                    <Smartphone className="w-3.5 h-3.5" />
-                    UPI / QR
+                    <Smartphone className={cn("w-6 h-6", paymentMethod === 'upi' ? "text-primary" : "text-neutral-400")} />
+                    <span>UPI / QR</span>
                   </button>
                 </div>
               </div>
 
               {/* Address Form (if Delivery) */}
               {deliveryType === 'delivery' && (
-                <div className="space-y-3 pt-3 border-t border-neutral-100">
+                <div className="space-y-4 pt-4 border-t border-neutral-100">
                   <div className="flex items-center justify-between">
-                    <h3 className="font-bold text-xs text-neutral-700 uppercase tracking-wider">
-                      Shipping Details
-                    </h3>
+                    <div className="flex items-center gap-1.5 text-neutral-700">
+                      <MapPin className="w-4 h-4" />
+                      <h3 className="font-bold text-sm">Shipping Address</h3>
+                    </div>
                     <button
                       type="button"
                       onClick={handleQuickFill}
-                      className="text-xs font-medium text-primary hover:underline flex items-center gap-1"
+                      className="text-xs font-bold text-primary bg-primary/10 px-2.5 py-1 rounded-full hover:bg-primary/20 transition-colors flex items-center gap-1"
                     >
-                      <Sparkles className="w-3 h-3" /> Quick Demo Fill
+                      <Sparkles className="w-3 h-3" /> Auto-fill
                     </button>
                   </div>
 
-                  <div>
-                    <input
-                      {...register('name')}
-                      placeholder="Receiver's Full Name"
-                      className="form-input text-sm py-2"
-                    />
-                    {errors.name && <p className="text-xs text-red-600 mt-1">{errors.name.message}</p>}
-                  </div>
-
-                  <div>
-                    <input
-                      {...register('phone')}
-                      placeholder="10-digit Phone Number"
-                      className="form-input text-sm py-2"
-                    />
-                    {errors.phone && <p className="text-xs text-red-600 mt-1">{errors.phone.message}</p>}
-                  </div>
-
-                  <div>
-                    <input
-                      {...register('line1')}
-                      placeholder="Address Line 1 (Flat, Building, Street)"
-                      className="form-input text-sm py-2"
-                    />
-                    {errors.line1 && <p className="text-xs text-red-600 mt-1">{errors.line1.message}</p>}
-                  </div>
-
-                  <div>
-                    <input
-                      {...register('line2')}
-                      placeholder="Landmark (Optional)"
-                      className="form-input text-sm py-2"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="space-y-3">
                     <div>
                       <input
-                        {...register('city')}
-                        placeholder="City"
-                        className="form-input text-sm py-2"
+                        {...register('name')}
+                        placeholder="Full Name"
+                        className="w-full bg-neutral-50 border border-neutral-200 text-neutral-900 rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                       />
-                      {errors.city && <p className="text-xs text-red-600 mt-1">{errors.city.message}</p>}
+                      {errors.name && <p className="text-xs font-bold text-red-500 mt-1.5 ml-1">{errors.name.message}</p>}
                     </div>
+
                     <div>
                       <input
-                        {...register('state')}
-                        placeholder="State"
-                        className="form-input text-sm py-2"
+                        {...register('phone')}
+                        placeholder="Phone Number"
+                        className="w-full bg-neutral-50 border border-neutral-200 text-neutral-900 rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                       />
-                      {errors.state && <p className="text-xs text-red-600 mt-1">{errors.state.message}</p>}
+                      {errors.phone && <p className="text-xs font-bold text-red-500 mt-1.5 ml-1">{errors.phone.message}</p>}
                     </div>
-                  </div>
 
-                  <div>
-                    <input
-                      {...register('pincode')}
-                      placeholder="6-digit PIN Code"
-                      className="form-input text-sm py-2"
-                    />
-                    {errors.pincode && <p className="text-xs text-red-600 mt-1">{errors.pincode.message}</p>}
+                    <div>
+                      <input
+                        {...register('line1')}
+                        placeholder="Flat, Building, Street"
+                        className="w-full bg-neutral-50 border border-neutral-200 text-neutral-900 rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                      />
+                      {errors.line1 && <p className="text-xs font-bold text-red-500 mt-1.5 ml-1">{errors.line1.message}</p>}
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <input
+                          {...register('city')}
+                          placeholder="City"
+                          className="w-full bg-neutral-50 border border-neutral-200 text-neutral-900 rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                        />
+                        {errors.city && <p className="text-xs font-bold text-red-500 mt-1.5 ml-1">{errors.city.message}</p>}
+                      </div>
+                      <div>
+                        <input
+                          {...register('pincode')}
+                          placeholder="PIN Code"
+                          className="w-full bg-neutral-50 border border-neutral-200 text-neutral-900 rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                        />
+                        {errors.pincode && <p className="text-xs font-bold text-red-500 mt-1.5 ml-1">{errors.pincode.message}</p>}
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}
@@ -498,14 +495,14 @@ export default function CartPage() {
               <button
                 type="submit"
                 disabled={isPlacingOrder}
-                className="btn-primary w-full py-3.5 text-base font-bold shadow-md hover:shadow-lg transition-all"
+                className="w-full bg-primary text-white rounded-2xl py-4 text-lg font-extrabold shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 hover:-translate-y-1 transition-all disabled:opacity-70 disabled:hover:translate-y-0 mt-4"
               >
                 {isPlacingOrder ? (
                   <span className="flex items-center justify-center">
-                    <Loader2 className="w-5 h-5 animate-spin mr-2" /> Submitting Order...
+                    <Loader2 className="w-6 h-6 animate-spin mr-2" /> Processing...
                   </span>
                 ) : (
-                  `Place Order • ${formatCurrency(finalTotal)}`
+                  `Checkout • ${formatCurrency(finalTotal)}`
                 )}
               </button>
             </form>

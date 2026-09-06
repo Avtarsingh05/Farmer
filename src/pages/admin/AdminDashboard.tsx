@@ -124,183 +124,245 @@ export default function AdminDashboard() {
 
   if (loading) {
     return (
-      <div className="flex h-64 items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <Loader2 className="w-10 h-10 animate-spin text-primary" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-6 container-content py-6">
-      <h1 className="text-2xl font-bold text-neutral-900">Admin Dashboard</h1>
-
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Link to="/admin/users" className="card p-6 flex items-center gap-4 hover:border-primary transition-colors cursor-pointer">
-          <div className="p-4 bg-blue-50 text-blue-600 rounded-full">
-            <Users className="w-8 h-8" />
-          </div>
-          <div>
-            <p className="text-sm text-neutral-500 font-medium">Total Users</p>
-            <p className="text-2xl font-bold text-neutral-900">{stats.users}</p>
-          </div>
-        </Link>
-        <Link to="/admin/farmers" className="card p-6 flex items-center gap-4 hover:border-primary transition-colors cursor-pointer">
-          <div className="p-4 bg-green-50 text-green-600 rounded-full">
-            <Tractor className="w-8 h-8" />
-          </div>
-          <div>
-            <p className="text-sm text-neutral-500 font-medium">Farmers</p>
-            <p className="text-2xl font-bold text-neutral-900">{stats.farmers}</p>
-          </div>
-        </Link>
-        <Link to="/admin/products" className="card p-6 flex items-center gap-4 hover:border-primary transition-colors cursor-pointer">
-          <div className="p-4 bg-purple-50 text-purple-600 rounded-full">
-            <Box className="w-8 h-8" />
-          </div>
-          <div>
-            <p className="text-sm text-neutral-500 font-medium">Active Products</p>
-            <p className="text-2xl font-bold text-neutral-900">{stats.products}</p>
-          </div>
-        </Link>
-        <Link to="/admin/orders" className="card p-6 flex items-center gap-4 hover:border-primary transition-colors cursor-pointer">
-          <div className="p-4 bg-amber-50 text-amber-600 rounded-full">
-            <ShoppingBag className="w-8 h-8" />
-          </div>
-          <div>
-            <p className="text-sm text-neutral-500 font-medium">Total Orders</p>
-            <p className="text-2xl font-bold text-neutral-900">{stats.orders}</p>
-          </div>
-        </Link>
+    <div className="space-y-8 container-content py-8 animate-fade-up">
+      {/* Header Section */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-extrabold text-neutral-900 tracking-tight">Command Center</h1>
+          <p className="text-sm text-neutral-500 mt-1">Monitor platform metrics, manage users, and oversee operations.</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <button 
+            onClick={loadData}
+            className="btn-secondary bg-white hover:bg-neutral-50 text-neutral-700 rounded-full px-4 py-2 shadow-sm border-neutral-200 flex items-center gap-2"
+          >
+            <RefreshCw className="w-4 h-4" />
+            Refresh Data
+          </button>
+        </div>
       </div>
 
-      {/* Firebase Firestore Containers & Live Control */}
-      <div className="card p-6 bg-gradient-to-br from-amber-500/5 via-white to-primary/5 border border-amber-200/70 shadow-sm rounded-xl">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <Database className="w-5 h-5 text-amber-600" />
-              <h2 className="text-lg font-bold text-neutral-900">Firebase Firestore Containers</h2>
-              <span className={cn(
-                "px-2 py-0.5 text-xs font-semibold rounded-md border flex items-center gap-1.5",
-                firebaseStatus.isConnected 
-                  ? "bg-green-50 text-green-700 border-green-200" 
-                  : "bg-amber-50 text-amber-800 border-amber-200"
-              )}>
-                <span className={cn("w-1.5 h-1.5 rounded-full", firebaseStatus.isConnected ? "bg-green-600 animate-pulse" : "bg-amber-600")}></span>
-                {firebaseStatus.isConnected ? 'Connected to Firebase' : 'Demo / Standby Mode'}
-              </span>
+      {/* Metric Cards - Ultra Modern */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <Link to="/admin/users" className="group block bg-white rounded-2xl p-6 border border-neutral-200 shadow-sm hover:shadow-md transition-all duration-300 hover:border-neutral-900 relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+            <Users className="w-16 h-16 text-neutral-900" />
+          </div>
+          <div className="relative z-10">
+            <div className="w-12 h-12 bg-neutral-900 text-white rounded-xl flex items-center justify-center mb-4 shadow-sm group-hover:scale-110 transition-transform">
+              <Users className="w-6 h-6" />
             </div>
-            <p className="text-sm text-neutral-600">
-              Active Project: <code className="px-1.5 py-0.5 bg-neutral-100 rounded text-neutral-800 font-mono text-xs">{firebaseStatus.projectId}</code> • Sync and populate live database collections.
-            </p>
+            <p className="text-sm font-semibold text-neutral-500 uppercase tracking-wider mb-1">Total Users</p>
+            <p className="text-4xl font-extrabold text-neutral-900">{stats.users}</p>
           </div>
+        </Link>
+        
+        <Link to="/admin/farmers" className="group block bg-white rounded-2xl p-6 border border-neutral-200 shadow-sm hover:shadow-md transition-all duration-300 hover:border-emerald-600 relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+            <Tractor className="w-16 h-16 text-emerald-600" />
+          </div>
+          <div className="relative z-10">
+            <div className="w-12 h-12 bg-emerald-600 text-white rounded-xl flex items-center justify-center mb-4 shadow-sm group-hover:scale-110 transition-transform">
+              <Tractor className="w-6 h-6" />
+            </div>
+            <p className="text-sm font-semibold text-neutral-500 uppercase tracking-wider mb-1">Active Farmers</p>
+            <p className="text-4xl font-extrabold text-neutral-900">{stats.farmers}</p>
+          </div>
+        </Link>
 
-          <div className="flex items-center gap-3">
-            <button
-              onClick={handleRefreshStatus}
-              disabled={isSeeding || isChecking}
-              className="btn-secondary btn-sm flex items-center gap-1.5"
-              title="Test connection and refresh document counts"
-            >
-              <RefreshCw className={cn("w-4 h-4", isChecking && "animate-spin")} />
-              Check Status
-            </button>
-            <button
-              onClick={handleSeedDatabase}
-              disabled={isSeeding}
-              className="btn-primary btn-sm flex items-center gap-1.5 bg-primary hover:bg-primary-600 shadow-sm"
-            >
-              {isSeeding ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  Seeding Containers...
-                </>
-              ) : (
-                <>
-                  <Sparkles className="w-4 h-4" />
-                  Seed Firestore Containers
-                </>
-              )}
-            </button>
+        <Link to="/admin/products" className="group block bg-white rounded-2xl p-6 border border-neutral-200 shadow-sm hover:shadow-md transition-all duration-300 hover:border-blue-600 relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+            <Box className="w-16 h-16 text-blue-600" />
           </div>
-        </div>
+          <div className="relative z-10">
+            <div className="w-12 h-12 bg-blue-600 text-white rounded-xl flex items-center justify-center mb-4 shadow-sm group-hover:scale-110 transition-transform">
+              <Box className="w-6 h-6" />
+            </div>
+            <p className="text-sm font-semibold text-neutral-500 uppercase tracking-wider mb-1">Products Listed</p>
+            <p className="text-4xl font-extrabold text-neutral-900">{stats.products}</p>
+          </div>
+        </Link>
 
-        {/* Live Container Counts */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6 pt-4 border-t border-neutral-100">
-          <div className="p-3 bg-white rounded-lg border border-neutral-200">
-            <p className="text-xs text-neutral-500 font-medium">Categories Container</p>
-            <p className="text-lg font-bold text-neutral-900">{firebaseStatus.collections.categories} docs</p>
+        <Link to="/admin/orders" className="group block bg-white rounded-2xl p-6 border border-neutral-200 shadow-sm hover:shadow-md transition-all duration-300 hover:border-amber-500 relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+            <ShoppingBag className="w-16 h-16 text-amber-500" />
           </div>
-          <div className="p-3 bg-white rounded-lg border border-neutral-200">
-            <p className="text-xs text-neutral-500 font-medium">Products Container</p>
-            <p className="text-lg font-bold text-neutral-900">{firebaseStatus.collections.products} docs</p>
+          <div className="relative z-10">
+            <div className="w-12 h-12 bg-amber-500 text-white rounded-xl flex items-center justify-center mb-4 shadow-sm group-hover:scale-110 transition-transform">
+              <ShoppingBag className="w-6 h-6" />
+            </div>
+            <p className="text-sm font-semibold text-neutral-500 uppercase tracking-wider mb-1">Total Orders</p>
+            <p className="text-4xl font-extrabold text-neutral-900">{stats.orders}</p>
           </div>
-          <div className="p-3 bg-white rounded-lg border border-neutral-200">
-            <p className="text-xs text-neutral-500 font-medium">Farmers Container</p>
-            <p className="text-lg font-bold text-neutral-900">{firebaseStatus.collections.farmers} docs</p>
-          </div>
-          <div className="p-3 bg-white rounded-lg border border-neutral-200">
-            <p className="text-xs text-neutral-500 font-medium">Orders Container</p>
-            <p className="text-lg font-bold text-neutral-900">{firebaseStatus.collections.orders} docs</p>
-          </div>
-        </div>
-
-        {seedMessage && (
-          <div className="mt-4 p-3 rounded-lg bg-green-50 border border-green-200 text-green-800 text-xs flex items-center gap-2">
-            <CheckCircle className="w-4 h-4 text-green-600 shrink-0" />
-            <span>{seedMessage}</span>
-          </div>
-        )}
+        </Link>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Pending Verifications */}
-        <div className="card p-0 overflow-hidden flex flex-col">
-          <div className="p-4 border-b border-neutral-100 flex justify-between items-center bg-neutral-50">
-            <h2 className="font-bold text-neutral-900">Pending Farmers</h2>
-            <Link to="/admin/farmers" className="text-sm text-primary font-medium hover:underline">View All</Link>
-          </div>
-          <div className="flex-1 p-4">
-            {pendingFarmers.length === 0 ? (
-              <p className="text-neutral-500 text-sm py-4 text-center">No pending verifications.</p>
-            ) : (
-              <div className="space-y-3">
-                {pendingFarmers.map((farmer: any) => (
-                  <div key={farmer.userId} className="flex justify-between items-center p-3 border border-neutral-100 rounded-lg hover:bg-neutral-50">
-                    <div>
-                      <p className="font-medium text-sm">{farmer.displayName || 'Unknown Farm'}</p>
-                      <p className="text-xs text-neutral-500">{farmer.district}, {farmer.state}</p>
-                    </div>
-                    <Link to="/admin/farmers" className="btn-secondary btn-sm">Review</Link>
-                  </div>
-                ))}
+      {/* Firebase Control Panel - High Tech Style */}
+      <div className="bg-neutral-900 rounded-2xl shadow-lg border border-neutral-800 overflow-hidden text-neutral-100">
+        <div className="p-6 md:p-8">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+            <div className="flex gap-4">
+              <div className="p-3 bg-neutral-800 rounded-xl shrink-0 h-fit">
+                <Database className="w-8 h-8 text-indigo-400" />
               </div>
+              <div>
+                <div className="flex items-center gap-3 mb-1">
+                  <h2 className="text-xl font-bold text-white tracking-tight">System Database Control</h2>
+                  <span className={cn(
+                    "px-2.5 py-1 text-[10px] uppercase tracking-wider font-bold rounded-full flex items-center gap-1.5 border",
+                    firebaseStatus.isConnected 
+                      ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" 
+                      : "bg-amber-500/10 text-amber-400 border-amber-500/20"
+                  )}>
+                    <span className={cn("w-2 h-2 rounded-full", firebaseStatus.isConnected ? "bg-emerald-400 animate-pulse" : "bg-amber-400")}></span>
+                    {firebaseStatus.isConnected ? 'Connected' : 'Standby'}
+                  </span>
+                </div>
+                <p className="text-sm text-neutral-400 max-w-xl">
+                  Project: <code className="text-indigo-300 font-mono bg-indigo-900/30 px-1.5 py-0.5 rounded">{firebaseStatus.projectId}</code> • Sync and populate live database collections.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-3">
+              <button
+                onClick={handleRefreshStatus}
+                disabled={isSeeding || isChecking}
+                className="bg-neutral-800 hover:bg-neutral-700 text-white border border-neutral-700 rounded-xl px-4 py-2.5 text-sm font-medium transition-all flex items-center gap-2 disabled:opacity-50"
+              >
+                <RefreshCw className={cn("w-4 h-4", isChecking && "animate-spin")} />
+                Ping Status
+              </button>
+              <button
+                onClick={handleSeedDatabase}
+                disabled={isSeeding}
+                className="bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl px-4 py-2.5 text-sm font-semibold transition-all shadow-md shadow-indigo-900/20 flex items-center gap-2 disabled:opacity-50"
+              >
+                {isSeeding ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Initializing...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-4 h-4" />
+                    Seed Collections
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+
+          {/* Collection Stats */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8 pt-6 border-t border-neutral-800">
+            <div className="bg-neutral-800/50 rounded-xl p-4 border border-neutral-800">
+              <p className="text-xs font-medium text-neutral-400 uppercase tracking-wider mb-1">Categories</p>
+              <p className="text-2xl font-bold text-white">{firebaseStatus.collections.categories}</p>
+            </div>
+            <div className="bg-neutral-800/50 rounded-xl p-4 border border-neutral-800">
+              <p className="text-xs font-medium text-neutral-400 uppercase tracking-wider mb-1">Products</p>
+              <p className="text-2xl font-bold text-white">{firebaseStatus.collections.products}</p>
+            </div>
+            <div className="bg-neutral-800/50 rounded-xl p-4 border border-neutral-800">
+              <p className="text-xs font-medium text-neutral-400 uppercase tracking-wider mb-1">Farmers</p>
+              <p className="text-2xl font-bold text-white">{firebaseStatus.collections.farmers}</p>
+            </div>
+            <div className="bg-neutral-800/50 rounded-xl p-4 border border-neutral-800">
+              <p className="text-xs font-medium text-neutral-400 uppercase tracking-wider mb-1">Orders</p>
+              <p className="text-2xl font-bold text-white">{firebaseStatus.collections.orders}</p>
+            </div>
+          </div>
+
+          {seedMessage && (
+            <div className="mt-6 p-4 rounded-xl bg-emerald-900/20 border border-emerald-900/50 flex items-start gap-3">
+              <CheckCircle className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+              <p className="text-sm text-emerald-200 leading-relaxed">{seedMessage}</p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Data Tables Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Pending Farmers */}
+        <div className="bg-white rounded-2xl border border-neutral-200 shadow-sm flex flex-col overflow-hidden">
+          <div className="px-6 py-5 border-b border-neutral-100 flex justify-between items-center bg-neutral-50/50">
+            <h2 className="text-lg font-bold text-neutral-900">Action Required: Verifications</h2>
+            <Link to="/admin/farmers" className="text-sm font-semibold text-neutral-900 hover:text-primary transition-colors">View All →</Link>
+          </div>
+          <div className="flex-1 p-2">
+            {pendingFarmers.length === 0 ? (
+              <div className="py-12 flex flex-col items-center justify-center text-center">
+                <Tractor className="w-12 h-12 text-neutral-200 mb-3" />
+                <p className="text-neutral-500 font-medium">No pending verifications</p>
+                <p className="text-sm text-neutral-400">All caught up!</p>
+              </div>
+            ) : (
+              <ul className="divide-y divide-neutral-100">
+                {pendingFarmers.map((farmer: any) => (
+                  <li key={farmer.userId} className="flex items-center justify-between p-4 hover:bg-neutral-50 transition-colors rounded-xl m-1">
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-sm">
+                        {farmer.displayName?.charAt(0) || 'F'}
+                      </div>
+                      <div>
+                        <p className="font-semibold text-neutral-900">{farmer.displayName || 'Unknown Farm'}</p>
+                        <p className="text-xs text-neutral-500 font-medium">{farmer.district}, {farmer.state}</p>
+                      </div>
+                    </div>
+                    <Link to={`/admin/farmers`} className="px-3 py-1.5 text-sm font-medium text-neutral-700 bg-white border border-neutral-200 rounded-lg hover:border-neutral-900 hover:bg-neutral-900 hover:text-white transition-all">
+                      Review
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             )}
           </div>
         </div>
 
         {/* Recent Orders */}
-        <div className="card p-0 overflow-hidden flex flex-col">
-          <div className="p-4 border-b border-neutral-100 flex justify-between items-center bg-neutral-50">
-            <h2 className="font-bold text-neutral-900">Recent Orders</h2>
-            <Link to="/admin/orders" className="text-sm text-primary font-medium hover:underline">View All</Link>
+        <div className="bg-white rounded-2xl border border-neutral-200 shadow-sm flex flex-col overflow-hidden">
+          <div className="px-6 py-5 border-b border-neutral-100 flex justify-between items-center bg-neutral-50/50">
+            <h2 className="text-lg font-bold text-neutral-900">Recent Transactions</h2>
+            <Link to="/admin/orders" className="text-sm font-semibold text-neutral-900 hover:text-primary transition-colors">View All →</Link>
           </div>
-          <div className="flex-1 p-4">
+          <div className="flex-1 p-2">
             {recentOrders.length === 0 ? (
-              <p className="text-neutral-500 text-sm py-4 text-center">No recent orders.</p>
-            ) : (
-              <div className="space-y-3">
-                {recentOrders.map((order: any) => (
-                  <div key={order.id} className="flex justify-between items-center p-3 border border-neutral-100 rounded-lg hover:bg-neutral-50">
-                    <div>
-                      <p className="font-medium text-sm">#{order.id.slice(0,8)}</p>
-                      <p className="text-xs text-neutral-500">₹{order.total} - {order.orderStatus}</p>
-                    </div>
-                    <Link to="/admin/orders" className="btn-secondary btn-sm">View</Link>
-                  </div>
-                ))}
+              <div className="py-12 flex flex-col items-center justify-center text-center">
+                <ShoppingBag className="w-12 h-12 text-neutral-200 mb-3" />
+                <p className="text-neutral-500 font-medium">No recent orders</p>
+                <p className="text-sm text-neutral-400">Orders will appear here.</p>
               </div>
+            ) : (
+              <ul className="divide-y divide-neutral-100">
+                {recentOrders.map((order: any) => (
+                  <li key={order.id} className="flex items-center justify-between p-4 hover:bg-neutral-50 transition-colors rounded-xl m-1">
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center">
+                        <ShoppingBag className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <p className="font-semibold text-neutral-900">Order #{order.id.slice(0,8)}</p>
+                        <div className="flex items-center gap-2 mt-0.5">
+                          <span className="text-sm font-bold text-emerald-600">₹{order.total}</span>
+                          <span className="w-1 h-1 rounded-full bg-neutral-300"></span>
+                          <span className="text-xs font-medium text-neutral-500 capitalize">{order.orderStatus}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <Link to={`/admin/orders`} className="px-3 py-1.5 text-sm font-medium text-neutral-700 bg-white border border-neutral-200 rounded-lg hover:border-neutral-900 hover:bg-neutral-900 hover:text-white transition-all">
+                      Details
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             )}
           </div>
         </div>

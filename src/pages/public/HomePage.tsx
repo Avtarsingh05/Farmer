@@ -1,239 +1,512 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { getTestimonials } from '@/services/landingService';
 import { Link } from 'react-router-dom';
-import { ArrowRight, CheckCircle, Leaf, Shield, TrendingUp, Users } from 'lucide-react';
+import {
+  ArrowRight, CheckCircle, Leaf, Shield, TrendingUp, Users,
+  Star, Package, MapPin, ChevronDown, ShoppingBag, Sprout,
+  BarChart3, Truck, BadgeCheck, IndianRupee, TrendingDown,
+} from 'lucide-react';
 import { ScrollExpand } from '@/components/ui';
 
-const HomePage: React.FC = () => {
+function useInView(threshold = 0.15) {
+  const ref = useRef(null);
+  const [inView, setInView] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setInView(true); obs.disconnect(); } },
+      { threshold }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [threshold]);
+  return { ref, inView };
+}
+
+const TICKER_ITEMS = [
+  { name: 'Tomato',        mandi: 'Lasalgaon, Nashik',   price: '\u20b926/kg',   trend: 'down' },
+  { name: 'Onion',         mandi: 'Lasalgaon, Nashik',   price: '\u20b932/kg',   trend: 'up'   },
+  { name: 'Basmati Rice',  mandi: 'Karnal Grain Market', price: '\u20b988/kg',   trend: 'up'   },
+  { name: 'Alphonso Mango',mandi: 'Vashi APMC',          price: '\u20b9680/dz',  trend: 'down' },
+  { name: 'Wheat',         mandi: 'Sehore Mandi, MP',    price: '\u20b934/kg',   trend: 'up'   },
+  { name: 'Potato',        mandi: 'Agra Mandi, UP',      price: '\u20b922/kg',   trend: 'down' },
+  { name: 'Chana Dal',     mandi: 'Gulbarga APMC, KA',   price: '\u20b976/kg',   trend: 'up'   },
+  { name: 'Turmeric',      mandi: 'Erode/Salem APMC',    price: '\u20b9140/kg',  trend: 'down' },
+  { name: 'Cauliflower',   mandi: 'Pune APMC',           price: '\u20b918/kg',   trend: 'up'   },
+  { name: 'Green Peas',    mandi: 'Nagpur APMC',         price: '\u20b948/kg',   trend: 'down' },
+];
+
+const MARKET_PULSE = [
+  { name: 'Tomato',    district: 'Nashik, MH',    farmerPrice: 26,  mandiPrice: 32,  unit: 'kg', grade: 'A' },
+  { name: 'Onion',     district: 'Lasalgaon, MH', farmerPrice: 32,  mandiPrice: 38,  unit: 'kg', grade: 'A' },
+  { name: 'Wheat',     district: 'Sehore, MP',    farmerPrice: 34,  mandiPrice: 40,  unit: 'kg', grade: 'A' },
+  { name: 'Potato',    district: 'Agra, UP',      farmerPrice: 22,  mandiPrice: 26,  unit: 'kg', grade: 'B' },
+  { name: 'Turmeric',  district: 'Salem, TN',     farmerPrice: 140, mandiPrice: 165, unit: 'kg', grade: 'A' },
+  { name: 'Chana Dal', district: 'Gulbarga, KA',  farmerPrice: 76,  mandiPrice: 88,  unit: 'kg', grade: 'A' },
+];
+
+const DEFAULT_TESTIMONIALS = [
+  {
+    name: 'Ramesh Patil', role: 'Onion Farmer', district: 'Nashik, Maharashtra',
+    photo: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&auto=format&fit=crop&q=80',
+    quote: 'Middlemen used to take 40%. Now I sell directly through KisanMitra. Last month I earned \u20b912,000 more.',
+    rating: 5, stat: '+\u20b912,000 / month',
+  },
+  {
+    name: 'Anita Mehta', role: 'Restaurant Buyer', district: 'Bandra, Mumbai',
+    photo: 'https://images.unsplash.com/photo-1494790108755-2616b612b18c?w=120&auto=format&fit=crop&q=80',
+    quote: 'I source all vegetables for my 3 restaurants through KisanMitra. Quality is consistent and prices are fair.',
+    rating: 5, stat: 'Saves \u20b98,000/month',
+  },
+  {
+    name: 'Sukhwinder Singh', role: 'Wheat & Rice Farmer', district: 'Amritsar, Punjab',
+    photo: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=120&auto=format&fit=crop&q=80',
+    quote: 'Used to struggle getting fair rates at the mandi. KisanMitra gave me access to buyers in Delhi and Mumbai.',
+    rating: 5, stat: '+\u20b918,000 / month',
+  },
+];
+
+const HomePage = () => {
+  const [testimonials, setTestimonials] = useState(DEFAULT_TESTIMONIALS);
+  useEffect(() => {
+    getTestimonials().then(data => {
+      if (data && data.length > 0) setTestimonials(data);
+    }).catch(console.error);
+  }, []);
+
+  const howSection          = useInView(0.12);
+  const pulseSection        = useInView(0.08);
+  const farmerSection       = useInView(0.08);
+  const buyerSection        = useInView(0.08);
+  const testimonialsSection = useInView(0.08);
+  const ctaSection          = useInView(0.08);
+  const countersRef         = useInView(0.25);
+
+  const [counters, setCounters] = useState({ farmers: 0, buyers: 0, orders: 0, mandis: 0 });
+  useEffect(() => {
+    if (!countersRef.inView) return;
+    const targets = { farmers: 500, buyers: 2400, orders: 14800, mandis: 28 };
+    const steps = 60; const duration = 1800;
+    let step = 0;
+    const timer = setInterval(() => {
+      step++;
+      const ease = 1 - Math.pow(1 - Math.min(step / steps, 1), 3);
+      setCounters({
+        farmers: Math.round(targets.farmers * ease),
+        buyers:  Math.round(targets.buyers  * ease),
+        orders:  Math.round(targets.orders  * ease),
+        mandis:  Math.round(targets.mandis  * ease),
+      });
+      if (step >= steps) clearInterval(timer);
+    }, duration / steps);
+    return () => clearInterval(timer);
+  }, [countersRef.inView]);
+
+  const tickerItems = [...TICKER_ITEMS, ...TICKER_ITEMS];
+
   return (
-    <div className="flex flex-col min-h-screen bg-neutral-50">
-      {/* SECTION 1 - Hero */}
-      <section className="bg-[#F9F7F2] pt-16 pb-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-neutral-900 tracking-tight mb-6 leading-tight">
-            Buy closer to the source. <br className="hidden sm:block" />
-            <span className="text-primary">Sell directly to the market.</span>
-          </h1>
-          <p className="max-w-2xl mx-auto text-lg md:text-xl text-neutral-600 mb-10">
-            KisanMitra connects farmers directly with buyers. Transparent pricing. No unnecessary middlemen. Fresh produce from verified farms.
+    <div className="flex flex-col min-h-screen bg-neutral-50 overflow-x-hidden">
+
+      {/* HERO */}
+      <section
+        className="relative min-h-screen flex flex-col justify-center overflow-hidden"
+        style={{ background: 'linear-gradient(135deg, #F9F7F2 0%, #F0EDE6 35%, #E8F5E9 70%, #F9F7F2 100%)' }}
+      >
+        <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+          <div className="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-primary/5 blur-3xl" />
+          <div className="absolute top-1/2 -left-48 w-80 h-80 rounded-full blur-3xl" style={{ background: 'rgba(193,127,36,0.04)' }} />
+          <div className="absolute bottom-0 right-1/4 w-64 h-64 rounded-full bg-primary/5 blur-2xl" />
+        </div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16 w-full">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-8">
+              <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-4 py-2 text-primary text-sm font-semibold animate-fade-up">
+                <span className="w-2 h-2 rounded-full bg-primary animate-pulse-dot" />
+                India's Direct Farm-to-Market Platform
+              </div>
+              <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold text-neutral-900 tracking-tight leading-none animate-fade-up delay-100">
+                Farmers earn{' '}
+                <span className="relative inline-block text-primary">
+                  more.
+                  <svg className="absolute -bottom-2 left-0 w-full" viewBox="0 0 200 8" fill="none">
+                    <path d="M2 6 Q100 2 198 6" stroke="#2D5016" strokeWidth="3" strokeLinecap="round" fill="none" opacity="0.4"/>
+                  </svg>
+                </span>
+                <br />Buyers pay{' '}
+                <span style={{ color: 'var(--color-accent)' }}>less.</span>
+              </h1>
+              <p className="text-xl text-neutral-600 max-w-lg leading-relaxed animate-fade-up delay-200">
+                KisanMitra removes brokers from India's agricultural supply chain. Verified farmers sell directly to buyers — transparent APMC pricing, zero hidden commissions.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 animate-fade-up delay-300">
+                <Link to="/market" className="group inline-flex items-center justify-center gap-2 px-8 py-4 bg-primary text-white font-semibold text-base rounded-xl shadow-lg hover:shadow-xl hover:bg-primary/90 transition-all duration-200">
+                  Browse Produce <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </Link>
+                <Link to="/register?role=farmer" className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-neutral-800 font-semibold text-base rounded-xl border border-neutral-200 shadow-sm hover:shadow-md hover:border-primary/30 transition-all duration-200">
+                  <Sprout className="w-5 h-5 text-primary" /> Join as Farmer
+                </Link>
+              </div>
+              <div className="flex flex-wrap gap-6 text-sm text-neutral-500 animate-fade-up delay-400">
+                {[
+                  { icon: BadgeCheck, label: '500+ Verified Farmers' },
+                  { icon: Shield,     label: 'APMC Price Transparency' },
+                  { icon: Truck,      label: 'Direct Farm Dispatch' },
+                ].map(({ icon: Icon, label }) => (
+                  <div key={label} className="flex items-center gap-1.5">
+                    <Icon className="w-4 h-4 text-primary" /><span>{label}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="relative hidden lg:flex items-center justify-center h-[520px] animate-fade-in delay-300">
+              <div className="relative w-72 h-72 rounded-3xl overflow-hidden shadow-2xl border-4 border-white animate-float-slow">
+                <img src="https://images.unsplash.com/photo-1595974482597-4b8da8879bc5?w=600&auto=format&fit=crop&q=80" alt="Farmer" className="w-full h-full object-cover" />
+              </div>
+              <div className="absolute top-8 right-4 bg-white rounded-2xl shadow-xl px-4 py-3 border border-neutral-100 animate-float" style={{ animationDelay: '0s' }}>
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center"><TrendingUp className="w-4 h-4 text-green-600" /></div>
+                  <div><div className="text-xs text-neutral-500">Onion · Lasalgaon</div><div className="text-sm font-bold text-neutral-900">\u20b932/kg</div></div>
+                </div>
+              </div>
+              <div className="absolute bottom-16 left-2 bg-white rounded-2xl shadow-xl px-4 py-3 border border-neutral-100 animate-float" style={{ animationDelay: '2s' }}>
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center"><IndianRupee className="w-4 h-4 text-amber-600" /></div>
+                  <div><div className="text-xs text-neutral-500">Farmer earns more</div><div className="text-sm font-bold text-green-700">+\u20b98/kg avg</div></div>
+                </div>
+              </div>
+              <div className="absolute bottom-8 right-0 bg-primary text-white rounded-2xl shadow-xl px-4 py-3 animate-float" style={{ animationDelay: '1s' }}>
+                <div className="flex items-center gap-2">
+                  <BadgeCheck className="w-5 h-5 text-white/80" />
+                  <div><div className="text-xs text-white/70">Order placed</div><div className="text-sm font-bold">Just now ✓</div></div>
+                </div>
+              </div>
+              <div className="absolute top-1/2 -left-4 -translate-y-1/2 bg-white rounded-2xl shadow-xl px-3 py-2 border border-neutral-100 animate-float" style={{ animationDelay: '3s' }}>
+                <div className="flex items-center gap-2"><MapPin className="w-4 h-4 text-primary" /><span className="text-xs font-semibold text-neutral-700">Nashik, MH</span></div>
+              </div>
+              <div className="absolute bottom-0 right-16 w-40 h-40 rounded-2xl overflow-hidden shadow-lg border-2 border-white animate-float" style={{ animationDelay: '1.5s' }}>
+                <img src="https://images.unsplash.com/photo-1610348725531-843dff563e2c?w=300&auto=format&fit=crop&q=80" alt="Produce" className="w-full h-full object-cover" />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-neutral-400">
+          <span className="text-xs font-medium tracking-widest uppercase">Scroll</span>
+          <ChevronDown className="w-5 h-5 animate-scroll-bounce" />
+        </div>
+      </section>
+
+      {/* LIVE TICKER */}
+      <section className="py-3 overflow-hidden" style={{ background: 'var(--color-primary)' }}>
+        <div className="flex items-center gap-3">
+          <div className="flex-shrink-0 flex items-center gap-2 bg-white/20 text-white text-xs font-bold px-3 py-1.5 rounded-full ml-4">
+            <span className="w-1.5 h-1.5 rounded-full bg-green-300 animate-pulse-dot" />LIVE MANDI
+          </div>
+          <div className="marquee-track overflow-hidden flex-1">
+            <div className="flex animate-marquee whitespace-nowrap" style={{ width: 'max-content' }}>
+              {tickerItems.map((item, i) => (
+                <span key={i} className="inline-flex items-center gap-2 mx-6 text-white text-sm">
+                  <span className="font-semibold">{item.name}</span>
+                  <span className="text-white/60 text-xs">{item.mandi}</span>
+                  <span className="font-bold bg-white/15 px-2 py-0.5 rounded-full">{item.price}</span>
+                  {item.trend === 'up' ? <TrendingUp className="w-3.5 h-3.5 text-green-300" /> : <TrendingDown className="w-3.5 h-3.5 text-red-300" />}
+                  <span className="text-white/20 ml-2">•</span>
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* STATS */}
+      <section ref={countersRef.ref} className="py-16 px-4 sm:px-6 lg:px-8 bg-white border-b border-neutral-100">
+        <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8">
+          {[
+            { value: counters.farmers, suffix: '+', label: 'Verified Farmers',  icon: Sprout,  color: 'text-primary'    },
+            { value: counters.buyers,  suffix: '+', label: 'Active Buyers',     icon: Users,   color: 'text-blue-600'  },
+            { value: counters.orders,  suffix: '+', label: 'Orders Delivered',  icon: Package, color: 'text-amber-600' },
+            { value: counters.mandis,  suffix: '',  label: 'States Covered',    icon: MapPin,  color: 'text-purple-600' },
+          ].map(({ value, suffix, label, icon: Icon, color }) => (
+            <div key={label} className="text-center space-y-2">
+              <div className="w-12 h-12 mx-auto rounded-2xl bg-neutral-50 flex items-center justify-center">
+                <Icon className={`w-6 h-6 ${color}`} />
+              </div>
+              <div className="text-3xl md:text-4xl font-extrabold text-neutral-900">{value.toLocaleString('en-IN')}{suffix}</div>
+              <div className="text-sm text-neutral-500 font-medium">{label}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* SCROLL EXPAND */}
+      <section className="relative w-full bg-neutral-900 py-32 overflow-hidden">
+        <div className="absolute inset-0">
+          <img src="https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=1800&auto=format&fit=crop&q=80" alt="Farmlands at golden hour" className="w-full h-full object-cover opacity-30" />
+          <div className="absolute inset-0 bg-gradient-to-t from-neutral-900 via-neutral-900/60 to-transparent" />
+        </div>
+        <div className="relative max-w-4xl mx-auto text-center px-4 space-y-8 z-10">
+          <h2 className="text-3xl sm:text-5xl md:text-6xl font-extrabold text-white tracking-tight drop-shadow-lg leading-tight animate-fade-up">
+            Transparent Pricing.<br /><span className="text-emerald-400">Zero Middlemen.</span>
+          </h2>
+          <p className="text-base sm:text-lg text-neutral-200 max-w-2xl mx-auto leading-relaxed animate-fade-up delay-100">
+            By removing layered intermediaries, KisanMitra returns maximum earnings to farmer families while delivering fresh, traceable produce at true market rates.
           </p>
-          <div className="flex flex-col sm:flex-row justify-center gap-4 mb-14">
-            <Link to="/market" className="btn-primary btn-lg inline-flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transition-all">
-              Explore Produce <ArrowRight className="w-5 h-5" />
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4 animate-fade-up delay-200">
+            <Link to="/market" className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold shadow-xl transition-all inline-flex items-center justify-center gap-2">
+              Explore Market <ArrowRight className="w-5 h-5" />
             </Link>
-            <Link to="/register" className="btn-secondary btn-lg inline-flex items-center justify-center gap-2 bg-white">
-              Sell Your Produce
+            <Link to="/register?role=farmer" className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-white/15 hover:bg-white/25 text-white font-semibold border border-white/30 backdrop-blur-md transition-all inline-flex items-center justify-center gap-2">
+              Sell Your Harvest
             </Link>
           </div>
-          
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-8 text-sm text-neutral-600 font-medium pb-4">
-            <div className="flex items-center gap-2">
-              <Users className="w-5 h-5 text-primary" />
-              <span>500+ Active Farmers</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <TrendingUp className="w-5 h-5 text-primary" />
-              <span>Direct farm-to-buyer ordering</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Shield className="w-5 h-5 text-primary" />
-              <span>Transparent price information</span>
-            </div>
+          <div className="pt-12 mt-12 grid grid-cols-3 gap-6 max-w-2xl mx-auto border-t border-white/20 text-white animate-fade-up delay-300">
+            <div><div className="text-2xl sm:text-3xl font-bold">100%</div><div className="text-xs sm:text-sm text-neutral-300 mt-1">Direct Farm Gate</div></div>
+            <div><div className="text-2xl sm:text-3xl font-bold text-emerald-400">₹0</div><div className="text-xs sm:text-sm text-neutral-300 mt-1">Broker Commissions</div></div>
+            <div><div className="text-2xl sm:text-3xl font-bold">Verified</div><div className="text-xs sm:text-sm text-neutral-300 mt-1">Farms & Quality</div></div>
           </div>
         </div>
       </section>
 
-      {/* SECTION 1.5 - React Bits <ScrollExpand /> Interactive Story Showcase */}
-      <section className="relative w-full bg-neutral-900">
-        <ScrollExpand
-          src="https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=1800&auto=format&fit=crop&q=80"
-          alt="Lush agricultural farmlands in Bharat at golden hour"
-          title="Direct From Soil to Society"
-          scrollHint="Scroll to expand our journey"
-          useWindowScroll
-          topOffset={64}
-          startWidth={52}
-          startHeight={64}
-          startRadius={28}
-          endRadius={0}
-          mediaZoom={1.35}
-          scrollDistance={1.1}
-          holdDistance={0.4}
-          smoothing={0.12}
-          overlayScrim={0.65}
-        >
-          <div className="max-w-3xl text-center px-4 space-y-6">
-            <h2 className="text-3xl sm:text-5xl md:text-6xl font-extrabold text-white tracking-tight drop-shadow-lg leading-tight">
-              Transparent Pricing.<br />
-              <span className="text-emerald-400">Zero Middlemen.</span>
-            </h2>
-            
-            <p className="text-base sm:text-lg md:text-xl text-neutral-100 max-w-2xl mx-auto leading-relaxed drop-shadow">
-              By removing layered intermediaries, KisanMitra returns maximum earnings directly to farmer families while delivering fresh, traceable produce to buyers at true market rates.
-            </p>
-
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
-              <Link
-                to="/market"
-                className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-base shadow-xl hover:shadow-2xl transition-all duration-200 inline-flex items-center justify-center gap-2"
-              >
-                Explore Market <ArrowRight className="w-5 h-5" />
-              </Link>
-              <Link
-                to="/register?role=farmer"
-                className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-white/15 hover:bg-white/25 text-white font-semibold text-base border border-white/30 backdrop-blur-md transition-all duration-200 inline-flex items-center justify-center gap-2"
-              >
-                Sell Your Harvest
-              </Link>
-            </div>
-
-            <div className="pt-4 grid grid-cols-3 gap-6 max-w-xl mx-auto border-t border-white/20 text-white">
-              <div>
-                <div className="text-2xl sm:text-3xl font-bold text-white">100%</div>
-                <div className="text-xs sm:text-sm text-neutral-300">Direct Farm Gate</div>
-              </div>
-              <div>
-                <div className="text-2xl sm:text-3xl font-bold text-emerald-400">₹0</div>
-                <div className="text-xs sm:text-sm text-neutral-300">Broker Commissions</div>
-              </div>
-              <div>
-                <div className="text-2xl sm:text-3xl font-bold text-white">Verified</div>
-                <div className="text-xs sm:text-sm text-neutral-300">Farms & Quality</div>
-              </div>
-            </div>
-          </div>
-        </ScrollExpand>
-      </section>
-
-      {/* SECTION 2 - How It Works */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
+      {/* HOW IT WORKS */}
+      <section ref={howSection.ref} className="py-24 px-4 sm:px-6 lg:px-8 bg-white">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-neutral-900">How KisanMitra Works</h2>
+          <div className={`text-center mb-16 ${howSection.inView ? 'animate-fade-up' : 'opacity-0'}`}>
+            <div className="inline-flex items-center gap-2 text-primary font-bold text-sm tracking-widest uppercase mb-4"><BarChart3 className="w-4 h-4" /> The Process</div>
+            <h2 className="text-4xl font-extrabold text-neutral-900">How KisanMitra Works</h2>
+            <p className="mt-4 text-lg text-neutral-500 max-w-xl mx-auto">Three simple steps that change everything for Indian farmers and buyers.</p>
           </div>
-          <div className="grid md:grid-cols-3 gap-12">
-            <div className="text-center space-y-4">
-              <div className="w-16 h-16 rounded-full bg-primary/10 text-primary flex items-center justify-center mx-auto text-2xl font-bold">1</div>
-              <h3 className="text-xl font-semibold text-neutral-900">Farmers List Produce</h3>
-              <p className="text-neutral-600">Verified farmers list their fresh harvest with accurate, transparent pricing directly on the platform.</p>
+          <div className="relative">
+            <div className="hidden md:block absolute top-14 left-[16.67%] right-[16.67%] h-0.5 bg-neutral-100">
+              <div className="h-full bg-primary/40 transition-all duration-1000 ease-out" style={{ width: howSection.inView ? '100%' : '0%' }} />
             </div>
-            <div className="text-center space-y-4">
-              <div className="w-16 h-16 rounded-full bg-primary/10 text-primary flex items-center justify-center mx-auto text-2xl font-bold">2</div>
-              <h3 className="text-xl font-semibold text-neutral-900">Buyers Place Orders</h3>
-              <p className="text-neutral-600">Buyers browse products, compare prices, and order exactly what they need directly from the source.</p>
-            </div>
-            <div className="text-center space-y-4">
-              <div className="w-16 h-16 rounded-full bg-primary/10 text-primary flex items-center justify-center mx-auto text-2xl font-bold">3</div>
-              <h3 className="text-xl font-semibold text-neutral-900">Produce Delivered</h3>
-              <p className="text-neutral-600">Quality produce moves from the farm straight to the buyer with full visibility every step of the way.</p>
+            <div className="grid md:grid-cols-3 gap-8">
+              {[
+                { step: 1, icon: Sprout,     title: 'Farmers List Produce', desc: 'Verified farmers upload harvest with real APMC benchmark pricing.',   detail: 'Photo upload · APMC price · Quality grade', delay: 'delay-100' },
+                { step: 2, icon: ShoppingBag,title: 'Buyers Place Orders',  desc: 'Browse, compare prices, and order directly without any agents.',        detail: 'Browse by district · Filter · Instant checkout', delay: 'delay-300' },
+                { step: 3, icon: Truck,      title: 'Produce Delivered',    desc: 'Farm-to-door with full order tracking and transparent delivery status.',detail: 'Live tracking · COD + UPI · Direct dispatch', delay: 'delay-500' },
+              ].map(({ step, icon: Icon, title, desc, detail, delay }) => (
+                <div key={step} className={`relative ${howSection.inView ? `animate-fade-up ${delay}` : 'opacity-0'}`}>
+                  <div className="group bg-white rounded-3xl border border-neutral-100 p-8 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+                    <div className="flex items-center gap-4 mb-6">
+                      <div className="relative">
+                        <div className="w-14 h-14 rounded-2xl bg-primary text-white flex items-center justify-center" style={{ boxShadow: '0 8px 25px rgba(45,80,22,0.3)' }}>
+                          <Icon className="w-7 h-7" />
+                        </div>
+                        <div className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-neutral-900 text-white text-xs font-bold flex items-center justify-center">{step}</div>
+                      </div>
+                    </div>
+                    <h3 className="text-xl font-bold text-neutral-900 mb-3">{title}</h3>
+                    <p className="text-neutral-500 leading-relaxed mb-4">{desc}</p>
+                    <div className="text-xs text-primary font-semibold bg-primary/5 rounded-xl px-3 py-2">{detail}</div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
       </section>
 
-      {/* SECTION 3 - For Farmers */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-neutral-50">
-        <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center">
-          <div className="order-2 md:order-1 rounded-2xl aspect-square md:aspect-[4/3] flex items-center justify-center overflow-hidden relative shadow-lg">
-            <img
-              src="https://images.unsplash.com/photo-1595974482597-4b8da8879bc5?w=900&auto=format&fit=crop&q=80"
-              alt="Indian farmer inspecting fresh crops in farm"
-              className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-            />
-          </div>
-          <div className="order-1 md:order-2 space-y-6">
-            <div className="flex items-center gap-2 text-primary font-bold text-sm tracking-wider uppercase">
-              <Leaf className="w-4 h-4 text-primary" />
-              <span>For Farmers</span>
+      {/* MARKET PULSE */}
+      <section ref={pulseSection.ref} className="py-24 px-4 sm:px-6 lg:px-8 bg-neutral-50">
+        <div className="max-w-7xl mx-auto">
+          <div className={`flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-4 ${pulseSection.inView ? 'animate-fade-up' : 'opacity-0'}`}>
+            <div>
+              <div className="inline-flex items-center gap-2 text-primary font-bold text-sm tracking-widest uppercase mb-3">
+                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse-dot" />Today's Market Prices
+              </div>
+              <h2 className="text-3xl font-extrabold text-neutral-900">Live APMC Mandi Pulse</h2>
+              <p className="text-neutral-500 mt-2">Farm-gate prices vs. official APMC mandi benchmark rates.</p>
             </div>
-            <h2 className="text-3xl md:text-4xl font-bold text-neutral-900">Sell directly to buyers.</h2>
-            <ul className="space-y-4 text-neutral-600">
-              <li className="flex items-start gap-3">
-                <CheckCircle className="w-6 h-6 text-primary shrink-0" />
-                <span><strong>Set your own price:</strong> No arbitrary market rates, price your produce fairly.</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <CheckCircle className="w-6 h-6 text-primary shrink-0" />
-                <span><strong>Reach more buyers:</strong> Access a network of buyers beyond your local mandis.</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <CheckCircle className="w-6 h-6 text-primary shrink-0" />
-                <span><strong>Track orders:</strong> Manage incoming requests effortlessly from your dashboard.</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <CheckCircle className="w-6 h-6 text-primary shrink-0" />
-                <span><strong>Manage inventory:</strong> Keep your stock updated in real-time as you harvest.</span>
-              </li>
+            <Link to="/market" className="inline-flex items-center gap-2 text-primary font-semibold hover:gap-3 transition-all text-sm">View all produce <ArrowRight className="w-4 h-4" /></Link>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {MARKET_PULSE.map((item, i) => {
+              const saving = item.mandiPrice - item.farmerPrice;
+              const savingPct = Math.round((saving / item.mandiPrice) * 100);
+              const delays = ['delay-100','delay-200','delay-300','delay-400','delay-500','delay-600'];
+              return (
+                <div key={item.name} className={`bg-white rounded-2xl border border-neutral-100 p-5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 ${pulseSection.inView ? `animate-scale-in ${delays[i] || ''}` : 'opacity-0'}`}>
+                  <div className="flex justify-between items-start mb-4">
+                    <div>
+                      <h3 className="font-bold text-neutral-900 text-lg">{item.name}</h3>
+                      <div className="flex items-center gap-1 text-xs text-neutral-400 mt-0.5"><MapPin className="w-3 h-3" />{item.district}</div>
+                    </div>
+                    <span className={`text-xs font-bold px-2 py-1 rounded-full ${item.grade === 'A' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>Grade {item.grade}</span>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs text-neutral-500">Farm Gate Price</span>
+                      <span className="text-xl font-extrabold text-primary">\u20b9{item.farmerPrice}/{item.unit}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs text-neutral-500">Mandi Benchmark</span>
+                      <span className="text-sm font-semibold text-neutral-400 line-through">\u20b9{item.mandiPrice}/{item.unit}</span>
+                    </div>
+                  </div>
+                  <div className="mt-4 pt-4 border-t border-neutral-50 flex items-center justify-between">
+                    <div className="flex items-center gap-1.5 bg-green-50 text-green-700 text-xs font-bold px-2.5 py-1 rounded-full">
+                      <TrendingDown className="w-3 h-3" /> Save \u20b9{saving}/{item.unit} ({savingPct}% less)
+                    </div>
+                    <Link to="/market" className="text-xs text-primary font-semibold hover:underline">Buy now</Link>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* FOR FARMERS */}
+      <section ref={farmerSection.ref} className="py-24 px-4 sm:px-6 lg:px-8 bg-white">
+        <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
+          <div className={`relative ${farmerSection.inView ? 'animate-scale-in' : 'opacity-0'}`}>
+            <div className="relative rounded-3xl overflow-hidden aspect-[4/3] shadow-2xl">
+              <img src="https://images.unsplash.com/photo-1595974482597-4b8da8879bc5?w=900&auto=format&fit=crop&q=80" alt="Farmer" className="w-full h-full object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-neutral-900/60 via-transparent to-transparent" />
+              <div className="absolute bottom-6 left-6 right-6 bg-white/95 backdrop-blur-sm rounded-2xl p-4 shadow-lg">
+                <div className="grid grid-cols-3 gap-4 text-center">
+                  {[{ val: '\u20b98+', label: 'more per kg avg.' }, { val: '\u20b90', label: 'commission fee' }, { val: '24h', label: 'order dispatch' }].map(({ val, label }) => (
+                    <div key={label}><div className="text-xl font-extrabold text-primary">{val}</div><div className="text-[11px] text-neutral-500 leading-tight">{label}</div></div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className={`space-y-6 ${farmerSection.inView ? 'animate-fade-up delay-200' : 'opacity-0'}`}>
+            <div className="inline-flex items-center gap-2 text-primary font-bold text-sm tracking-widest uppercase"><Leaf className="w-4 h-4" /> For Farmers</div>
+            <h2 className="text-4xl font-extrabold text-neutral-900 leading-tight">Set your own price.<br /><span className="text-primary">Keep what you earn.</span></h2>
+            <p className="text-neutral-600 text-lg">Stop losing 30-40% of your income to commission agents. Sell directly at a fair price you control.</p>
+            <ul className="space-y-4">
+              {[
+                { title: 'Own your pricing',          desc: 'Set farm-gate prices anchored to real APMC mandi benchmarks.' },
+                { title: 'Reach beyond local mandis', desc: 'Access buyers in Delhi, Mumbai, Pune, and Bangalore from your village.' },
+                { title: 'Smart inventory dashboard', desc: 'Update stock in real-time, manage orders, and track earnings from your phone.' },
+                { title: 'Free to join forever',      desc: 'No listing fees. No subscription. 0% commission currently.' },
+              ].map(({ title, desc }) => (
+                <li key={title} className="flex items-start gap-3 group">
+                  <CheckCircle className="w-5 h-5 text-primary mt-0.5 shrink-0 group-hover:scale-110 transition-transform" />
+                  <div><span className="font-semibold text-neutral-900">{title}: </span><span className="text-neutral-600">{desc}</span></div>
+                </li>
+              ))}
             </ul>
-            <div className="pt-4">
-              <Link to="/register" className="btn-primary inline-flex items-center justify-center">
-                Start Selling
+            <div className="pt-4 flex gap-4">
+              <Link to="/register?role=farmer" className="group inline-flex items-center gap-2 px-6 py-3 bg-primary text-white font-semibold rounded-xl shadow-md hover:shadow-lg hover:bg-primary/90 transition-all">
+                Start Selling Free <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Link>
+              <Link to="/how-it-works" className="inline-flex items-center gap-2 px-6 py-3 text-primary font-semibold hover:underline">How it works</Link>
             </div>
           </div>
         </div>
       </section>
 
-      {/* SECTION 4 - For Buyers */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
-        <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center">
-          <div className="space-y-6">
-            <div className="flex items-center gap-2 text-primary font-bold text-sm tracking-wider uppercase">
-              <Users className="w-4 h-4 text-primary" />
-              <span>For Buyers</span>
-            </div>
-            <h2 className="text-3xl md:text-4xl font-bold text-neutral-900">Find produce from nearby farmers.</h2>
-            <ul className="space-y-4 text-neutral-600">
-              <li className="flex items-start gap-3">
-                <CheckCircle className="w-6 h-6 text-primary shrink-0" />
-                <span><strong>Browse verified farmers:</strong> Know exactly where your food is coming from.</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <CheckCircle className="w-6 h-6 text-primary shrink-0" />
-                <span><strong>Compare prices:</strong> Make informed decisions with transparent market pricing.</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <CheckCircle className="w-6 h-6 text-primary shrink-0" />
-                <span><strong>Track orders:</strong> Monitor your delivery status from farm to door.</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <CheckCircle className="w-6 h-6 text-primary shrink-0" />
-                <span><strong>Favorites:</strong> Save your trusted farmers for quick repeat ordering.</span>
-              </li>
+      {/* FOR BUYERS */}
+      <section ref={buyerSection.ref} className="py-24 px-4 sm:px-6 lg:px-8 bg-neutral-900">
+        <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
+          <div className={`space-y-6 ${buyerSection.inView ? 'animate-fade-up' : 'opacity-0'}`}>
+            <div className="inline-flex items-center gap-2 text-emerald-400 font-bold text-sm tracking-widest uppercase"><Users className="w-4 h-4" /> For Buyers</div>
+            <h2 className="text-4xl font-extrabold text-white leading-tight">Know your farmer.<br /><span className="text-emerald-400">Trust your food.</span></h2>
+            <p className="text-neutral-400 text-lg">Every product shows the exact farm, district, quality grade, and APMC reference price. No mystery supply chains.</p>
+            <ul className="space-y-4">
+              {[
+                { title: 'Verified farm origins',   desc: 'Full traceability — farmer, district, harvest date and quality grade.' },
+                { title: 'Save 15-25% vs. retail',  desc: 'Skip the middlemen markup. Direct farm prices are consistently lower.' },
+                { title: 'Flexible delivery',        desc: 'Choose farm pickup or home delivery with real order tracking.' },
+                { title: 'COD + UPI',                desc: 'Pay on delivery or scan-and-pay. Zero payment friction.' },
+              ].map(({ title, desc }) => (
+                <li key={title} className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-emerald-400 mt-0.5 shrink-0" />
+                  <div><span className="font-semibold text-white">{title}: </span><span className="text-neutral-400">{desc}</span></div>
+                </li>
+              ))}
             </ul>
-            <div className="pt-4">
-              <Link to="/market" className="btn-primary inline-flex items-center justify-center">
-                Find Produce
-              </Link>
-            </div>
+            <Link to="/market" className="group inline-flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-xl shadow-lg transition-all">
+              Browse Produce <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </Link>
           </div>
-          <div className="rounded-2xl aspect-square md:aspect-[4/3] flex items-center justify-center overflow-hidden relative shadow-lg">
-            <img
-              src="https://images.unsplash.com/photo-1610348725531-843dff563e2c?w=900&auto=format&fit=crop&q=80"
-              alt="Fresh farm produce sorted in crates"
-              className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-            />
+          <div className={`relative ${buyerSection.inView ? 'animate-scale-in delay-200' : 'opacity-0'}`}>
+            <div className="relative rounded-3xl overflow-hidden aspect-[4/3] shadow-2xl">
+              <img src="https://images.unsplash.com/photo-1610348725531-843dff563e2c?w=900&auto=format&fit=crop&q=80" alt="Produce" className="w-full h-full object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-neutral-900/50 via-transparent to-transparent" />
+              <div className="absolute bottom-6 left-6 right-6 bg-neutral-900/90 backdrop-blur-sm rounded-2xl p-4 border border-white/10">
+                <div className="flex items-center justify-between">
+                  <div><div className="text-white font-semibold">Alphonso Mangoes</div><div className="text-neutral-400 text-sm">Devgad, Ratnagiri · Grade A</div></div>
+                  <div className="text-right"><div className="text-emerald-400 font-extrabold text-lg">\u20b9680<span className="text-sm font-normal">/dz</span></div><div className="text-neutral-500 text-xs line-through">\u20b9820 APMC rate</div></div>
+                </div>
+                <div className="mt-3 flex gap-2">
+                  <div className="flex-1 bg-emerald-600 text-white text-xs font-bold px-3 py-1.5 rounded-lg text-center">Add to Cart</div>
+                  <div className="bg-white/10 text-white text-xs font-bold px-3 py-1.5 rounded-lg text-center">View Farm</div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* SECTION 5 - Final CTA */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-primary/5">
-        <div className="max-w-4xl mx-auto text-center space-y-8">
-          <h2 className="text-3xl md:text-4xl font-bold text-neutral-900">Ready to get started?</h2>
-          <p className="text-xl text-neutral-600">Join the growing community of farmers and buyers transforming agricultural trade.</p>
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <Link to="/register?role=farmer" className="btn-primary btn-lg inline-flex items-center justify-center">
-              I'm a Farmer
-            </Link>
-            <Link to="/register?role=buyer" className="btn-secondary btn-lg inline-flex items-center justify-center bg-white">
-              I'm a Buyer
-            </Link>
+      {/* TESTIMONIALS */}
+      <section ref={testimonialsSection.ref} className="py-24 px-4 sm:px-6 lg:px-8 bg-neutral-50">
+        <div className="max-w-7xl mx-auto">
+          <div className={`text-center mb-16 ${testimonialsSection.inView ? 'animate-fade-up' : 'opacity-0'}`}>
+            <div className="inline-flex items-center gap-2 text-primary font-bold text-sm tracking-widest uppercase mb-4"><Star className="w-4 h-4" /> Real Stories</div>
+            <h2 className="text-4xl font-extrabold text-neutral-900">Farmers and buyers love KisanMitra</h2>
+            <p className="mt-4 text-lg text-neutral-500 max-w-xl mx-auto">Real results from real people across India.</p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-6">
+            {testimonials.map((t, i) => {
+              const delays = ['delay-200', 'delay-400', 'delay-600'];
+              return (
+                <div key={t.name} className={`bg-white rounded-3xl p-6 shadow-sm border border-neutral-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col ${testimonialsSection.inView ? `animate-fade-up ${delays[i] || ''}` : 'opacity-0'}`}>
+                  <div className="flex gap-0.5 mb-4">{[...Array(t.rating)].map((_, j) => <Star key={j} className="w-4 h-4 text-amber-400 fill-amber-400" />)}</div>
+                  <blockquote className="text-neutral-700 leading-relaxed flex-1 mb-6">"{t.quote}"</blockquote>
+                  <div className="flex items-center gap-3 pt-4 border-t border-neutral-100">
+                    <img src={t.photo} alt={t.name} className="w-11 h-11 rounded-full object-cover border-2 border-neutral-100" />
+                    <div className="flex-1"><div className="font-bold text-neutral-900 text-sm">{t.name}</div><div className="text-xs text-neutral-500">{t.role} · {t.district}</div></div>
+                    <div className="text-xs font-bold text-green-700 bg-green-50 px-2 py-1 rounded-full">{t.stat}</div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
+
+      {/* FINAL CTA */}
+      <section ref={ctaSection.ref} className="py-24 px-4 sm:px-6 lg:px-8 bg-white">
+        <div className="max-w-5xl mx-auto">
+          <div className={`text-center mb-12 ${ctaSection.inView ? 'animate-fade-up' : 'opacity-0'}`}>
+            <h2 className="text-4xl md:text-5xl font-extrabold text-neutral-900">Ready to get started?</h2>
+            <p className="mt-4 text-xl text-neutral-500">Join thousands of farmers and buyers transforming Indian agriculture.</p>
+          </div>
+          <div className={`grid md:grid-cols-2 gap-6 ${ctaSection.inView ? 'animate-fade-up delay-200' : 'opacity-0'}`}>
+            <div className="relative group rounded-3xl overflow-hidden shadow-xl">
+              <img src="https://images.unsplash.com/photo-1595974482597-4b8da8879bc5?w=600&auto=format&fit=crop&q=80" alt="Farmer" className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500" />
+              <div className="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/50 to-transparent" />
+              <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                <div className="text-xs font-bold uppercase tracking-widest mb-1 text-white/70">For Farmers</div>
+                <h3 className="text-2xl font-extrabold mb-2">Start Selling Today</h3>
+                <p className="text-sm text-white/80 mb-4">List your produce free. Reach buyers across India.</p>
+                <Link to="/register?role=farmer" className="inline-flex items-center gap-2 bg-white text-primary font-bold px-5 py-2.5 rounded-xl hover:bg-neutral-100 transition-colors text-sm">
+                  I'm a Farmer <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
+            </div>
+            <div className="relative group rounded-3xl overflow-hidden shadow-xl">
+              <img src="https://images.unsplash.com/photo-1610348725531-843dff563e2c?w=600&auto=format&fit=crop&q=80" alt="Produce" className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500" />
+              <div className="absolute inset-0 bg-gradient-to-t from-neutral-900/90 via-neutral-900/50 to-transparent" />
+              <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                <div className="text-xs font-bold uppercase tracking-widest mb-1 text-white/70">For Buyers</div>
+                <h3 className="text-2xl font-extrabold mb-2">Find Fresh Produce</h3>
+                <p className="text-sm text-white/80 mb-4">Direct from verified farms. Transparent pricing.</p>
+                <Link to="/register?role=buyer" className="inline-flex items-center gap-2 bg-white text-neutral-900 font-bold px-5 py-2.5 rounded-xl hover:bg-neutral-100 transition-colors text-sm">
+                  I'm a Buyer <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
     </div>
   );
 };
 
 export default HomePage;
-

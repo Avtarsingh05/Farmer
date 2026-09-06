@@ -35,7 +35,7 @@ export const BuyerLayout: React.FC = () => {
         </div>
       )}
 
-      <div className="lg:pl-64 flex flex-col min-h-screen pb-16 lg:pb-0">
+      <div className="lg:pl-72 flex flex-col min-h-screen pb-16 lg:pb-0">
         <DashboardTopBar 
           title={getPageTitle()} 
           onMenuClick={() => setIsMobileMenuOpen(true)} 

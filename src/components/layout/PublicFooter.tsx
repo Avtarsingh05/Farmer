@@ -1,73 +1,117 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Leaf, Mail, Globe, ExternalLink } from 'lucide-react';
+import { Leaf, Mail, Phone, MapPin, Shield, BadgeCheck } from 'lucide-react';
 
 export const PublicFooter: React.FC = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-white border-t border-neutral-200 pt-12 pb-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-          <div className="col-span-1">
-            <div className="flex items-center space-x-2 mb-4">
-              <Leaf className="h-6 w-6 text-primary" />
-              <span className="text-lg font-bold text-primary">KisanMitra</span>
+    <footer className="bg-neutral-900 text-white">
+      {/* Trust bar */}
+      <div className="border-b border-white/10 py-5">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-wrap justify-center md:justify-between gap-6 text-sm text-neutral-400">
+            {[
+              { icon: BadgeCheck, label: '500+ APMC-verified farmers' },
+              { icon: Shield,     label: 'Zero broker commissions' },
+              { icon: MapPin,     label: '28 states across India' },
+              { icon: Mail,       label: 'support@kisanmitra.in' },
+            ].map(({ icon: Icon, label }) => (
+              <div key={label} className="flex items-center gap-2">
+                <Icon className="w-4 h-4 text-primary" />
+                <span>{label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Main footer grid */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-8">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-10 mb-12">
+          {/* Brand col */}
+          <div className="md:col-span-2 space-y-4">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center">
+                <Leaf className="w-5 h-5 text-white" />
+              </div>
+              <span className="text-xl font-extrabold text-white">KisanMitra</span>
             </div>
-            <p className="text-neutral-600 text-sm">
-              Empowering farmers with direct market access and fair prices.
+            <p className="text-neutral-400 text-sm leading-relaxed max-w-xs">
+              India's direct farm-to-market platform. Empowering farmers with fair prices, giving buyers transparent produce at the source.
             </p>
+            <div className="flex items-center gap-2 text-xs text-neutral-500">
+              <Phone className="w-3.5 h-3.5" />
+              <span>Farmer Helpline: 1800-XXX-XXXX (toll-free)</span>
+            </div>
+            {/* APMC badge */}
+            <div className="inline-flex items-center gap-2 bg-primary/20 border border-primary/30 text-primary text-xs font-semibold px-3 py-1.5 rounded-full">
+              <Shield className="w-3.5 h-3.5" />
+              APMC Benchmark Prices · Agmarknet Sourced
+            </div>
           </div>
-          
+
+          {/* Product */}
           <div>
-            <h3 className="text-sm font-semibold text-neutral-900 tracking-wider uppercase mb-4">Product</h3>
+            <h3 className="text-xs font-bold text-neutral-300 tracking-widest uppercase mb-5">Platform</h3>
             <ul className="space-y-3">
-              <li><Link to="/market" className="text-sm text-neutral-600 hover:text-primary">Market</Link></li>
-              <li><Link to="/how-it-works" className="text-sm text-neutral-600 hover:text-primary">How it works</Link></li>
-              <li><Link to="/for-farmers" className="text-sm text-neutral-600 hover:text-primary">For Farmers</Link></li>
-              <li><Link to="/for-buyers" className="text-sm text-neutral-600 hover:text-primary">For Buyers</Link></li>
+              {[
+                { label: 'Browse Market',    to: '/market' },
+                { label: 'How It Works',     to: '/how-it-works' },
+                { label: 'For Farmers',      to: '/farmers' },
+                { label: 'For Buyers',       to: '/register?role=buyer' },
+              ].map(({ label, to }) => (
+                <li key={to}>
+                  <Link to={to} className="text-sm text-neutral-400 hover:text-white transition-colors">{label}</Link>
+                </li>
+              ))}
             </ul>
           </div>
 
+          {/* Company */}
           <div>
-            <h3 className="text-sm font-semibold text-neutral-900 tracking-wider uppercase mb-4">Company</h3>
+            <h3 className="text-xs font-bold text-neutral-300 tracking-widest uppercase mb-5">Company</h3>
             <ul className="space-y-3">
-              <li><Link to="/about" className="text-sm text-neutral-600 hover:text-primary">About</Link></li>
-              <li><Link to="/contact" className="text-sm text-neutral-600 hover:text-primary">Contact</Link></li>
-              <li><Link to="/privacy" className="text-sm text-neutral-600 hover:text-primary">Privacy Policy</Link></li>
-              <li><Link to="/terms" className="text-sm text-neutral-600 hover:text-primary">Terms of Service</Link></li>
+              {[
+                { label: 'About Us',         to: '/about' },
+                { label: 'Privacy Policy',   to: '/privacy' },
+                { label: 'Terms of Service', to: '/terms' },
+              ].map(({ label, to }) => (
+                <li key={to}>
+                  <Link to={to} className="text-sm text-neutral-400 hover:text-white transition-colors">{label}</Link>
+                </li>
+              ))}
             </ul>
           </div>
 
+          {/* Support */}
           <div>
-            <h3 className="text-sm font-semibold text-neutral-900 tracking-wider uppercase mb-4">Support</h3>
+            <h3 className="text-xs font-bold text-neutral-300 tracking-widest uppercase mb-5">Support</h3>
             <ul className="space-y-3">
-              <li><Link to="/help" className="text-sm text-neutral-600 hover:text-primary">Help Center</Link></li>
-              <li><Link to="/faq" className="text-sm text-neutral-600 hover:text-primary">FAQ</Link></li>
+              {[
+                { label: 'Help Center', to: '/help' },
+                { label: 'FAQ',         to: '/faq' },
+                { label: 'Contact Us',  to: '/contact' },
+              ].map(({ label, to }) => (
+                <li key={to}>
+                  <Link to={to} className="text-sm text-neutral-400 hover:text-white transition-colors">{label}</Link>
+                </li>
+              ))}
             </ul>
           </div>
         </div>
 
-        <div className="border-t border-neutral-200 pt-8 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-          <p className="text-sm text-neutral-600">
-            &copy; {currentYear} KisanMitra. All rights reserved.
+        {/* Bottom row */}
+        <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="text-sm text-neutral-500">
+            &copy; {currentYear} KisanMitra Technologies Pvt. Ltd. All rights reserved.
           </p>
-          <div className="flex space-x-6">
-            <a href="#" className="text-neutral-400 hover:text-primary">
-              <span className="sr-only">Website</span>
-              <Globe className="h-5 w-5" />
-            </a>
-            <a href="#" className="text-neutral-400 hover:text-primary">
-              <span className="sr-only">Mail</span>
-              <Mail className="h-5 w-5" />
-            </a>
-            <a href="#" className="text-neutral-400 hover:text-primary">
-              <span className="sr-only">External</span>
-              <ExternalLink className="h-5 w-5" />
-            </a>
-          </div>
+          <p className="text-xs text-neutral-600">
+            Prices sourced from Agmarknet (National Agriculture Market) APMC daily bulletins.
+          </p>
         </div>
       </div>
     </footer>
   );
 };
+

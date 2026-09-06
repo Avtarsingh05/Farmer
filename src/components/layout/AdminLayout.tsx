@@ -34,7 +34,7 @@ export const AdminLayout: React.FC = () => {
         </div>
       )}
 
-      <div className="lg:pl-64 flex flex-col min-h-screen">
+      <div className="lg:pl-72 flex flex-col min-h-screen">
         <DashboardTopBar 
           title={getPageTitle()} 
           onMenuClick={() => setIsMobileMenuOpen(true)} 
