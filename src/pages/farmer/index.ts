@@ -6,3 +6,5 @@ export { default as FarmerOrderDetailPage } from './FarmerOrderDetailPage';
 export { default as FarmerInventoryPage } from './FarmerInventoryPage';
 export { default as FarmerEarningsPage } from './FarmerEarningsPage';
 export { default as FarmerProfilePage } from './FarmerProfilePage';
+
+export { default as FarmerAnalyticsPage } from './FarmerAnalyticsPage';

@@ -1,36 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { MapPin, ShieldCheck, Clock, Box } from 'lucide-react';
+import { MapPin, ShieldCheck, Clock, Box, ChevronLeft, Calendar } from 'lucide-react';
 import { getFarmerProfile } from '@/services/farmerService';
 import { getFarmerProducts } from '@/services/productService';
 import { FarmerProfile, ProductListItem } from '@/types';
-
-const SimpleProductCard: React.FC<{ product: ProductListItem }> = ({ product }) => (
-  <Link to={`/products/${product.id}`} className="card p-4 hover:shadow-md transition-all group block">
-    <div className="aspect-square bg-neutral-100 rounded-lg mb-4 flex items-center justify-center overflow-hidden">
-      <img 
-        src={product.images?.[0]?.secureUrl || 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=400&auto=format&fit=crop&q=80'} 
-        alt={product.name} 
-        className="w-full h-full object-cover group-hover:scale-105 transition-transform" 
-        onError={(e) => {
-          (e.currentTarget as HTMLImageElement).src = 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=400&auto=format&fit=crop&q=80';
-        }}
-      />
-    </div>
-    <div>
-      <h4 className="font-medium text-neutral-900 truncate">{product.name}</h4>
-      <p className="text-sm text-neutral-500 mb-2">{product.categoryName || product.category || ''}</p>
-      <div className="flex justify-between items-center">
-        <span className="font-bold text-primary">₹{product.price}/{product.unit}</span>
-        {product.availabilityStatus === 'available' ? (
-          <span className="text-xs text-green-600 bg-green-50 px-2 py-0.5 rounded-full font-medium">In Stock</span>
-        ) : (
-          <span className="text-xs text-red-600 bg-red-50 px-2 py-0.5 rounded-full font-medium">Out</span>
-        )}
-      </div>
-    </div>
-  </Link>
-);
+import { ProductCard } from '@/components/shared/ProductCard';
 
 export default function FarmerProfilePage() {
   const { id } = useParams<{ id: string }>();
@@ -63,21 +37,21 @@ export default function FarmerProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-neutral-50 py-8">
-        <div className="max-w-5xl mx-auto px-4">
-          <div className="bg-white rounded-2xl p-8 shadow-sm mb-8">
-            <div className="flex flex-col md:flex-row gap-8 items-start">
-              <div className="skeleton w-32 h-32 rounded-full shrink-0" />
-              <div className="space-y-4 w-full">
-                <div className="skeleton h-8 w-1/3" />
-                <div className="skeleton h-5 w-1/4" />
-                <div className="skeleton h-20 w-full" />
+      <div className="min-h-screen bg-neutral-50 py-12">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="bg-white rounded-3xl p-10 shadow-sm border border-neutral-100 mb-10">
+            <div className="flex flex-col md:flex-row gap-10 items-start">
+              <div className="skeleton w-40 h-40 rounded-full shrink-0" />
+              <div className="space-y-6 w-full pt-4">
+                <div className="skeleton h-10 w-1/3" />
+                <div className="skeleton h-6 w-1/4" />
+                <div className="skeleton h-24 w-full" />
               </div>
             </div>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[...Array(4)].map((_, i) => (
-               <div key={i} className="skeleton h-64 rounded-xl" />
+               <div key={i} className="skeleton h-[350px] rounded-2xl" />
             ))}
           </div>
         </div>
@@ -87,22 +61,37 @@ export default function FarmerProfilePage() {
 
   if (error || !farmer) {
     return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center text-center px-4">
-        <h2 className="text-2xl font-bold text-neutral-900 mb-2">Profile Not Found</h2>
-        <p className="text-neutral-600 mb-6">{error || 'This farmer profile is unavailable.'}</p>
-        <Link to="/farmers" className="btn-primary">Browse All Farmers</Link>
+      <div className="min-h-[70vh] flex flex-col items-center justify-center text-center px-4 bg-neutral-50">
+        <div className="w-20 h-20 bg-neutral-200 rounded-full flex items-center justify-center mb-6">
+          <span className="text-3xl">?</span>
+        </div>
+        <h2 className="text-3xl font-bold text-neutral-900 mb-3">Profile Not Found</h2>
+        <p className="text-neutral-600 mb-8 max-w-md text-lg">{error || 'This farmer profile is unavailable or has been removed.'}</p>
+        <Link to="/farmers" className="btn-primary flex items-center gap-2 px-6 py-3">
+          <ChevronLeft className="w-5 h-5" /> Back to Farmers
+        </Link>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-neutral-50 py-8">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-neutral-50 pb-24">
+      {/* Cover Image Placeholder */}
+      <div className="h-64 md:h-80 w-full bg-primary/10 relative overflow-hidden">
+        <img 
+          src="https://images.unsplash.com/photo-1586771107445-d3af111162b7?w=2000&auto=format&fit=crop&q=80"
+          className="w-full h-full object-cover mix-blend-overlay opacity-50"
+          alt="Farm Background"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+      </div>
+
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 -mt-32 relative z-10">
         
         {/* Profile Header */}
-        <div className="bg-white rounded-2xl shadow-sm border border-neutral-200 p-6 md:p-10 mb-8">
-          <div className="flex flex-col md:flex-row gap-8 items-start">
-            <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-primary/10 text-primary flex items-center justify-center text-4xl font-bold shrink-0 border-4 border-white shadow-md overflow-hidden">
+        <div className="bg-white rounded-3xl shadow-xl border border-neutral-100 p-8 md:p-12 mb-12 animate-fade-up">
+          <div className="flex flex-col md:flex-row gap-10 items-start">
+            <div className="w-32 h-32 md:w-48 md:h-48 rounded-full bg-white flex items-center justify-center text-4xl font-bold shrink-0 border-8 border-white shadow-lg overflow-hidden -mt-20 md:-mt-24 z-20 relative bg-neutral-100">
               <img 
                 src={farmer.photoURL || farmer.photoUrl || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&auto=format&fit=crop&q=80'} 
                 alt={farmer.displayName || 'Farmer'} 
@@ -113,41 +102,51 @@ export default function FarmerProfilePage() {
               />
             </div>
             
-            <div className="flex-1">
-              <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-2">
-                <h1 className="text-3xl font-bold text-neutral-900">
-                  {farmer.displayName || 'Independent Farmer'}
-                </h1>
-                {farmer.verificationStatus === 'verified' ? (
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm font-medium w-fit">
-                    <ShieldCheck className="w-4 h-4" /> Verified Farmer
-                  </span>
-                ) : (
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 text-amber-700 text-sm font-medium w-fit">
-                    <Clock className="w-4 h-4" /> Verification Pending
-                  </span>
-                )}
+            <div className="flex-1 w-full">
+              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-4">
+                <div>
+                  <h1 className="text-3xl md:text-4xl font-bold text-neutral-900 mb-2">
+                    {farmer.displayName || 'Independent Farmer'}
+                  </h1>
+                  <div className="flex flex-wrap items-center gap-3 text-neutral-600 font-medium">
+                    <span className="flex items-center gap-1.5">
+                      <MapPin className="w-4 h-4 text-neutral-400" />
+                      {[farmer.district, farmer.state].filter(Boolean).join(', ') || 'Location not provided'}
+                    </span>
+                    <span className="text-neutral-300">•</span>
+                    <span className="flex items-center gap-1.5">
+                      <Calendar className="w-4 h-4 text-neutral-400" />
+                      Member since {new Date().getFullYear()}
+                    </span>
+                  </div>
+                </div>
+                
+                <div className="shrink-0">
+                  {farmer.verificationStatus === 'verified' ? (
+                    <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-50 text-green-700 text-sm font-bold border border-green-200 shadow-sm">
+                      <ShieldCheck className="w-5 h-5" /> Verified Profile
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-50 text-amber-700 text-sm font-bold border border-amber-200 shadow-sm">
+                      <Clock className="w-5 h-5" /> Verification Pending
+                    </span>
+                  )}
+                </div>
               </div>
               
-              <div className="flex items-center gap-2 text-neutral-600 mb-6">
-                <MapPin className="w-4 h-4" />
-                <span>
-                  {[farmer.district, farmer.state]
-                    .filter(Boolean)
-                    .join(', ') || 'Location details not provided'}
-                </span>
-              </div>
-              
-              <div className="prose prose-neutral max-w-none text-neutral-700">
-                <h3 className="text-sm uppercase tracking-wider text-neutral-500 font-semibold mb-2">About the Farm</h3>
-                <p>
+              <div className="mt-8 pt-8 border-t border-neutral-100">
+                <h3 className="text-lg font-bold text-neutral-900 mb-3">About the Farm</h3>
+                <p className="text-neutral-600 text-lg leading-relaxed max-w-3xl">
                   {farmer.bio || 
                    'This farmer has not provided a detailed description yet. They are a registered producer on KisanMitra, bringing fresh produce directly to the market.'}
                 </p>
                 {farmer.farmCount !== undefined && (
-                  <p className="mt-2 text-sm">
-                    <strong>Farm Count:</strong> {farmer.farmCount}
-                  </p>
+                  <div className="mt-6 flex gap-8">
+                    <div className="bg-neutral-50 px-6 py-4 rounded-2xl border border-neutral-100">
+                      <p className="text-sm text-neutral-500 font-medium mb-1">Total Farms</p>
+                      <p className="text-2xl font-bold text-neutral-900">{farmer.farmCount}</p>
+                    </div>
+                  </div>
                 )}
               </div>
             </div>
@@ -155,19 +154,28 @@ export default function FarmerProfilePage() {
         </div>
 
         {/* Farmer's Products */}
-        <div>
-          <h2 className="text-2xl font-bold text-neutral-900 mb-6">Available Produce</h2>
+        <div className="animate-fade-up animate-delay-200">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-3xl font-bold text-neutral-900">Available Produce</h2>
+            <Link to="/market" className="text-primary font-semibold hover:underline flex items-center gap-1">
+              View Market <ChevronLeft className="w-4 h-4 rotate-180" />
+            </Link>
+          </div>
           
           {products.length === 0 ? (
-            <div className="bg-white rounded-xl border border-neutral-200 p-12 text-center">
-              <Box className="w-12 h-12 text-neutral-300 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-neutral-900 mb-2">No active listings</h3>
-              <p className="text-neutral-500">This farmer currently doesn't have any produce listed for sale.</p>
+            <div className="bg-white rounded-3xl border border-neutral-100 p-16 text-center shadow-sm">
+              <div className="w-20 h-20 bg-neutral-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Box className="w-10 h-10 text-neutral-300" />
+              </div>
+              <h3 className="text-xl font-bold text-neutral-900 mb-2">No active listings</h3>
+              <p className="text-neutral-500 text-lg max-w-md mx-auto">This farmer currently doesn't have any produce listed for sale. Check back later!</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {products.map((product) => (
-                <SimpleProductCard key={product.id} product={product} />
+                <div key={product.id} className="h-full">
+                  <ProductCard product={product} />
+                </div>
               ))}
             </div>
           )}

@@ -31,6 +31,7 @@ const FarmerOrderDetailPage= lazy(() => import('@/pages/farmer/FarmerOrderDetail
 const FarmerInventoryPage  = lazy(() => import('@/pages/farmer/FarmerInventoryPage'));
 const FarmerEarningsPage   = lazy(() => import('@/pages/farmer/FarmerEarningsPage'));
 const FarmerProfilePage2   = lazy(() => import('@/pages/farmer/FarmerProfilePage'));
+const FarmerAnalyticsPage  = lazy(() => import('@/pages/farmer/FarmerAnalyticsPage'));
 
 // ─── Buyer pages ──────────────────────────────────────────────────────────────
 const BuyerDashboard       = lazy(() => import('@/pages/buyer/BuyerDashboard'));
@@ -108,7 +109,7 @@ const router = createBrowserRouter([
       { path: 'inventory',          element: <Suspense fallback={<PageLoader />}><FarmerInventoryPage /></Suspense> },
       { path: 'earnings',           element: <Suspense fallback={<PageLoader />}><FarmerEarningsPage /></Suspense> },
       { path: 'profile',            element: <Suspense fallback={<PageLoader />}><FarmerProfilePage2 /></Suspense> },
-      { path: 'analytics',          element: <Suspense fallback={<PageLoader />}><FarmerEarningsPage /></Suspense> },
+      { path: 'analytics',          element: <Suspense fallback={<PageLoader />}><FarmerAnalyticsPage /></Suspense> },
       { path: 'settings',           element: <Suspense fallback={<PageLoader />}><FarmerProfilePage2 /></Suspense> },
     ],
   },

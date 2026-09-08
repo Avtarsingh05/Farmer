@@ -268,3 +268,36 @@ export async function updateInventoryThreshold(
     }
   }
 }
+
+export async function updateAvailableQuantity(
+  productId: string,
+  farmerId: string,
+  availableQty: number
+): Promise<void> {
+  if (isDemoMode()) {
+    const list = getStoredInventory();
+    const item = list.find((i) => i.productId === productId && i.farmerId === farmerId);
+    if (!item) throw new Error('Inventory item not found or permission denied.');
+    item.availableQty = availableQty;
+    saveStoredInventory([...list]);
+    return;
+  }
+
+  try {
+    const snap = await getDoc(doc(db, COLLECTIONS.INVENTORY, productId));
+    if (!snap.exists() || snap.data().farmerId !== farmerId) {
+      throw new Error('Inventory item not found or permission denied.');
+    }
+    await updateDoc(doc(db, COLLECTIONS.INVENTORY, productId), {
+      availableQty,
+      updatedAt: serverTimestamp(),
+    });
+  } catch {
+    const list = getStoredInventory();
+    const item = list.find((i) => i.productId === productId && i.farmerId === farmerId);
+    if (item) {
+      item.availableQty = availableQty;
+      saveStoredInventory([...list]);
+    }
+  }
+}
