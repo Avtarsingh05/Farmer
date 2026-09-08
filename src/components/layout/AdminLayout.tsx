@@ -1,3 +1,4 @@
+import { cn } from '@/utils/cn';
 import React, { useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { AdminSidebar } from './AdminSidebar';
@@ -5,6 +6,7 @@ import { DashboardTopBar } from './DashboardTopBar';
 
 export const AdminLayout: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const location = useLocation();
 
   const getPageTitle = () => {
@@ -22,7 +24,7 @@ export const AdminLayout: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-neutral-50">
-      <AdminSidebar />
+      <AdminSidebar isCollapsed={isSidebarCollapsed} onToggle={() => setIsSidebarCollapsed(!isSidebarCollapsed)} />
       
       {/* Mobile Drawer */}
       {isMobileMenuOpen && (
@@ -34,7 +36,7 @@ export const AdminLayout: React.FC = () => {
         </div>
       )}
 
-      <div className="lg:pl-72 flex flex-col min-h-screen">
+      <div className={cn("flex flex-col min-h-screen transition-all duration-300", isSidebarCollapsed ? "lg:pl-20" : "lg:pl-72")}>
         <DashboardTopBar 
           title={getPageTitle()} 
           onMenuClick={() => setIsMobileMenuOpen(true)} 

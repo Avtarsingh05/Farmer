@@ -1,3 +1,4 @@
+import { cn } from '@/utils/cn';
 import React, { useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { FarmerSidebar } from './FarmerSidebar';
@@ -6,6 +7,7 @@ import { DashboardTopBar } from './DashboardTopBar';
 
 export const FarmerLayout: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const location = useLocation();
 
   // Simple title mapper based on pathname
@@ -26,7 +28,7 @@ export const FarmerLayout: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-neutral-50">
-      <FarmerSidebar />
+      <FarmerSidebar isCollapsed={isSidebarCollapsed} onToggle={() => setIsSidebarCollapsed(!isSidebarCollapsed)} />
       
       {/* Mobile Drawer (visible only when toggled on mobile) */}
       {isMobileMenuOpen && (
@@ -38,7 +40,7 @@ export const FarmerLayout: React.FC = () => {
         </div>
       )}
 
-      <div className="lg:pl-72 flex flex-col min-h-screen pb-16 lg:pb-0">
+      <div className={cn("flex flex-col min-h-screen pb-16 lg:pb-0 transition-all duration-300", isSidebarCollapsed ? "lg:pl-20" : "lg:pl-72")}>
         <DashboardTopBar 
           title={getPageTitle()} 
           onMenuClick={() => setIsMobileMenuOpen(true)} 

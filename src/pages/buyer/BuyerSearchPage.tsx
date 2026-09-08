@@ -208,11 +208,11 @@ export default function BuyerSearchPage() {
                 onChange={(e) => setSortBy(e.target.value)}
                 className="py-2.5 pl-3 pr-8 text-xs sm:text-sm font-medium border border-neutral-300 rounded-lg bg-white text-neutral-700 hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer"
               >
-                <option value="featured">✨ Recommended</option>
-                <option value="price_asc">₹ Price: Low to High</option>
-                <option value="price_desc">₹ Price: High to Low</option>
-                <option value="qty_desc">📦 Available Stock</option>
-                <option value="name_asc">🔤 Name (A - Z)</option>
+                <option value="featured">Recommended</option>
+                <option value="price_asc">Price: Low to High</option>
+                <option value="price_desc">Price: High to Low</option>
+                <option value="qty_desc">Available Stock</option>
+                <option value="name_asc">Name (A - Z)</option>
               </select>
             </div>
 
@@ -296,7 +296,6 @@ export default function BuyerSearchPage() {
                   : "bg-white text-neutral-700 border-neutral-200 hover:border-neutral-300 hover:bg-neutral-50"
               )}
             >
-              <span>{cat.icon}</span>
               <span>{cat.name}</span>
             </button>
           ))}

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  Settings, Save, Star, RotateCcw, ShieldCheck, Database, CheckCircle2, 
+  Settings, Save, Star, RotateCcw, ShieldCheck, Crown, Database, CheckCircle2, 
   AlertTriangle, Plus, Trash2, Download, Upload, Server, Sprout, 
   HelpCircle, RefreshCw, Key, Store, Truck, IndianRupee, Bell, Package
 } from 'lucide-react';
@@ -498,7 +498,11 @@ export default function AdminSettingsPage() {
                               "w-10 h-10 rounded-xl flex items-center justify-center font-bold text-lg shadow-sm shrink-0",
                               isPrimary ? "bg-purple-100 text-purple-700" : "bg-neutral-100 text-neutral-700"
                             )}>
-                              {isPrimary ? '👑' : '🛡️'}
+                              {isPrimary ? (
+                                <Crown className="w-5 h-5 text-purple-600" />
+                              ) : (
+                                <ShieldCheck className="w-5 h-5 text-neutral-600" />
+                              )}
                             </div>
                             <div>
                               <div className="flex items-center gap-2 flex-wrap">

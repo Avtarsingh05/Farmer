@@ -17,6 +17,7 @@ export function ProductCard({ product, loading }: ProductCardProps) {
   const { user } = useAuth();
   const { addItem, items } = useCart();
   const [isFavorite, setIsFavorite] = useState(false);
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
 
   if (loading) {
     return (
@@ -46,6 +47,8 @@ export function ProductCard({ product, loading }: ProductCardProps) {
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    setIsAddingToCart(true);
+    setTimeout(() => setIsAddingToCart(false), 600);
     addItem({
       productId: product.id,
       productName: product.name,
@@ -129,14 +132,15 @@ export function ProductCard({ product, loading }: ProductCardProps) {
               onClick={handleAddToCart}
               disabled={inCart}
               className={cn(
-                "p-2 rounded-lg border transition-colors flex items-center justify-center",
+                "p-2 rounded-lg border transition-all flex items-center justify-center active:scale-95 duration-300",
                 inCart 
-                  ? "bg-primary-50 border-primary text-primary" 
-                  : "bg-white border-neutral-300 text-neutral-700 hover:border-primary hover:text-primary"
+                  ? "bg-green-50 border-green-500 text-green-600 shadow-sm" 
+                  : "bg-white border-neutral-300 text-neutral-700 hover:border-primary hover:text-primary hover:shadow-md",
+                isAddingToCart ? "animate-[bounce_0.5s_ease-in-out] bg-primary text-white border-primary" : ""
               )}
               title={inCart ? "In cart" : "Add to cart"}
             >
-              <ShoppingCart className="w-4 h-4" />
+              <ShoppingCart className={cn("w-4 h-4 transition-transform duration-300", isAddingToCart ? "scale-110" : "")} />
             </button>
           )}
         </div>

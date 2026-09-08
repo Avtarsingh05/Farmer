@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Eye, EyeOff, Sparkles } from 'lucide-react';
+import { Eye, EyeOff, Sparkles, Sprout, ShoppingBag, Shield } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks';
 import { loginSchema } from '@/schemas/auth.schema';
@@ -59,7 +59,10 @@ export default function LoginPage() {
                 onClick={() => handleDemoLogin('farmer')}
                 className="py-2 px-1.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white rounded-lg font-medium text-xs shadow-sm transition-all flex flex-col items-center justify-center text-center"
               >
-                <span className="font-semibold">👨‍🌾 Farmer</span>
+                <div className="flex items-center gap-1 font-semibold">
+                  <Sprout className="w-3.5 h-3.5" />
+                  <span>Farmer</span>
+                </div>
                 <span className="text-[10px] text-emerald-100 mt-0.5">Ramesh Patel</span>
               </button>
               <button
@@ -67,7 +70,10 @@ export default function LoginPage() {
                 onClick={() => handleDemoLogin('buyer')}
                 className="py-2 px-1.5 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white rounded-lg font-medium text-xs shadow-sm transition-all flex flex-col items-center justify-center text-center"
               >
-                <span className="font-semibold">🛒 Buyer</span>
+                <div className="flex items-center gap-1 font-semibold">
+                  <ShoppingBag className="w-3.5 h-3.5" />
+                  <span>Buyer</span>
+                </div>
                 <span className="text-[10px] text-blue-100 mt-0.5">Priya Sharma</span>
               </button>
               <button
@@ -75,7 +81,10 @@ export default function LoginPage() {
                 onClick={() => handleDemoLogin('admin')}
                 className="py-2 px-1.5 bg-neutral-800 hover:bg-neutral-900 active:scale-95 text-white rounded-lg font-medium text-xs shadow-sm transition-all flex flex-col items-center justify-center text-center"
               >
-                <span className="font-semibold">🛡️ Admin</span>
+                <div className="flex items-center gap-1 font-semibold">
+                  <Shield className="w-3.5 h-3.5" />
+                  <span>Admin</span>
+                </div>
                 <span className="text-[10px] text-neutral-300 mt-0.5">Platform</span>
               </button>
             </div>

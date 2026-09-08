@@ -143,7 +143,7 @@ export default function CartPage() {
         <div className="w-28 h-28 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-8 text-emerald-600 shadow-xl shadow-emerald-100">
           <CheckCircle2 className="w-14 h-14" />
         </div>
-        <h1 className="text-4xl font-extrabold text-neutral-900 mb-4 tracking-tight">Order Confirmed! 🎉</h1>
+        <h1 className="text-4xl font-extrabold text-neutral-900 mb-4 tracking-tight">Order Confirmed!</h1>
         <p className="text-neutral-500 text-lg mb-10 max-w-lg mx-auto">
           Your direct farm harvest order <strong className="text-neutral-900 font-mono bg-neutral-100 px-2 py-1 rounded">#{placedOrderId}</strong> has been sent to the farmer.
         </p>

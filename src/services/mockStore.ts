@@ -273,14 +273,14 @@ export const DEMO_USERS: Record<string, AppUser> = {
 };
 
 export const DEMO_CATEGORIES: Category[] = [
-  { id: 'cat-veg', name: 'Vegetables', slug: 'vegetables', icon: '🥦', description: 'Fresh farm-harvested vegetables', isActive: true, order: 1, createdAt: new Date(), updatedAt: new Date() },
-  { id: 'cat-fruits', name: 'Fruits', slug: 'fruits', icon: '🍎', description: 'Seasonal and exotic orchard fruits', isActive: true, order: 2, createdAt: new Date(), updatedAt: new Date() },
-  { id: 'cat-grains', name: 'Grains & Cereals', slug: 'grains', icon: '🌾', description: 'Wheat, Rice, Millets and grains', isActive: true, order: 3, createdAt: new Date(), updatedAt: new Date() },
-  { id: 'cat-pulses', name: 'Pulses & Lentils', slug: 'pulses', icon: '🫘', description: 'High-protein farm-cleaned lentils', isActive: true, order: 4, createdAt: new Date(), updatedAt: new Date() },
-  { id: 'cat-oilseeds', name: 'Oilseeds', slug: 'oilseeds', icon: '🌻', description: 'Mustard, groundnut, and sesame seeds', isActive: true, order: 5, createdAt: new Date(), updatedAt: new Date() },
-  { id: 'cat-spices', name: 'Spices & Herbs', slug: 'spices', icon: '🌶️', description: 'Pure ground & whole Indian spices', isActive: true, order: 6, createdAt: new Date(), updatedAt: new Date() },
-  { id: 'cat-dairy', name: 'Dairy', slug: 'dairy', icon: '🥛', description: 'Fresh farm milk and dairy products', isActive: true, order: 7, createdAt: new Date(), updatedAt: new Date() },
-  { id: 'cat-other', name: 'Other Farm Produce', slug: 'other', icon: '📦', description: 'Honey, jaggery and organic items', isActive: true, order: 8, createdAt: new Date(), updatedAt: new Date() },
+  { id: 'cat-veg', name: 'Vegetables', slug: 'vegetables', icon: '', description: 'Fresh farm-harvested vegetables', isActive: true, order: 1, createdAt: new Date(), updatedAt: new Date() },
+  { id: 'cat-fruits', name: 'Fruits', slug: 'fruits', icon: '', description: 'Seasonal and exotic orchard fruits', isActive: true, order: 2, createdAt: new Date(), updatedAt: new Date() },
+  { id: 'cat-grains', name: 'Grains & Cereals', slug: 'grains', icon: '', description: 'Wheat, Rice, Millets and grains', isActive: true, order: 3, createdAt: new Date(), updatedAt: new Date() },
+  { id: 'cat-pulses', name: 'Pulses & Lentils', slug: 'pulses', icon: '', description: 'High-protein farm-cleaned lentils', isActive: true, order: 4, createdAt: new Date(), updatedAt: new Date() },
+  { id: 'cat-oilseeds', name: 'Oilseeds', slug: 'oilseeds', icon: '', description: 'Mustard, groundnut, and sesame seeds', isActive: true, order: 5, createdAt: new Date(), updatedAt: new Date() },
+  { id: 'cat-spices', name: 'Spices & Herbs', slug: 'spices', icon: '', description: 'Pure ground & whole Indian spices', isActive: true, order: 6, createdAt: new Date(), updatedAt: new Date() },
+  { id: 'cat-dairy', name: 'Dairy', slug: 'dairy', icon: '', description: 'Fresh farm milk and dairy products', isActive: true, order: 7, createdAt: new Date(), updatedAt: new Date() },
+  { id: 'cat-other', name: 'Other Farm Produce', slug: 'other', icon: '', description: 'Honey, jaggery and organic items', isActive: true, order: 8, createdAt: new Date(), updatedAt: new Date() },
 ];
 
 export const DEMO_FARMERS: FarmerProfile[] = [

@@ -1,13 +1,13 @@
 ﻿import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Users, Sprout, Package, ShoppingBag, Tag, Flag, Settings, Leaf, LogOut } from 'lucide-react';
+import { LayoutDashboard, Users, Sprout, Package, ShoppingBag, Tag, Flag, Settings, Leaf, LogOut , MoreVertical } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { useAuth } from '@/hooks';
 
 const cn = (...args: (string | undefined | null | false)[]) => twMerge(clsx(args));
 
-export const AdminSidebar: React.FC = () => {
+export const AdminSidebar: React.FC<{ isCollapsed?: boolean; onToggle?: () => void }> = ({ isCollapsed, onToggle }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
@@ -28,17 +28,20 @@ export const AdminSidebar: React.FC = () => {
   };
 
   return (
-    <aside className="hidden lg:flex flex-col w-72 bg-neutral-900 text-white h-screen fixed top-0 left-0 z-50 shadow-2xl">
-      <div className="flex items-center space-x-3 h-20 px-8 cursor-pointer bg-neutral-950/80 backdrop-blur-md border-b border-white/5" onClick={() => navigate('/admin')}>
-        <div className="bg-accent p-2 rounded-xl shadow-lg shadow-accent/20">
-          <Leaf className="h-6 w-6 text-white" />
+    <aside className={cn("hidden lg:flex flex-col  bg-neutral-900 text-white h-screen fixed top-0 left-0 z-50 shadow-2xl transition-all duration-300", isCollapsed ? "w-20" : "w-72")}>
+      <div className="flex items-center justify-between h-20 px-4 cursor-pointer bg-neutral-950/50 border-white/5 backdrop-blur-md border-b">
+        <div className="flex items-center space-x-3 overflow-hidden" onClick={() => navigate('admin')}>
+          <div className="bg-primary p-2 rounded-xl shadow-lg shadow-primary/20 shrink-0">
+            <Leaf className="h-6 w-6 text-white" />
+          </div>
+          {!isCollapsed && <span className="text-2xl font-bold tracking-tight text-white whitespace-nowrap">KisanMitra</span>}
         </div>
-        <div className="flex flex-col">
-          <span className="text-xl font-bold text-white leading-none tracking-tight">KisanMitra</span>
-          <span className="text-[10px] text-accent font-bold tracking-widest uppercase mt-1">Admin Panel</span>
-        </div>
+        {onToggle && (
+          <button onClick={(e) => { e.stopPropagation(); onToggle(); }} className="p-2 hover:bg-neutral-500/20 rounded-lg shrink-0">
+            <MoreVertical className="w-5 h-5 text-neutral-400" />
+          </button>
+        )}
       </div>
-
       <nav className="flex-1 overflow-y-auto py-8 px-4 space-y-2 scrollbar-hide">
         <div className="px-4 mb-4 text-xs font-semibold text-neutral-500 uppercase tracking-wider">Management</div>
         {navItems.map((item) => {

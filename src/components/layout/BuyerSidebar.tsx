@@ -1,6 +1,6 @@
 ﻿import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { Store, ShoppingCart, ClipboardList, Heart, User, Leaf, LogOut, Settings, Search, LayoutDashboard } from 'lucide-react';
+import { Store, ShoppingCart, ClipboardList, Heart, User, Leaf, LogOut, Settings, Search, LayoutDashboard , MoreVertical } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { useAuth, useCart } from '@/hooks';
@@ -8,7 +8,7 @@ import { CartItem } from '@/types';
 
 const cn = (...args: (string | undefined | null | false)[]) => twMerge(clsx(args));
 
-export const BuyerSidebar: React.FC = () => {
+export const BuyerSidebar: React.FC<{ isCollapsed?: boolean; onToggle?: () => void }> = ({ isCollapsed, onToggle }) => {
   const { user, logout } = useAuth();
   const { cart } = useCart();
   const navigate = useNavigate();
@@ -30,14 +30,20 @@ export const BuyerSidebar: React.FC = () => {
   };
 
   return (
-    <aside className="hidden lg:flex flex-col w-72 bg-white text-neutral-900 h-screen fixed top-0 left-0 z-50 border-r border-neutral-200/60 shadow-[4px_0_24px_rgba(0,0,0,0.02)]">
-      <div className="flex items-center space-x-3 h-20 px-8 cursor-pointer bg-white border-b border-neutral-100" onClick={() => navigate('/buyer')}>
-        <div className="bg-primary/10 p-2 rounded-xl">
-          <Leaf className="h-6 w-6 text-primary" />
+    <aside className={cn("hidden lg:flex flex-col  bg-white text-neutral-900 h-screen fixed top-0 left-0 z-50 border-r border-neutral-200/60 shadow-[4px_0_24px_rgba(0,0,0,0.02)] transition-all duration-300", isCollapsed ? "w-20" : "w-72")}>
+      <div className="flex items-center justify-between h-20 px-4 cursor-pointer bg-neutral-50/50 border-neutral-200/50 backdrop-blur-md border-b">
+        <div className="flex items-center space-x-3 overflow-hidden" onClick={() => navigate('buyer')}>
+          <div className="bg-primary p-2 rounded-xl shadow-lg shadow-primary/20 shrink-0">
+            <Leaf className="h-6 w-6 text-white" />
+          </div>
+          {!isCollapsed && <span className="text-2xl font-bold tracking-tight text-neutral-900 whitespace-nowrap">KisanMitra</span>}
         </div>
-        <span className="text-2xl font-bold tracking-tight text-neutral-900">KisanMitra</span>
+        {onToggle && (
+          <button onClick={(e) => { e.stopPropagation(); onToggle(); }} className="p-2 hover:bg-neutral-500/20 rounded-lg shrink-0">
+            <MoreVertical className="w-5 h-5 text-neutral-500" />
+          </button>
+        )}
       </div>
-
       <nav className="flex-1 overflow-y-auto py-8 px-4 space-y-2 scrollbar-hide">
         <div className="px-4 mb-4 text-xs font-bold text-neutral-400 uppercase tracking-wider">Buyer Menu</div>
         {navItems.map((item) => {

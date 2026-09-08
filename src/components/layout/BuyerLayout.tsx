@@ -1,3 +1,4 @@
+import { cn } from '@/utils/cn';
 import React, { useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { BuyerSidebar } from './BuyerSidebar';
@@ -6,6 +7,7 @@ import { DashboardTopBar } from './DashboardTopBar';
 
 export const BuyerLayout: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const location = useLocation();
 
   const getPageTitle = () => {
@@ -23,7 +25,7 @@ export const BuyerLayout: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-neutral-50">
-      <BuyerSidebar />
+      <BuyerSidebar isCollapsed={isSidebarCollapsed} onToggle={() => setIsSidebarCollapsed(!isSidebarCollapsed)} />
       
       {/* Mobile Drawer */}
       {isMobileMenuOpen && (
@@ -35,7 +37,7 @@ export const BuyerLayout: React.FC = () => {
         </div>
       )}
 
-      <div className="lg:pl-72 flex flex-col min-h-screen pb-16 lg:pb-0">
+      <div className={cn("flex flex-col min-h-screen pb-16 lg:pb-0 transition-all duration-300", isSidebarCollapsed ? "lg:pl-20" : "lg:pl-72")}>
         <DashboardTopBar 
           title={getPageTitle()} 
           onMenuClick={() => setIsMobileMenuOpen(true)} 

@@ -60,7 +60,7 @@ export async function seedFirestoreContainers(): Promise<SeedingResult> {
       await setDoc(doc(db, COLLECTIONS.CATEGORIES, cat.id), {
         name: cat.name,
         slug: cat.slug,
-        icon: cat.icon || '🥦',
+        icon: cat.icon || '',
         description: cat.description || '',
         order: cat.order || 1,
         isActive: true,

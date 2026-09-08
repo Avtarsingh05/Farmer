@@ -13,14 +13,14 @@
  */
 
 export const SEED_CATEGORIES = [
-  { name: 'Vegetables',  slug: 'vegetables',  icon: '🥦', order: 1, isActive: true },
-  { name: 'Fruits',      slug: 'fruits',      icon: '🍎', order: 2, isActive: true },
-  { name: 'Grains',      slug: 'grains',      icon: '🌾', order: 3, isActive: true },
-  { name: 'Pulses',      slug: 'pulses',      icon: '🫘', order: 4, isActive: true },
-  { name: 'Oilseeds',    slug: 'oilseeds',    icon: '🌻', order: 5, isActive: true },
-  { name: 'Spices',      slug: 'spices',      icon: '🌶️', order: 6, isActive: true },
-  { name: 'Dairy',       slug: 'dairy',       icon: '🥛', order: 7, isActive: true },
-  { name: 'Other',       slug: 'other',       icon: '📦', order: 8, isActive: true },
+  { name: 'Vegetables',  slug: 'vegetables',  icon: '', order: 1, isActive: true },
+  { name: 'Fruits',      slug: 'fruits',      icon: '', order: 2, isActive: true },
+  { name: 'Grains',      slug: 'grains',      icon: '', order: 3, isActive: true },
+  { name: 'Pulses',      slug: 'pulses',      icon: '', order: 4, isActive: true },
+  { name: 'Oilseeds',    slug: 'oilseeds',    icon: '', order: 5, isActive: true },
+  { name: 'Spices',      slug: 'spices',      icon: '', order: 6, isActive: true },
+  { name: 'Dairy',       slug: 'dairy',       icon: '', order: 7, isActive: true },
+  { name: 'Other',       slug: 'other',       icon: '', order: 8, isActive: true },
 ];
 
 export const SEED_PRODUCTS = [

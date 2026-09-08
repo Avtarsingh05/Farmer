@@ -6,7 +6,6 @@ import {
   Star, Package, MapPin, ChevronDown, ShoppingBag, Sprout,
   BarChart3, Truck, BadgeCheck, IndianRupee, TrendingDown,
 } from 'lucide-react';
-import { ScrollExpand } from '@/components/ui';
 
 function useInView(threshold = 0.15) {
   const ref = useRef(null);
@@ -25,16 +24,16 @@ function useInView(threshold = 0.15) {
 }
 
 const TICKER_ITEMS = [
-  { name: 'Tomato',        mandi: 'Lasalgaon, Nashik',   price: '\u20b926/kg',   trend: 'down' },
-  { name: 'Onion',         mandi: 'Lasalgaon, Nashik',   price: '\u20b932/kg',   trend: 'up'   },
-  { name: 'Basmati Rice',  mandi: 'Karnal Grain Market', price: '\u20b988/kg',   trend: 'up'   },
-  { name: 'Alphonso Mango',mandi: 'Vashi APMC',          price: '\u20b9680/dz',  trend: 'down' },
-  { name: 'Wheat',         mandi: 'Sehore Mandi, MP',    price: '\u20b934/kg',   trend: 'up'   },
-  { name: 'Potato',        mandi: 'Agra Mandi, UP',      price: '\u20b922/kg',   trend: 'down' },
-  { name: 'Chana Dal',     mandi: 'Gulbarga APMC, KA',   price: '\u20b976/kg',   trend: 'up'   },
-  { name: 'Turmeric',      mandi: 'Erode/Salem APMC',    price: '\u20b9140/kg',  trend: 'down' },
-  { name: 'Cauliflower',   mandi: 'Pune APMC',           price: '\u20b918/kg',   trend: 'up'   },
-  { name: 'Green Peas',    mandi: 'Nagpur APMC',         price: '\u20b948/kg',   trend: 'down' },
+  { name: 'Tomato',        mandi: 'Lasalgaon, Nashik',   price: '₹26/kg',   trend: 'down' },
+  { name: 'Onion',         mandi: 'Lasalgaon, Nashik',   price: '₹32/kg',   trend: 'up'   },
+  { name: 'Basmati Rice',  mandi: 'Karnal Grain Market', price: '₹88/kg',   trend: 'up'   },
+  { name: 'Alphonso Mango',mandi: 'Vashi APMC',          price: '₹680/dz',  trend: 'down' },
+  { name: 'Wheat',         mandi: 'Sehore Mandi, MP',    price: '₹34/kg',   trend: 'up'   },
+  { name: 'Potato',        mandi: 'Agra Mandi, UP',      price: '₹22/kg',   trend: 'down' },
+  { name: 'Chana Dal',     mandi: 'Gulbarga APMC, KA',   price: '₹76/kg',   trend: 'up'   },
+  { name: 'Turmeric',      mandi: 'Erode/Salem APMC',    price: '₹140/kg',  trend: 'down' },
+  { name: 'Cauliflower',   mandi: 'Pune APMC',           price: '₹18/kg',   trend: 'up'   },
+  { name: 'Green Peas',    mandi: 'Nagpur APMC',         price: '₹48/kg',   trend: 'down' },
 ];
 
 const MARKET_PULSE = [
@@ -50,20 +49,20 @@ const DEFAULT_TESTIMONIALS = [
   {
     name: 'Ramesh Patil', role: 'Onion Farmer', district: 'Nashik, Maharashtra',
     photo: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&auto=format&fit=crop&q=80',
-    quote: 'Middlemen used to take 40%. Now I sell directly through KisanMitra. Last month I earned \u20b912,000 more.',
-    rating: 5, stat: '+\u20b912,000 / month',
+    quote: 'Middlemen used to take 40%. Now I sell directly through KisanMitra. Last month I earned ₹12,000 more.',
+    rating: 5, stat: '+₹12,000 / month',
   },
   {
     name: 'Anita Mehta', role: 'Restaurant Buyer', district: 'Bandra, Mumbai',
     photo: 'https://images.unsplash.com/photo-1494790108755-2616b612b18c?w=120&auto=format&fit=crop&q=80',
     quote: 'I source all vegetables for my 3 restaurants through KisanMitra. Quality is consistent and prices are fair.',
-    rating: 5, stat: 'Saves \u20b98,000/month',
+    rating: 5, stat: 'Saves ₹8,000/month',
   },
   {
     name: 'Sukhwinder Singh', role: 'Wheat & Rice Farmer', district: 'Amritsar, Punjab',
     photo: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=120&auto=format&fit=crop&q=80',
     quote: 'Used to struggle getting fair rates at the mandi. KisanMitra gave me access to buyers in Delhi and Mumbai.',
-    rating: 5, stat: '+\u20b918,000 / month',
+    rating: 5, stat: '+₹18,000 / month',
   },
 ];
 
@@ -166,19 +165,19 @@ const HomePage = () => {
               <div className="absolute top-8 right-4 bg-white rounded-2xl shadow-xl px-4 py-3 border border-neutral-100 animate-float" style={{ animationDelay: '0s' }}>
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center"><TrendingUp className="w-4 h-4 text-green-600" /></div>
-                  <div><div className="text-xs text-neutral-500">Onion · Lasalgaon</div><div className="text-sm font-bold text-neutral-900">\u20b932/kg</div></div>
+                  <div><div className="text-xs text-neutral-500">Onion · Lasalgaon</div><div className="text-sm font-bold text-neutral-900">₹32/kg</div></div>
                 </div>
               </div>
               <div className="absolute bottom-16 left-2 bg-white rounded-2xl shadow-xl px-4 py-3 border border-neutral-100 animate-float" style={{ animationDelay: '2s' }}>
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center"><IndianRupee className="w-4 h-4 text-amber-600" /></div>
-                  <div><div className="text-xs text-neutral-500">Farmer earns more</div><div className="text-sm font-bold text-green-700">+\u20b98/kg avg</div></div>
+                  <div><div className="text-xs text-neutral-500">Farmer earns more</div><div className="text-sm font-bold text-green-700">+₹8/kg avg</div></div>
                 </div>
               </div>
               <div className="absolute bottom-8 right-0 bg-primary text-white rounded-2xl shadow-xl px-4 py-3 animate-float" style={{ animationDelay: '1s' }}>
                 <div className="flex items-center gap-2">
                   <BadgeCheck className="w-5 h-5 text-white/80" />
-                  <div><div className="text-xs text-white/70">Order placed</div><div className="text-sm font-bold">Just now ✓</div></div>
+                  <div><div className="text-xs text-white/70">Order placed</div><div className="text-sm font-bold">Just now</div></div>
                 </div>
               </div>
               <div className="absolute top-1/2 -left-4 -translate-y-1/2 bg-white rounded-2xl shadow-xl px-3 py-2 border border-neutral-100 animate-float" style={{ animationDelay: '3s' }}>
@@ -238,31 +237,60 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* SCROLL EXPAND */}
-      <section className="relative w-full bg-neutral-900 py-32 overflow-hidden">
+      {/* VALUE HIGHLIGHT BANNER */}
+      <section className="relative w-full bg-neutral-950 py-24 sm:py-32 overflow-hidden">
+        {/* Background photo with subtle dark gradient */}
         <div className="absolute inset-0">
-          <img src="https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=1800&auto=format&fit=crop&q=80" alt="Farmlands at golden hour" className="w-full h-full object-cover opacity-30" />
-          <div className="absolute inset-0 bg-gradient-to-t from-neutral-900 via-neutral-900/60 to-transparent" />
+          <img
+            src="https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=1800&auto=format&fit=crop&q=80"
+            alt="Farmlands at golden hour"
+            className="w-full h-full object-cover opacity-25"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/70 to-neutral-950/90" />
         </div>
-        <div className="relative max-w-4xl mx-auto text-center px-4 space-y-8 z-10">
-          <h2 className="text-3xl sm:text-5xl md:text-6xl font-extrabold text-white tracking-tight drop-shadow-lg leading-tight animate-fade-up">
-            Transparent Pricing.<br /><span className="text-emerald-400">Zero Middlemen.</span>
+
+        <div className="relative max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8 space-y-8 z-10">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs sm:text-sm font-semibold tracking-wide">
+            <Shield className="w-4 h-4" /> Direct Farm Network
+          </div>
+
+          <h2 className="text-3xl sm:text-5xl md:text-6xl font-extrabold text-white tracking-tight leading-tight">
+            Transparent Pricing.<br />
+            <span className="text-emerald-400">Zero Middlemen.</span>
           </h2>
-          <p className="text-base sm:text-lg text-neutral-200 max-w-2xl mx-auto leading-relaxed animate-fade-up delay-100">
+
+          <p className="text-base sm:text-lg text-neutral-300 max-w-2xl mx-auto leading-relaxed">
             By removing layered intermediaries, KisanMitra returns maximum earnings to farmer families while delivering fresh, traceable produce at true market rates.
           </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4 animate-fade-up delay-200">
-            <Link to="/market" className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold shadow-xl transition-all inline-flex items-center justify-center gap-2">
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
+            <Link
+              to="/market"
+              className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold shadow-lg shadow-emerald-900/30 transition-all inline-flex items-center justify-center gap-2 active:scale-95"
+            >
               Explore Market <ArrowRight className="w-5 h-5" />
             </Link>
-            <Link to="/register?role=farmer" className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-white/15 hover:bg-white/25 text-white font-semibold border border-white/30 backdrop-blur-md transition-all inline-flex items-center justify-center gap-2">
+            <Link
+              to="/register?role=farmer"
+              className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold border border-white/20 backdrop-blur-md transition-all inline-flex items-center justify-center gap-2 active:scale-95"
+            >
               Sell Your Harvest
             </Link>
           </div>
-          <div className="pt-12 mt-12 grid grid-cols-3 gap-6 max-w-2xl mx-auto border-t border-white/20 text-white animate-fade-up delay-300">
-            <div><div className="text-2xl sm:text-3xl font-bold">100%</div><div className="text-xs sm:text-sm text-neutral-300 mt-1">Direct Farm Gate</div></div>
-            <div><div className="text-2xl sm:text-3xl font-bold text-emerald-400">₹0</div><div className="text-xs sm:text-sm text-neutral-300 mt-1">Broker Commissions</div></div>
-            <div><div className="text-2xl sm:text-3xl font-bold">Verified</div><div className="text-xs sm:text-sm text-neutral-300 mt-1">Farms & Quality</div></div>
+
+          <div className="pt-8 grid grid-cols-3 gap-6 max-w-xl mx-auto border-t border-white/10 text-white">
+            <div>
+              <div className="text-2xl sm:text-3xl font-bold">100%</div>
+              <div className="text-xs sm:text-sm text-neutral-400 mt-1">Direct Farm Gate</div>
+            </div>
+            <div>
+              <div className="text-2xl sm:text-3xl font-bold text-emerald-400">₹0</div>
+              <div className="text-xs sm:text-sm text-neutral-400 mt-1">Broker Commissions</div>
+            </div>
+            <div>
+              <div className="text-2xl sm:text-3xl font-bold">Verified</div>
+              <div className="text-xs sm:text-sm text-neutral-400 mt-1">Farms & Quality</div>
+            </div>
           </div>
         </div>
       </section>
@@ -336,16 +364,16 @@ const HomePage = () => {
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
                       <span className="text-xs text-neutral-500">Farm Gate Price</span>
-                      <span className="text-xl font-extrabold text-primary">\u20b9{item.farmerPrice}/{item.unit}</span>
+                      <span className="text-xl font-extrabold text-primary">₹{item.farmerPrice}/{item.unit}</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-xs text-neutral-500">Mandi Benchmark</span>
-                      <span className="text-sm font-semibold text-neutral-400 line-through">\u20b9{item.mandiPrice}/{item.unit}</span>
+                      <span className="text-sm font-semibold text-neutral-400 line-through">₹{item.mandiPrice}/{item.unit}</span>
                     </div>
                   </div>
                   <div className="mt-4 pt-4 border-t border-neutral-50 flex items-center justify-between">
                     <div className="flex items-center gap-1.5 bg-green-50 text-green-700 text-xs font-bold px-2.5 py-1 rounded-full">
-                      <TrendingDown className="w-3 h-3" /> Save \u20b9{saving}/{item.unit} ({savingPct}% less)
+                      <TrendingDown className="w-3 h-3" /> Save ₹{saving}/{item.unit} ({savingPct}% less)
                     </div>
                     <Link to="/market" className="text-xs text-primary font-semibold hover:underline">Buy now</Link>
                   </div>
@@ -365,7 +393,7 @@ const HomePage = () => {
               <div className="absolute inset-0 bg-gradient-to-t from-neutral-900/60 via-transparent to-transparent" />
               <div className="absolute bottom-6 left-6 right-6 bg-white/95 backdrop-blur-sm rounded-2xl p-4 shadow-lg">
                 <div className="grid grid-cols-3 gap-4 text-center">
-                  {[{ val: '\u20b98+', label: 'more per kg avg.' }, { val: '\u20b90', label: 'commission fee' }, { val: '24h', label: 'order dispatch' }].map(({ val, label }) => (
+                  {[{ val: '₹8+', label: 'more per kg avg.' }, { val: '₹0', label: 'commission fee' }, { val: '24h', label: 'order dispatch' }].map(({ val, label }) => (
                     <div key={label}><div className="text-xl font-extrabold text-primary">{val}</div><div className="text-[11px] text-neutral-500 leading-tight">{label}</div></div>
                   ))}
                 </div>
@@ -430,7 +458,7 @@ const HomePage = () => {
               <div className="absolute bottom-6 left-6 right-6 bg-neutral-900/90 backdrop-blur-sm rounded-2xl p-4 border border-white/10">
                 <div className="flex items-center justify-between">
                   <div><div className="text-white font-semibold">Alphonso Mangoes</div><div className="text-neutral-400 text-sm">Devgad, Ratnagiri · Grade A</div></div>
-                  <div className="text-right"><div className="text-emerald-400 font-extrabold text-lg">\u20b9680<span className="text-sm font-normal">/dz</span></div><div className="text-neutral-500 text-xs line-through">\u20b9820 APMC rate</div></div>
+                  <div className="text-right"><div className="text-emerald-400 font-extrabold text-lg">₹680<span className="text-sm font-normal">/dz</span></div><div className="text-neutral-500 text-xs line-through">₹820 APMC rate</div></div>
                 </div>
                 <div className="mt-3 flex gap-2">
                   <div className="flex-1 bg-emerald-600 text-white text-xs font-bold px-3 py-1.5 rounded-lg text-center">Add to Cart</div>

@@ -93,9 +93,9 @@ export const PublicTopNav: React.FC = () => {
                   user.role === 'admin' && "bg-neutral-900 hover:bg-neutral-800 text-white border-neutral-800"
                 )}
               >
-                {user.role === 'admin' && '🛡️ Admin Panel'}
-                {user.role === 'farmer' && '👨‍🌾 Farmer Dashboard'}
-                {user.role === 'buyer' && '🛒 Buyer Dashboard'}
+                {user.role === 'admin' && 'Admin Panel'}
+                {user.role === 'farmer' && 'Farmer Dashboard'}
+                {user.role === 'buyer' && 'Buyer Dashboard'}
               </button>
             ) : (
               <>
@@ -194,9 +194,9 @@ export const PublicTopNav: React.FC = () => {
                     else navigate('/buyer');
                   }}
                 >
-                  {user.role === 'admin' && '🛡️ Admin Panel'}
-                  {user.role === 'farmer' && '👨‍🌾 Farmer Dashboard'}
-                  {user.role === 'buyer' && '🛒 Buyer Dashboard'}
+                  {user.role === 'admin' && 'Admin Panel'}
+                  {user.role === 'farmer' && 'Farmer Dashboard'}
+                  {user.role === 'buyer' && 'Buyer Dashboard'}
                 </button>
               ) : (
                 <>

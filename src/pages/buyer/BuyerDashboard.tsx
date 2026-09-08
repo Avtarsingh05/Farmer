@@ -84,7 +84,7 @@ export default function BuyerDashboard() {
         </div>
         <div className="relative z-10 max-w-2xl">
           <h1 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight mb-4 drop-shadow-md">
-            Welcome back, {user?.name || 'Buyer'}! 👋
+            Welcome back, {user?.name || 'Buyer'}!
           </h1>
           <p className="text-emerald-50 text-lg sm:text-xl font-medium opacity-90 max-w-xl leading-relaxed">
             Discover the freshest farm produce directly from the fields to your table. Support local farmers today.

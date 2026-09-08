@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { getAllCategories, updateCategory, createCategory, deleteCategory } from '@/services/categoryService';
 import { Category } from '@/types';
-import { Loader2, Plus, Edit2, Trash2 } from 'lucide-react';
+import { Loader2, Plus, Edit2, Trash2, Tag } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -130,7 +130,7 @@ export default function AdminCategoriesPage() {
                 <tr key={category.id} className="hover:bg-neutral-50 transition-colors">
                   <td className="table-td text-center">
                     <div className="w-8 h-8 rounded bg-primary/10 text-primary flex items-center justify-center mx-auto text-sm">
-                      {category.icon || category.name.charAt(0)}
+                      <Tag className="w-4 h-4" />
                     </div>
                   </td>
                   <td className="table-td">
