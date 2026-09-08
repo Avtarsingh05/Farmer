@@ -1,8 +1,10 @@
+import { getPlatformSettings } from '@/services/settingsService';
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Leaf, Mail, Phone, MapPin, Shield, BadgeCheck } from 'lucide-react';
+import { Mail, Phone, MapPin, Shield, BadgeCheck } from 'lucide-react';
 
 export const PublicFooter: React.FC = () => {
+  const { logoUrl } = getPlatformSettings();
   const currentYear = new Date().getFullYear();
 
   return (
@@ -33,7 +35,7 @@ export const PublicFooter: React.FC = () => {
           <div className="md:col-span-2 space-y-4">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center">
-                <Leaf className="w-5 h-5 text-white" />
+                
               </div>
               <span className="text-xl font-extrabold text-white">KisanMitra</span>
             </div>

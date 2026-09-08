@@ -5,7 +5,7 @@ import { ProductListItem } from '@/types';
 import { formatPricePerUnit } from '@/utils/currency';
 import { Badge } from '@/components/ui/Badge';
 import { useAuth, useCart } from '@/hooks';
-import { getProductThumbnail } from '@/services/cloudinaryService';
+import { getOptimizedImageUrl } from '@/services/cloudinaryService';
 import { cn } from '@/utils/cn';
 
 interface ProductCardProps {
@@ -37,10 +37,8 @@ export function ProductCard({ product, loading }: ProductCardProps) {
     );
   }
 
+  const imageUrl = getOptimizedImageUrl(product.images?.[0], 400);
   const DEFAULT_PRODUCE_IMAGE = 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=600&auto=format&fit=crop&q=80';
-  const imageUrl = product.images?.[0]?.secureUrl 
-    || (product.images?.[0]?.publicId ? getProductThumbnail(product.images[0].publicId, 400) : DEFAULT_PRODUCE_IMAGE)
-    || DEFAULT_PRODUCE_IMAGE;
 
   const inCart = items.some(item => item.productId === product.id);
 

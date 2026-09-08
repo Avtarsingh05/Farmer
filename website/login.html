@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - KisanMitra</title>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- FontAwesome -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        primary: {
+                            DEFAULT: '#2D5016',
+                            dark: '#1A3009',
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            200: '#bbf7d0',
+                            600: '#16a34a',
+                            700: '#2D5016',
+                            800: '#1A3009',
+                            900: '#0f1f06',
+                        },
+                        accent: {
+                            DEFAULT: '#C17F24',
+                            50: '#fff8eb',
+                            100: '#ffefc6',
+                        },
+                        neutral: {
+                            50: '#F9F7F2',
+                            100: '#F0EDE6',
+                            200: '#E2DDD5',
+                            300: '#D0C8BD',
+                            400: '#B5AA9C',
+                            500: '#9A8D7E',
+                            600: '#7A7268',
+                            700: '#5A5349',
+                            800: '#3A352F',
+                            900: '#1A1A18',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="js/app.js"></script>
+</head>
+<body class="min-h-screen bg-neutral-50 flex font-sans antialiased text-neutral-900">
+    <!-- Left Promotional Panel -->
+    <div class="hidden lg:flex w-1/2 bg-gradient-to-br from-primary to-neutral-900 flex-col justify-between p-12 text-white">
+        <div>
+            <a href="index.html" class="flex items-center gap-3 mb-10 group">
+                <div class="bg-white/10 backdrop-blur-sm border border-white/20 w-11 h-11 flex items-center justify-center rounded-2xl shadow-lg group-hover:scale-105 transition-transform">
+                    <span class="text-white font-black text-2xl">K</span>
+                </div>
+                <span class="text-3xl font-bold tracking-tight">KisanMitra</span>
+            </a>
+            <h2 class="text-4xl lg:text-5xl font-extrabold leading-tight mb-6 tracking-tight">
+                Direct from farms.<br><span class="text-accent">Fair for everyone.</span>
+            </h2>
+            <p class="text-neutral-300 text-lg max-w-md leading-relaxed font-medium">
+                India's transparent agricultural marketplace connecting verified farmers directly with buyers at real APMC prices.
+            </p>
+        </div>
+        <div>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="bg-white/10 p-5 rounded-2xl backdrop-blur-sm border border-white/10">
+                    <i data-lucide="sprout" class="w-6 h-6 mb-2 text-primary-200"></i>
+                    <h3 class="font-bold text-white text-base">Direct Trade</h3>
+                    <p class="text-xs text-neutral-300 mt-1">Zero broker fees. Fair farm-gate prices.</p>
+                </div>
+                <div class="bg-white/10 p-5 rounded-2xl backdrop-blur-sm border border-white/10">
+                    <i data-lucide="shield-check" class="w-6 h-6 mb-2 text-primary-200"></i>
+                    <h3 class="font-bold text-white text-base">Verified Quality</h3>
+                    <p class="text-xs text-neutral-300 mt-1">APMC benchmarked and grade checked.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Right Form Container -->
+    <div class="w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-8">
+        <div class="w-full max-w-md bg-white rounded-3xl shadow-xl border border-neutral-200 p-8 sm:p-10">
+            <div class="text-center mb-6">
+                <a href="index.html" class="inline-flex items-center space-x-2.5 mb-3 group">
+                    <div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-white font-black text-xl shadow-md shadow-primary/20 group-hover:scale-105 transition-transform">K</div>
+                    <span class="text-2xl font-bold tracking-tight text-primary">KisanMitra</span>
+                </a>
+                <h2 class="text-2xl font-extrabold text-neutral-900 tracking-tight">Welcome Back</h2>
+                <p class="text-xs text-neutral-500 mt-1">Sign in to your account</p>
+            </div>
+            
+            <!-- 1-Click Demo Login -->
+            <div class="bg-primary-50/70 border border-primary-100 rounded-2xl p-4 mb-6">
+                <div class="flex items-center justify-center gap-1.5 text-xs font-bold text-primary uppercase tracking-wider mb-3">
+                    <i data-lucide="sparkles" class="w-3.5 h-3.5 text-primary"></i>
+                    <span>Instant 1-Click Demo Access</span>
+                </div>
+                <div class="grid grid-cols-3 gap-2">
+                    <button type="button" onclick="demoLogin('farmer')" class="py-2.5 px-2 bg-primary hover:bg-primary-dark active:scale-95 text-white rounded-xl font-bold text-xs shadow-sm transition-all flex flex-col items-center justify-center text-center">
+                        <span class="text-xs">👨‍🌾 Farmer</span>
+                        <span class="text-[10px] text-green-200 font-normal mt-0.5">Ramesh</span>
+                    </button>
+                    <button type="button" onclick="demoLogin('buyer')" class="py-2.5 px-2 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white rounded-xl font-bold text-xs shadow-sm transition-all flex flex-col items-center justify-center text-center">
+                        <span class="text-xs">🛒 Buyer</span>
+                        <span class="text-[10px] text-blue-200 font-normal mt-0.5">Priya</span>
+                    </button>
+                    <button type="button" onclick="demoLogin('admin')" class="py-2.5 px-2 bg-neutral-800 hover:bg-neutral-900 active:scale-95 text-white rounded-xl font-bold text-xs shadow-sm transition-all flex flex-col items-center justify-center text-center">
+                        <span class="text-xs">⚡ Admin</span>
+                        <span class="text-[10px] text-neutral-300 font-normal mt-0.5">Platform</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="relative mb-6">
+                <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-neutral-200"></div></div>
+                <div class="relative flex justify-center text-xs uppercase"><span class="bg-white px-3 text-neutral-400 font-semibold">Or sign in with</span></div>
+            </div>
+            
+            <!-- Google Sign In Button -->
+            <button type="button" id="googleSignInBtn" onclick="googleSignIn()" class="w-full bg-white border border-neutral-300 hover:border-neutral-400 text-neutral-800 hover:bg-neutral-50 py-3 rounded-xl font-bold text-sm shadow-sm transition-all flex items-center justify-center gap-3 mb-6 active:scale-95">
+                <svg class="w-5 h-5" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                <span>Sign in with Google</span>
+            </button>
+
+            <!-- Alert Notification Box -->
+            <div id="loginAlert" class="hidden p-3.5 rounded-xl text-xs font-semibold mb-4 flex items-center gap-2.5">
+                <i id="loginAlertIcon" data-lucide="alert-circle" class="w-4 h-4 shrink-0"></i>
+                <span id="loginAlertText"></span>
+            </div>
+
+            <!-- Email / Password Form -->
+            <form id="loginForm" class="space-y-4">
+                <div>
+                    <label for="email" class="block mb-1.5 font-semibold text-neutral-700 text-xs uppercase tracking-wider">Email Address</label>
+                    <div class="relative">
+                        <i data-lucide="mail" class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400"></i>
+                        <input id="email" type="email" placeholder="farmer@kisanmitra.in" class="w-full pl-10 pr-4 py-2.5 bg-neutral-50 border border-neutral-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm transition-all" required>
+                    </div>
+                </div>
+                
+                <div>
+                    <label for="password" class="block mb-1.5 font-semibold text-neutral-700 text-xs uppercase tracking-wider">Password</label>
+                    <div class="relative">
+                        <i data-lucide="lock" class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400"></i>
+                        <input id="password" type="password" placeholder="••••••••" class="w-full pl-10 pr-10 py-2.5 bg-neutral-50 border border-neutral-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm transition-all" required>
+                        <button type="button" onclick="togglePassword()" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600">
+                            <i id="eyeIcon" data-lucide="eye" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="flex items-center justify-between text-xs pt-1">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" id="rememberMe" class="rounded border-gray-300 text-primary focus:ring-primary">
+                        <span class="text-neutral-600 font-medium">Remember me</span>
+                    </label>
+                    <a href="forgot-password.html" class="text-primary font-bold hover:underline">Forgot password?</a>
+                </div>
+                
+                <button type="submit" id="submitBtn" class="w-full bg-primary hover:bg-primary-dark text-white py-3 rounded-xl font-bold text-sm shadow-md shadow-primary/20 transition-all hover:-translate-y-0.5 active:scale-95 flex items-center justify-center gap-2">
+                    Sign In
+                </button>
+            </form>
+            
+            <div class="mt-6 text-center text-xs text-neutral-600">
+                Don't have an account? 
+                <a href="register.html" class="text-primary font-bold hover:underline">Create an account</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Google OAuth Fallback Modal (for file:// protocol or blocked popup) -->
+    <div id="googleFallbackModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-neutral-100">
+            <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mb-4">
+                <svg class="w-6 h-6" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+            </div>
+            <h3 class="text-xl font-bold text-neutral-900 mb-2">Google Sign-In</h3>
+            <p class="text-sm text-neutral-600 mb-6 leading-relaxed">
+                Google OAuth requires an HTTP server (e.g. <code>http://localhost:5173</code>) per Google security rules. When testing locally via <code>file://</code>, click below to simulate instant Google login:
+            </p>
+            <div class="space-y-3">
+                <button onclick="signInDemoGoogle('buyer')" class="w-full py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-md transition-colors flex items-center justify-center gap-2">
+                    <i data-lucide="shopping-bag" class="w-4 h-4"></i> Continue as Google Buyer
+                </button>
+                <button onclick="signInDemoGoogle('farmer')" class="w-full py-3 px-4 rounded-xl bg-primary hover:bg-primary-dark text-white font-bold text-sm shadow-md transition-colors flex items-center justify-center gap-2">
+                    <i data-lucide="sprout" class="w-4 h-4"></i> Continue as Google Farmer
+                </button>
+                <button onclick="closeGoogleFallbackModal()" class="w-full py-2 text-xs text-neutral-400 hover:text-neutral-600 font-medium">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function togglePassword() {
+            const input = document.getElementById('password');
+            const icon = document.getElementById('eyeIcon');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.setAttribute('data-lucide', 'eye-off');
+            } else {
+                input.type = 'password';
+                icon.setAttribute('data-lucide', 'eye');
+            }
+            if(window.lucide) lucide.createIcons();
+        }
+
+        function showLoginAlert(msg, type = 'error') {
+            const alertBox = document.getElementById('loginAlert');
+            const alertText = document.getElementById('loginAlertText');
+            const alertIcon = document.getElementById('loginAlertIcon');
+            if (!alertBox) return;
+
+            alertBox.classList.remove('hidden', 'bg-red-50', 'text-red-700', 'border-red-200', 'bg-amber-50', 'text-amber-800', 'border-amber-200');
+
+            if (type === 'warning') {
+                alertBox.classList.add('bg-amber-50', 'text-amber-800', 'border', 'border-amber-200');
+                alertIcon.setAttribute('data-lucide', 'alert-triangle');
+            } else {
+                alertBox.classList.add('bg-red-50', 'text-red-700', 'border', 'border-red-200');
+                alertIcon.setAttribute('data-lucide', 'alert-circle');
+            }
+
+            alertText.textContent = msg;
+            alertBox.classList.remove('hidden');
+            if(window.lucide) lucide.createIcons();
+        }
+
+        function showGoogleFallbackModal() {
+            const modal = document.getElementById('googleFallbackModal');
+            if (modal) modal.classList.remove('hidden');
+            if(window.lucide) lucide.createIcons();
+        }
+
+        function closeGoogleFallbackModal() {
+            const modal = document.getElementById('googleFallbackModal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        async function signInDemoGoogle(role = 'buyer') {
+            closeGoogleFallbackModal();
+            const demoGoogleUser = {
+                uid: 'google-demo-' + (role === 'farmer' ? 'farmer123' : 'buyer456'),
+                displayName: role === 'farmer' ? 'Ramesh Patil (Google)' : 'Priya Sharma (Google)',
+                email: role === 'farmer' ? 'ramesh.farmer@gmail.com' : 'priya.buyer@gmail.com',
+                photoURL: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=120&auto=format&fit=crop&q=80'
+            };
+            await handleLoginSuccess(demoGoogleUser, role);
+        }
+
+        // Email / Password submission
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const btn = document.getElementById('submitBtn');
+            const alertBox = document.getElementById('loginAlert');
+            
+            if (alertBox) alertBox.classList.add('hidden');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2"></span> Signing in...';
+
+            try {
+                const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
+                await handleLoginSuccess(userCredential.user);
+            } catch (error) {
+                console.error("Login error", error);
+                showLoginAlert(error.message || "Invalid email or password.");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'Sign In';
+            }
+        });
+
+        // Real Google Sign In
+        async function googleSignIn() {
+            const googleBtn = document.getElementById('googleSignInBtn');
+            const originalHTML = googleBtn.innerHTML;
+            const alertBox = document.getElementById('loginAlert');
+            if (alertBox) alertBox.classList.add('hidden');
+
+            googleBtn.disabled = true;
+            googleBtn.innerHTML = '<span class="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2"></span> Connecting to Google...';
+
+            try {
+                if (!window.firebase || !firebase.auth) {
+                    throw new Error("Firebase Auth is loading. Please wait a moment.");
+                }
+
+                // If running on file:// protocol, Google popup cannot redirect to null origin
+                if (window.location.protocol === 'file:') {
+                    showGoogleFallbackModal();
+                    return;
+                }
+
+                const provider = new firebase.auth.GoogleAuthProvider();
+                provider.addScope('profile');
+                provider.addScope('email');
+                provider.setCustomParameters({ prompt: 'select_account' });
+
+                const userCredential = await firebase.auth().signInWithPopup(provider);
+                await handleLoginSuccess(userCredential.user);
+            } catch (error) {
+                console.error("Google sign in notice:", error);
+                if (error.code === 'auth/popup-closed-by-user') {
+                    showLoginAlert("Google sign-in popup was closed.", "warning");
+                } else if (error.code === 'auth/popup-blocked') {
+                    showLoginAlert("Popup was blocked by your browser. Please allow popups for this site.", "warning");
+                } else if (error.code === 'auth/operation-not-supported-in-this-environment' || error.code === 'auth/unauthorized-domain') {
+                    showGoogleFallbackModal();
+                } else {
+                    showLoginAlert(error.message || "Failed to sign in with Google.", "error");
+                }
+            } finally {
+                googleBtn.disabled = false;
+                googleBtn.innerHTML = originalHTML;
+            }
+        }
+
+        async function demoLogin(role) {
+            let email, password;
+            if (role === 'farmer') { email = 'farmer@kisanmitra.com'; password = 'password123'; }
+            else if (role === 'buyer') { email = 'buyer@kisanmitra.com'; password = 'password123'; }
+            else { email = 'admin@kisanmitra.com'; password = 'password123'; }
+
+            try {
+                const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
+                await handleLoginSuccess(userCredential.user, role);
+            } catch (error) {
+                // Instant demo simulation
+                const demoUser = {
+                    uid: role === 'farmer' ? 'demo-farmer-id' : (role === 'admin' ? 'DGzP6ZxUblbqM8RyvwoVrbAmEEs1' : 'demo-buyer-id'),
+                    displayName: role === 'farmer' ? 'Ramesh Patil' : (role === 'admin' ? 'Administrator' : 'Priya Sharma'),
+                    email: email,
+                    photoURL: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=120&auto=format&fit=crop&q=80'
+                };
+                await handleLoginSuccess(demoUser, role);
+            }
+        }
+
+        async function handleLoginSuccess(user, preferredRole = 'buyer') {
+            const ADMIN_UID = 'DGzP6ZxUblbqM8RyvwoVrbAmEEs1';
+            const isAdmin = (user.uid === ADMIN_UID) || (user.email && user.email.toLowerCase().includes('admin'));
+            let role = isAdmin ? 'admin' : (preferredRole || 'buyer');
+
+            try {
+                if (window.FM && window.FM.db) {
+                    const userRef = window.FM.db.collection('users').doc(user.uid);
+                    const userDoc = await userRef.get();
+
+                    if (userDoc.exists) {
+                        const data = userDoc.data();
+                        role = data.role || role;
+                    } else {
+                        await userRef.set({
+                            name: user.displayName || (isAdmin ? 'Platform Administrator' : 'User'),
+                            email: user.email || '',
+                            photoURL: user.photoURL || '',
+                            role: role,
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                            status: 'active'
+                        });
+
+                        if (role === 'farmer') {
+                            await window.FM.db.collection('farmers').doc(user.uid).set({
+                                userId: user.uid,
+                                displayName: user.displayName || 'Farmer',
+                                isVerified: false,
+                                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                            });
+                        }
+                    }
+                }
+            } catch (err) {
+                console.warn("Firestore sync warning:", err);
+            }
+
+            // Save to localStorage for instant local session persistence
+            localStorage.setItem('kisanmitra_user', JSON.stringify({
+                uid: user.uid,
+                name: user.displayName || (role === 'admin' ? 'Administrator' : 'User'),
+                email: user.email || '',
+                role: role,
+                photoURL: user.photoURL || ''
+            }));
+
+            // Redirect to appropriate dashboard
+            if (role === 'farmer') {
+                window.location.href = 'farmer/dashboard.html';
+            } else if (role === 'admin') {
+                window.location.href = 'admin/dashboard.html';
+            } else {
+                window.location.href = 'buyer/dashboard.html';
+            }
+        }
+
+        window.addEventListener('load', () => { if(window.lucide) lucide.createIcons(); });
+    </script>
+</body>
+</html>

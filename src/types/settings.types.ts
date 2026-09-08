@@ -5,6 +5,7 @@
 export interface PlatformSettings {
   // General Information
   platformName: string;
+  logoUrl?: string;
   supportEmail: string;
   supportPhone: string;
   currencySymbol: string;

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 Not Found | KisanMitra</title>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- FontAwesome -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: { sans: ['Inter', 'sans-serif'] },
+            colors: {
+              primary: {
+                DEFAULT: '#2D5016',
+                dark: '#1A3009',
+                50: '#f0fdf4',
+                100: '#dcfce7',
+                200: '#bbf7d0',
+                600: '#16a34a',
+                700: '#2D5016',
+                800: '#1A3009',
+                900: '#0f1f06',
+              },
+              accent: {
+                DEFAULT: '#C17F24',
+                50: '#fff8eb',
+                100: '#ffefc6',
+              },
+              neutral: {
+                50: '#F9F7F2',
+                100: '#F0EDE6',
+                200: '#E2DDD5',
+                300: '#D0C8BD',
+                400: '#B5AA9C',
+                500: '#9A8D7E',
+                600: '#7A7268',
+                700: '#5A5349',
+                800: '#3A352F',
+                900: '#1A1A18',
+              }
+            }
+          }
+        }
+      }
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/nav.js"></script>
+
+</head>
+<body class="min-h-screen bg-neutral-50 flex items-center justify-center p-4 relative overflow-hidden font-sans">
+    <!-- Decorative background elements -->
+    <div class="absolute top-10 left-10 md:top-20 md:left-20 text-primary/10 animate-bounce" style="animation-duration: 4s;">
+        <i data-lucide="sprout" class="w-24 h-24 md:w-32 md:h-32"></i>
+    </div>
+    <div class="absolute top-20 right-10 md:right-32 text-accent/10 animate-pulse" style="animation-duration: 3s;">
+        <i data-lucide="sun" class="w-24 h-24 md:w-32 md:h-32"></i>
+    </div>
+    <div class="absolute bottom-10 left-20 md:bottom-32 md:left-40 text-blue-500/10 animate-pulse" style="animation-duration: 5s;">
+        <i data-lucide="cloud-rain" class="w-24 h-24 md:w-32 md:h-32"></i>
+    </div>
+    <div class="absolute bottom-20 right-10 md:bottom-20 md:right-20 text-neutral-300/40 animate-bounce" style="animation-duration: 6s;">
+        <i data-lucide="wind" class="w-24 h-24 md:w-32 md:h-32"></i>
+    </div>
+
+    <div class="max-w-2xl w-full text-center z-10 space-y-8">
+        <!-- 404 Graphic -->
+        <div class="relative inline-block mt-8">
+            <h1 class="text-8xl md:text-[12rem] font-black text-neutral-200 tracking-tighter select-none">404</h1>
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                <div class="animate-[spin_10s_linear_infinite]">
+                    <i data-lucide="tractor" class="w-20 h-20 md:w-28 md:h-28 text-primary drop-shadow-xl -ml-6 md:-ml-10"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Funny Indian Agriculture text -->
+        <div class="space-y-4 px-4">
+            <h2 class="text-3xl md:text-5xl font-extrabold text-neutral-900 tracking-tight">
+                Aiyo! Crop Not Found.
+            </h2>
+            <p class="text-lg text-neutral-600 max-w-lg mx-auto font-medium">
+                Looks like our tractor took a wrong turn deep into the sugarcane fields, or the neighbor's goat chewed up the link you were looking for.
+            </p>
+            <p class="text-sm text-neutral-500 max-w-sm mx-auto">
+                Either way, this patch of digital land is completely barren. Let's get you back to greener pastures!
+            </p>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-8 px-4">
+            <button onclick="window.history.back()" class="flex-1 sm:flex-none border-2 border-neutral-200 text-neutral-700 hover:border-neutral-300 hover:bg-neutral-100 px-6 py-3 rounded-full font-bold flex items-center justify-center gap-2 transition-all active:scale-95">
+                <i data-lucide="arrow-left" class="w-5 h-5"></i> Reverse Tractor
+            </button>
+            <a href="market.html" class="flex-1 sm:flex-none bg-primary text-white hover:bg-primary-dark px-6 py-3 rounded-full font-bold shadow-lg shadow-primary/30 flex items-center justify-center gap-2 transition-all hover:-translate-y-1 active:scale-95">
+                <i data-lucide="map-pin" class="w-5 h-5"></i> Go to Local Mandi
+            </a>
+            <a href="index.html" class="flex-1 sm:flex-none bg-accent text-white hover:bg-amber-600 px-6 py-3 rounded-full font-bold shadow-lg shadow-accent/30 flex items-center justify-center gap-2 transition-all hover:-translate-y-1 active:scale-95">
+                <i data-lucide="home" class="w-5 h-5"></i> Back to Base Farm
+            </a>
+        </div>
+    </div>
+    <script>
+        window.addEventListener('load', () => { if(window.lucide) lucide.createIcons(); });
+    </script>
+</body>
+</html>

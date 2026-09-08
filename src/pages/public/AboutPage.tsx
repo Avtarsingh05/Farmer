@@ -1,5 +1,5 @@
 import React from 'react';
-import { Target, Heart, Sprout, Leaf, Globe2, ShieldCheck } from 'lucide-react';
+import { Target, Heart, Sprout, Globe2, ShieldCheck } from 'lucide-react';
 
 const AboutPage: React.FC = () => {
   return (
@@ -16,7 +16,7 @@ const AboutPage: React.FC = () => {
         </div>
         <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center animate-fade-up">
           <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-white border border-white/20 backdrop-blur-sm text-sm font-medium mb-6">
-            <Leaf className="w-4 h-4" /> Our Mission
+             Our Mission
           </span>
           <h1 className="text-4xl md:text-6xl font-bold text-white mb-8 leading-tight">
             Empowering Farmers.<br className="hidden md:block" /> Fresh for Buyers.

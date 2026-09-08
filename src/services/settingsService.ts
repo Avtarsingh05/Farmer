@@ -5,6 +5,7 @@ const SETTINGS_STORAGE_KEY = 'kisanmitra_platform_settings';
 
 export const DEFAULT_PLATFORM_SETTINGS: PlatformSettings = {
   platformName: 'KisanMitra',
+  logoUrl: undefined,
   supportEmail: 'support@kisanmitra.in',
   supportPhone: '+91 1800-200-5472',
   currencySymbol: '₹',

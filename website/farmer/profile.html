@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Farmer Profile | KisanMitra</title>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            primary: {
+              DEFAULT: '#2D5016',
+              50:  '#F2F7EC',
+              100: '#E0EDD0',
+              200: '#BEDBA2',
+              300: '#90C168',
+              400: '#68A83B',
+              500: '#4A7C23',
+              600: '#2D5016',
+              700: '#1A3009',
+              800: '#0E1C05',
+              900: '#060D02',
+            },
+            accent: {
+              DEFAULT: '#C17F24',
+              50:  '#FDF8EE',
+              100: '#F9EDD1',
+              200: '#F3D89E',
+              300: '#EAC060',
+              400: '#DEA737',
+              500: '#C17F24',
+              600: '#9A6119',
+              700: '#744912',
+              800: '#4E300B',
+              900: '#281805',
+            },
+            neutral: {
+              50:  '#F9F7F2',
+              100: '#F0EDE6',
+              200: '#E2DDD5',
+              300: '#C8C2B8',
+              400: '#A09890',
+              500: '#7A7268',
+              600: '#5A5450',
+              700: '#403C38',
+              800: '#2A2724',
+              900: '#1A1A18',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="../styles/main.css">
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="../firebase-config.js"></script>
+  <script src="../js/app.js"></script>
+  <script src="../js/cloudinary.js"></script>
+  <script src="../js/produce-images.js"></script>
+  <script src="../js/panel.js"></script>
+</head>
+<body class="bg-neutral-50 text-neutral-900 font-sans antialiased min-h-screen flex flex-col">
+  <main id="main-content" class="flex-1 lg:ml-72 transition-all duration-300 min-h-screen flex flex-col">
+    <div class="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
+
+      <div class="max-w-3xl mx-auto space-y-8">
+        <div>
+          <h1 class="text-3xl font-extrabold text-neutral-900 tracking-tight">Farm Profile</h1>
+          <p class="text-sm text-neutral-500 mt-1">Manage your public farm credentials, location, and verified badges.</p>
+        </div>
+
+        <form id="profile-form" class="space-y-6">
+          <div class="bg-white rounded-3xl p-6 sm:p-8 border border-neutral-100 shadow-sm space-y-6">
+            <!-- Profile Photo Upload via Cloudinary -->
+            <div class="flex items-center gap-6">
+              <img id="avatar-preview" src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150" 
+                   class="w-20 h-20 rounded-full object-cover shadow-md ring-4 ring-primary/10 shrink-0">
+              <div>
+                <label class="block text-sm font-bold text-neutral-800 mb-1">Farmer Photo</label>
+                <input type="file" id="avatar-input" accept="image/*" class="text-xs text-neutral-500 file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-primary file:text-white hover:file:bg-primary-dark cursor-pointer">
+                <p class="text-xs text-neutral-400 mt-1">Upload an authentic farmer photo to gain buyer trust.</p>
+              </div>
+            </div>
+
+            <!-- Name & Phone -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-bold text-neutral-800 mb-2">Display Name *</label>
+                <input type="text" id="prof-name" required class="w-full px-4 py-3 rounded-2xl bg-neutral-50 border border-neutral-200 text-sm font-medium focus:outline-none focus:border-primary">
+              </div>
+              <div>
+                <label class="block text-sm font-bold text-neutral-800 mb-2">Contact Phone</label>
+                <input type="tel" id="prof-phone" class="w-full px-4 py-3 rounded-2xl bg-neutral-50 border border-neutral-200 text-sm font-medium focus:outline-none focus:border-primary">
+              </div>
+            </div>
+
+            <!-- Location -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-bold text-neutral-800 mb-2">Farm District</label>
+                <input type="text" id="prof-district" placeholder="e.g. Nashik" class="w-full px-4 py-3 rounded-2xl bg-neutral-50 border border-neutral-200 text-sm font-medium focus:outline-none focus:border-primary">
+              </div>
+              <div>
+                <label class="block text-sm font-bold text-neutral-800 mb-2">State</label>
+                <input type="text" id="prof-state" placeholder="e.g. Maharashtra" class="w-full px-4 py-3 rounded-2xl bg-neutral-50 border border-neutral-200 text-sm font-medium focus:outline-none focus:border-primary">
+              </div>
+            </div>
+
+            <!-- Bio -->
+            <div>
+              <label class="block text-sm font-bold text-neutral-800 mb-2">About Your Farm (Bio)</label>
+              <textarea id="prof-bio" rows="4" placeholder="Tell buyers about your family farm, farming practices, and years of experience..." 
+                        class="w-full px-4 py-3 rounded-2xl bg-neutral-50 border border-neutral-200 text-sm font-medium focus:outline-none focus:border-primary"></textarea>
+            </div>
+          </div>
+
+          <div class="flex justify-end gap-3">
+            <button type="submit" id="save-prof-btn" class="btn-primary rounded-full px-8 py-3 font-bold shadow-lg shadow-primary/30 flex items-center gap-2">
+              <i data-lucide="check" class="w-5 h-5"></i> Save Profile Details
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <script>
+        let uploadedAvatarUrl = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+          window.initPanel({ role: 'farmer', currentPage: 'profile', title: 'Farm Profile' });
+
+          document.addEventListener('user-loaded', async (e) => {
+            const user = e.detail;
+            document.getElementById('prof-name').value = user.displayName || user.name || '';
+            document.getElementById('prof-phone').value = user.phone || '';
+            document.getElementById('prof-district').value = user.district || '';
+            document.getElementById('prof-state').value = user.state || '';
+            document.getElementById('prof-bio').value = user.bio || '';
+
+            if (user.photoUrl || user.photoURL) {
+              uploadedAvatarUrl = user.photoUrl || user.photoURL;
+              document.getElementById('avatar-preview').src = uploadedAvatarUrl;
+            }
+          });
+
+          document.getElementById('avatar-input').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            try {
+              window.toast({ type: 'info', message: 'Uploading photo to Cloudinary...' });
+              const res = await window.Cloudinary.uploadImage(file, 'profiles');
+              uploadedAvatarUrl = res.secureUrl;
+              document.getElementById('avatar-preview').src = res.secureUrl;
+              window.toast({ type: 'success', message: 'Profile photo uploaded!' });
+            } catch(err) {
+              window.toast({ type: 'error', message: 'Failed to upload photo.' });
+            }
+          });
+
+          document.getElementById('profile-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('save-prof-btn');
+            btn.disabled = true;
+            btn.textContent = 'Saving...';
+
+            try {
+              const user = window.currentUser;
+              const updateData = {
+                name: document.getElementById('prof-name').value.trim(),
+                displayName: document.getElementById('prof-name').value.trim(),
+                phone: document.getElementById('prof-phone').value.trim(),
+                district: document.getElementById('prof-district').value.trim(),
+                state: document.getElementById('prof-state').value.trim(),
+                bio: document.getElementById('prof-bio').value.trim(),
+                photoUrl: uploadedAvatarUrl || user.photoUrl || null
+              };
+
+              await window.FM.db.collection('users').doc(user.uid).update(updateData);
+              window.toast({ type: 'success', message: 'Profile updated successfully!' });
+            } catch(err) {
+              window.toast({ type: 'error', message: 'Failed to save profile.' });
+            } finally {
+              btn.disabled = false;
+              btn.innerHTML = '<i data-lucide="check" class="w-5 h-5"></i> Save Profile Details';
+              if (window.lucide) lucide.createIcons();
+            }
+          });
+        });
+      </script>
+
+    </div>
+  </main>
+</body>
+</html>

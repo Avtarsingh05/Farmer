@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KisanMitra | Farm-to-Table Platform</title>
+  <link rel="stylesheet" href="styles/main.css">
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- FontAwesome -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            primary: {
+              DEFAULT: '#2D5016',
+              dark: '#1A3009',
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              200: '#bbf7d0',
+              300: '#86efac',
+              400: '#4ade80',
+              500: '#22c55e',
+              600: '#16a34a',
+              700: '#2D5016',
+              800: '#1A3009',
+              900: '#0f1f06',
+            },
+            accent: {
+              DEFAULT: '#C17F24',
+              50: '#fff8eb',
+              100: '#ffefc6',
+              200: '#ffe099',
+              300: '#ffcc61',
+              400: '#C17F24',
+              500: '#b8751a',
+              600: '#a06010',
+            },
+            neutral: {
+              50: '#F9F7F2',
+              100: '#F0EDE6',
+              200: '#E2DDD5',
+              300: '#D0C8BD',
+              400: '#B5AA9C',
+              500: '#9A8D7E',
+              600: '#7A7268',
+              700: '#5A5349',
+              800: '#3A352F',
+              900: '#1A1A18',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Firebase Compat CDN -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="firebase-config.js"></script>
+  <script src="js/app.js"></script>
+
+  <style>
+    /* Inline styles to match specific Tailwind utilities and animations from React */
+    :root {
+      --color-primary: #2D5016;
+      --color-accent: #C17F24;
+    }
+    
+    .bg-primary { background-color: var(--color-primary); }
+    .text-primary { color: var(--color-primary); }
+    .border-primary { border-color: var(--color-primary); }
+    .hover\:bg-primary\/90:hover { background-color: rgba(45, 80, 22, 0.9); }
+    .hover\:border-primary\/30:hover { border-color: rgba(45, 80, 22, 0.3); }
+
+    .marquee-track { width: 100%; overflow: hidden; }
+    .animate-marquee { display: flex; animation: marquee 30s linear infinite; }
+    @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+    .animate-fade-up { animation: fadeUp 0.8s ease-out forwards; }
+    .animate-fade-in { animation: fadeIn 1s ease-out forwards; }
+    .animate-float { animation: float 6s ease-in-out infinite; }
+    .animate-float-slow { animation: floatSlow 8s ease-in-out infinite; }
+    .animate-pulse-dot { animation: pulseDot 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+    .animate-scroll-bounce { animation: scrollBounce 2s infinite; }
+    .animate-scale-in { animation: scaleIn 0.6s ease-out forwards; opacity: 0; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    @keyframes floatSlow {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-15px); }
+    }
+    @keyframes pulseDot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: .5; transform: scale(1.2); }
+    }
+    @keyframes scrollBounce {
+      0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+      40% { transform: translateY(-10px); }
+      60% { transform: translateY(-5px); }
+    }
+    @keyframes scaleIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .delay-100 { animation-delay: 100ms; }
+    .delay-200 { animation-delay: 200ms; }
+    .delay-300 { animation-delay: 300ms; }
+    .delay-400 { animation-delay: 400ms; }
+    .delay-500 { animation-delay: 500ms; }
+    .delay-600 { animation-delay: 600ms; }
+
+    /* Intersection Observer class for fading elements in when scrolled */
+    .fade-on-scroll { opacity: 1; }
+    .fade-on-scroll.is-visible { opacity: 1; }
+  </style>
+</head>
+<body class="bg-neutral-50 flex flex-col min-h-screen overflow-x-hidden font-sans antialiased text-neutral-900">
+
+  <!-- TOP NAVIGATION BAR -->
+  <header id="top-nav" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-transparent border-b border-transparent">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-16">
+        <!-- Logo -->
+        <a href="index.html" class="flex items-center space-x-2 cursor-pointer shrink-0">
+          <div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-white font-bold text-xl">K</div>
+          <span class="text-xl font-bold text-primary">KisanMitra</span>
+        </a>
+
+        <!-- Desktop Nav -->
+        <nav class="hidden md:flex items-center justify-center space-x-6">
+          <a href="index.html" class="text-primary font-medium border-b-2 border-primary pb-1">Home</a>
+          <a href="market.html" class="text-neutral-600 hover:text-primary font-medium">Market</a>
+          <a href="farmers.html" class="text-neutral-600 hover:text-primary font-medium">Farmers</a>
+          <a href="how-it-works.html" class="text-neutral-600 hover:text-primary font-medium">How It Works</a>
+          <a href="about.html" class="text-neutral-600 hover:text-primary font-medium">About</a>
+        </nav>
+
+        <!-- Desktop Actions -->
+        <div class="hidden md:flex items-center space-x-3">
+          <a href="cart.html" class="relative p-2.5 rounded-full text-neutral-700 hover:text-primary hover:bg-neutral-100/80 transition-colors">
+            <i data-lucide="shopping-cart" class="w-5 h-5"></i>
+            <span id="nav-cart-count" class="hidden absolute -top-1 -right-1 bg-primary text-white text-[11px] font-bold rounded-full w-5 h-5 flex items-center justify-center shadow-sm">0</span>
+          </a>
+          <a href="login.html" class="px-4 py-2 rounded-xl text-neutral-700 font-medium bg-white/85 backdrop-blur-sm hover:bg-white border border-neutral-200/80 transition-colors">Login</a>
+          <a href="register.html" class="px-4 py-2 rounded-xl bg-primary text-white font-medium shadow-sm hover:bg-primary/90 transition-colors">Get Started</a>
+        </div>
+
+        <!-- Mobile Menu Button -->
+        <div class="md:hidden flex items-center space-x-2">
+          <a href="cart.html" class="relative p-2 rounded-full text-neutral-700">
+            <i data-lucide="shopping-cart" class="w-5 h-5"></i>
+          </a>
+          <button id="mobile-menu-btn" class="text-neutral-600 p-1">
+            <i data-lucide="menu" class="w-6 h-6"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile Menu Drawer (Hidden by default) -->
+  <div id="mobile-menu" class="fixed inset-0 z-[60] flex hidden">
+    <div class="fixed inset-0 bg-black/50" id="mobile-menu-overlay"></div>
+    <div class="relative flex-1 flex flex-col max-w-xs w-full bg-white shadow-xl h-full slide-in-left">
+      <div class="absolute top-0 right-0 -mr-12 pt-2">
+        <button id="mobile-menu-close" class="ml-1 flex items-center justify-center h-10 w-10 rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
+          <i data-lucide="x" class="h-6 w-6 text-white"></i>
+        </button>
+      </div>
+      <div class="flex-1 h-0 pt-5 pb-4 overflow-y-auto px-4">
+        <div class="flex items-center space-x-2 mb-6">
+          <div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-white font-bold">K</div>
+          <span class="text-xl font-bold text-primary">KisanMitra</span>
+        </div>
+        <nav class="space-y-1">
+          <a href="index.html" class="block px-3 py-2 rounded-md text-base font-medium text-primary bg-neutral-50">Home</a>
+          <a href="market.html" class="block px-3 py-2 rounded-md text-base font-medium text-neutral-900 hover:bg-neutral-50 hover:text-primary">Market</a>
+          <a href="farmers.html" class="block px-3 py-2 rounded-md text-base font-medium text-neutral-900 hover:bg-neutral-50 hover:text-primary">Farmers</a>
+          <a href="how-it-works.html" class="block px-3 py-2 rounded-md text-base font-medium text-neutral-900 hover:bg-neutral-50 hover:text-primary">How It Works</a>
+          <a href="about.html" class="block px-3 py-2 rounded-md text-base font-medium text-neutral-900 hover:bg-neutral-50 hover:text-primary">About</a>
+        </nav>
+      </div>
+      <div class="p-4 border-t border-neutral-200 space-y-3">
+        <a href="register.html" class="block w-full text-center px-4 py-2 rounded-xl bg-primary text-white font-medium">Get Started</a>
+        <a href="login.html" class="block w-full text-center px-4 py-2 rounded-xl bg-neutral-100 text-neutral-700 font-medium">Login</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- HERO SECTION -->
+  <section class="relative min-h-screen flex flex-col justify-center overflow-hidden" style="background: linear-gradient(135deg, #F9F7F2 0%, #F0EDE6 35%, #E8F5E9 70%, #F9F7F2 100%)">
+    <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
+      <div class="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-primary/5 blur-3xl"></div>
+      <div class="absolute top-1/2 -left-48 w-80 h-80 rounded-full blur-3xl" style="background: rgba(193,127,36,0.04)"></div>
+      <div class="absolute bottom-0 right-1/4 w-64 h-64 rounded-full bg-primary/5 blur-2xl"></div>
+    </div>
+    
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16 w-full">
+      <div class="grid lg:grid-cols-2 gap-12 items-center">
+        <!-- Left content -->
+        <div class="space-y-8">
+          <div class="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-4 py-2 text-primary text-sm font-semibold animate-fade-up">
+            <span class="w-2 h-2 rounded-full bg-primary animate-pulse-dot"></span>
+            India's Direct Farm-to-Market Platform
+          </div>
+          <h1 class="text-5xl md:text-6xl lg:text-7xl font-extrabold text-neutral-900 tracking-tight leading-none animate-fade-up delay-100">
+            Farmers earn
+            <span class="relative inline-block text-primary">
+              more.
+              <svg class="absolute -bottom-2 left-0 w-full" viewBox="0 0 200 8" fill="none">
+                <path d="M2 6 Q100 2 198 6" stroke="#2D5016" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.4"/>
+              </svg>
+            </span>
+            <br>Buyers pay
+            <span style="color: var(--color-accent)">less.</span>
+          </h1>
+          <p class="text-xl text-neutral-600 max-w-lg leading-relaxed animate-fade-up delay-200">
+            KisanMitra removes brokers from India's agricultural supply chain. Verified farmers sell directly to buyers — transparent APMC pricing, zero hidden commissions.
+          </p>
+          <div class="flex flex-col sm:flex-row gap-4 animate-fade-up delay-300">
+            <a href="market.html" class="group inline-flex items-center justify-center gap-2 px-8 py-4 bg-primary text-white font-semibold text-base rounded-xl shadow-lg hover:shadow-xl hover:bg-primary/90 transition-all duration-200">
+              Browse Produce <i data-lucide="arrow-right" class="w-5 h-5 group-hover:translate-x-1 transition-transform"></i>
+            </a>
+            <a href="register.html?role=farmer" class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-neutral-800 font-semibold text-base rounded-xl border border-neutral-200 shadow-sm hover:shadow-md hover:border-primary/30 transition-all duration-200">
+              <i data-lucide="sprout" class="w-5 h-5 text-primary"></i> Join as Farmer
+            </a>
+          </div>
+          <div class="flex flex-wrap gap-6 text-sm text-neutral-500 animate-fade-up delay-400">
+            <div class="flex items-center gap-1.5"><i data-lucide="badge-check" class="w-4 h-4 text-primary"></i><span>500+ Verified Farmers</span></div>
+            <div class="flex items-center gap-1.5"><i data-lucide="shield" class="w-4 h-4 text-primary"></i><span>APMC Price Transparency</span></div>
+            <div class="flex items-center gap-1.5"><i data-lucide="truck" class="w-4 h-4 text-primary"></i><span>Direct Farm Dispatch</span></div>
+          </div>
+        </div>
+        
+        <!-- Right content (Floating images) -->
+        <div class="relative hidden lg:flex items-center justify-center h-[520px] animate-fade-in delay-300">
+          <div class="relative w-72 h-72 rounded-3xl overflow-hidden shadow-2xl border-4 border-white animate-float-slow">
+            <img src="https://images.unsplash.com/photo-1595974482597-4b8da8879bc5?w=600&auto=format&fit=crop&q=80" alt="Farmer" class="w-full h-full object-cover" />
+          </div>
+          <div class="absolute top-8 right-4 bg-white rounded-2xl shadow-xl px-4 py-3 border border-neutral-100 animate-float" style="animation-delay: 0s">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center"><i data-lucide="trending-up" class="w-4 h-4 text-green-600"></i></div>
+              <div><div class="text-xs text-neutral-500">Onion · Lasalgaon</div><div class="text-sm font-bold text-neutral-900">₹32/kg</div></div>
+            </div>
+          </div>
+          <div class="absolute bottom-16 left-2 bg-white rounded-2xl shadow-xl px-4 py-3 border border-neutral-100 animate-float" style="animation-delay: 2s">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center"><i data-lucide="indian-rupee" class="w-4 h-4 text-amber-600"></i></div>
+              <div><div class="text-xs text-neutral-500">Farmer earns more</div><div class="text-sm font-bold text-green-700">+₹8/kg avg</div></div>
+            </div>
+          </div>
+          <div class="absolute bottom-8 right-0 bg-primary text-white rounded-2xl shadow-xl px-4 py-3 animate-float" style="animation-delay: 1s">
+            <div class="flex items-center gap-2">
+              <i data-lucide="badge-check" class="w-5 h-5 text-white/80"></i>
+              <div><div class="text-xs text-white/70">Order placed</div><div class="text-sm font-bold">Just now</div></div>
+            </div>
+          </div>
+          <div class="absolute top-1/2 -left-4 -translate-y-1/2 bg-white rounded-2xl shadow-xl px-3 py-2 border border-neutral-100 animate-float" style="animation-delay: 3s">
+            <div class="flex items-center gap-2"><i data-lucide="map-pin" class="w-4 h-4 text-primary"></i><span class="text-xs font-semibold text-neutral-700">Nashik, MH</span></div>
+          </div>
+          <div class="absolute bottom-0 right-16 w-40 h-40 rounded-2xl overflow-hidden shadow-lg border-2 border-white animate-float" style="animation-delay: 1.5s">
+            <img src="https://images.unsplash.com/photo-1610348725531-843dff563e2c?w=300&auto=format&fit=crop&q=80" alt="Produce" class="w-full h-full object-cover" />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-neutral-400">
+      <span class="text-xs font-medium tracking-widest uppercase">Scroll</span>
+      <i data-lucide="chevron-down" class="w-5 h-5 animate-scroll-bounce"></i>
+    </div>
+  </section>
+
+  
+
+  <!-- VALUE HIGHLIGHT BANNER -->
+  <section class="relative w-full bg-neutral-950 py-24 sm:py-32 overflow-hidden">
+    <div class="absolute inset-0">
+      <img src="https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=1800&auto=format&fit=crop&q=80" alt="Farmlands at golden hour" class="w-full h-full object-cover opacity-25" />
+      <div class="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/70 to-neutral-950/90"></div>
+    </div>
+    <div class="relative max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8 space-y-8 z-10">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs sm:text-sm font-semibold tracking-wide">
+        <i data-lucide="shield" class="w-4 h-4"></i> Direct Farm Network
+      </div>
+      <h2 class="text-3xl sm:text-5xl md:text-6xl font-extrabold text-white tracking-tight leading-tight">
+        Transparent Pricing.<br />
+        <span class="text-emerald-400">Zero Middlemen.</span>
+      </h2>
+      <p class="text-base sm:text-lg text-neutral-300 max-w-2xl mx-auto leading-relaxed">
+        By removing layered intermediaries, KisanMitra returns maximum earnings to farmer families while delivering fresh, traceable produce at true market rates.
+      </p>
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
+        <a href="market.html" class="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold shadow-lg shadow-emerald-900/30 transition-all inline-flex items-center justify-center gap-2">
+          Explore Market <i data-lucide="arrow-right" class="w-5 h-5"></i>
+        </a>
+        <a href="register.html?role=farmer" class="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold border border-white/20 backdrop-blur-md transition-all inline-flex items-center justify-center gap-2">
+          Sell Your Harvest
+        </a>
+      </div>
+      <div class="pt-8 grid grid-cols-3 gap-6 max-w-xl mx-auto border-t border-white/10 text-white">
+        <div>
+          <div class="text-2xl sm:text-3xl font-bold">100%</div>
+          <div class="text-xs sm:text-sm text-neutral-400 mt-1">Direct Farm Gate</div>
+        </div>
+        <div>
+          <div class="text-2xl sm:text-3xl font-bold text-emerald-400">₹0</div>
+          <div class="text-xs sm:text-sm text-neutral-400 mt-1">Broker Commissions</div>
+        </div>
+        <div>
+          <div class="text-2xl sm:text-3xl font-bold">Verified</div>
+          <div class="text-xs sm:text-sm text-neutral-400 mt-1">Farms & Quality</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section id="how-section" class="py-24 px-4 sm:px-6 lg:px-8 bg-white fade-on-scroll">
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center mb-16 animate-section">
+        <div class="inline-flex items-center gap-2 text-primary font-bold text-sm tracking-widest uppercase mb-4"><i data-lucide="bar-chart-3" class="w-4 h-4"></i> The Process</div>
+        <h2 class="text-4xl font-extrabold text-neutral-900">How KisanMitra Works</h2>
+        <p class="mt-4 text-lg text-neutral-500 max-w-xl mx-auto">Three simple steps that change everything for Indian farmers and buyers.</p>
+      </div>
+      <div class="relative">
+        <div class="hidden md:block absolute top-14 left-[16.67%] right-[16.67%] h-0.5 bg-neutral-100">
+          <div id="process-line" class="h-full bg-primary/40 transition-all duration-1000 ease-out" style="width: 0%"></div>
+        </div>
+        <div class="grid md:grid-cols-3 gap-8">
+          <div class="relative animate-section delay-100">
+            <div class="group bg-white rounded-3xl border border-neutral-100 p-8 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+              <div class="flex items-center gap-4 mb-6">
+                <div class="relative">
+                  <div class="w-14 h-14 rounded-2xl bg-primary text-white flex items-center justify-center" style="box-shadow: 0 8px 25px rgba(45,80,22,0.3)">
+                    <i data-lucide="sprout" class="w-7 h-7"></i>
+                  </div>
+                  <div class="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-neutral-900 text-white text-xs font-bold flex items-center justify-center">1</div>
+                </div>
+              </div>
+              <h3 class="text-xl font-bold text-neutral-900 mb-3">Farmers List Produce</h3>
+              <p class="text-neutral-500 leading-relaxed mb-4">Verified farmers upload harvest with real APMC benchmark pricing.</p>
+              <div class="text-xs text-primary font-semibold bg-primary/5 rounded-xl px-3 py-2">Photo upload · APMC price · Quality grade</div>
+            </div>
+          </div>
+          <div class="relative animate-section delay-300">
+            <div class="group bg-white rounded-3xl border border-neutral-100 p-8 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+              <div class="flex items-center gap-4 mb-6">
+                <div class="relative">
+                  <div class="w-14 h-14 rounded-2xl bg-primary text-white flex items-center justify-center" style="box-shadow: 0 8px 25px rgba(45,80,22,0.3)">
+                    <i data-lucide="shopping-bag" class="w-7 h-7"></i>
+                  </div>
+                  <div class="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-neutral-900 text-white text-xs font-bold flex items-center justify-center">2</div>
+                </div>
+              </div>
+              <h3 class="text-xl font-bold text-neutral-900 mb-3">Buyers Place Orders</h3>
+              <p class="text-neutral-500 leading-relaxed mb-4">Browse, compare prices, and order directly without any agents.</p>
+              <div class="text-xs text-primary font-semibold bg-primary/5 rounded-xl px-3 py-2">Browse by district · Filter · Instant checkout</div>
+            </div>
+          </div>
+          <div class="relative animate-section delay-500">
+            <div class="group bg-white rounded-3xl border border-neutral-100 p-8 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+              <div class="flex items-center gap-4 mb-6">
+                <div class="relative">
+                  <div class="w-14 h-14 rounded-2xl bg-primary text-white flex items-center justify-center" style="box-shadow: 0 8px 25px rgba(45,80,22,0.3)">
+                    <i data-lucide="truck" class="w-7 h-7"></i>
+                  </div>
+                  <div class="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-neutral-900 text-white text-xs font-bold flex items-center justify-center">3</div>
+                </div>
+              </div>
+              <h3 class="text-xl font-bold text-neutral-900 mb-3">Produce Delivered</h3>
+              <p class="text-neutral-500 leading-relaxed mb-4">Farm-to-door with full order tracking and transparent delivery status.</p>
+              <div class="text-xs text-primary font-semibold bg-primary/5 rounded-xl px-3 py-2">Live tracking · COD + UPI · Direct dispatch</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MARKET PULSE -->
+  <section id="pulse-section" class="py-24 px-4 sm:px-6 lg:px-8 bg-neutral-50 fade-on-scroll">
+    <div class="max-w-7xl mx-auto">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-4 animate-section">
+        <div>
+          <div class="inline-flex items-center gap-2 text-primary font-bold text-sm tracking-widest uppercase mb-3">
+            <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse-dot"></span>Today's Market Prices
+          </div>
+          <h2 class="text-3xl font-extrabold text-neutral-900">Live APMC Mandi Pulse</h2>
+          <p class="text-neutral-500 mt-2">Farm-gate prices vs. official APMC mandi benchmark rates.</p>
+        </div>
+        <a href="market.html" class="inline-flex items-center gap-2 text-primary font-semibold hover:gap-3 transition-all text-sm">View all produce <i data-lucide="arrow-right" class="w-4 h-4"></i></a>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="market-pulse-grid">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- FOR FARMERS -->
+  <section id="farmer-section" class="py-24 px-4 sm:px-6 lg:px-8 bg-white fade-on-scroll">
+    <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
+      <div class="relative animate-section">
+        <div class="relative rounded-3xl overflow-hidden aspect-[4/3] shadow-2xl">
+          <img src="https://images.unsplash.com/photo-1595974482597-4b8da8879bc5?w=900&auto=format&fit=crop&q=80" alt="Farmer" class="w-full h-full object-cover" />
+          <div class="absolute inset-0 bg-gradient-to-t from-neutral-900/60 via-transparent to-transparent"></div>
+          <div class="absolute bottom-6 left-6 right-6 bg-white/95 backdrop-blur-sm rounded-2xl p-4 shadow-lg">
+            <div class="grid grid-cols-3 gap-4 text-center">
+              <div><div class="text-xl font-extrabold text-primary">₹8+</div><div class="text-[11px] text-neutral-500 leading-tight">more per kg avg.</div></div>
+              <div><div class="text-xl font-extrabold text-primary">₹0</div><div class="text-[11px] text-neutral-500 leading-tight">commission fee</div></div>
+              <div><div class="text-xl font-extrabold text-primary">24h</div><div class="text-[11px] text-neutral-500 leading-tight">order dispatch</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="space-y-6 animate-section delay-200">
+        <div class="inline-flex items-center gap-2 text-primary font-bold text-sm tracking-widest uppercase"> For Farmers</div>
+        <h2 class="text-4xl font-extrabold text-neutral-900 leading-tight">Set your own price.<br /><span class="text-primary">Keep what you earn.</span></h2>
+        <p class="text-neutral-600 text-lg">Stop losing 30-40% of your income to commission agents. Sell directly at a fair price you control.</p>
+        <ul class="space-y-4">
+          <li class="flex items-start gap-3 group">
+            <i data-lucide="check-circle" class="w-5 h-5 text-primary mt-0.5 shrink-0 group-hover:scale-110 transition-transform"></i>
+            <div><span class="font-semibold text-neutral-900">Own your pricing: </span><span class="text-neutral-600">Set farm-gate prices anchored to real APMC mandi benchmarks.</span></div>
+          </li>
+          <li class="flex items-start gap-3 group">
+            <i data-lucide="check-circle" class="w-5 h-5 text-primary mt-0.5 shrink-0 group-hover:scale-110 transition-transform"></i>
+            <div><span class="font-semibold text-neutral-900">Reach beyond local mandis: </span><span class="text-neutral-600">Access buyers in Delhi, Mumbai, Pune, and Bangalore from your village.</span></div>
+          </li>
+          <li class="flex items-start gap-3 group">
+            <i data-lucide="check-circle" class="w-5 h-5 text-primary mt-0.5 shrink-0 group-hover:scale-110 transition-transform"></i>
+            <div><span class="font-semibold text-neutral-900">Smart inventory dashboard: </span><span class="text-neutral-600">Update stock in real-time, manage orders, and track earnings from your phone.</span></div>
+          </li>
+          <li class="flex items-start gap-3 group">
+            <i data-lucide="check-circle" class="w-5 h-5 text-primary mt-0.5 shrink-0 group-hover:scale-110 transition-transform"></i>
+            <div><span class="font-semibold text-neutral-900">Free to join forever: </span><span class="text-neutral-600">No listing fees. No subscription. 0% commission currently.</span></div>
+          </li>
+        </ul>
+        <div class="pt-4 flex gap-4">
+          <a href="register.html?role=farmer" class="group inline-flex items-center gap-2 px-6 py-3 bg-primary text-white font-semibold rounded-xl shadow-md hover:shadow-lg hover:bg-primary/90 transition-all">
+            Start Selling Free <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+          </a>
+          <a href="how-it-works.html" class="inline-flex items-center gap-2 px-6 py-3 text-primary font-semibold hover:underline">How it works</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOR BUYERS -->
+  <section id="buyer-section" class="py-24 px-4 sm:px-6 lg:px-8 bg-neutral-900 fade-on-scroll">
+    <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
+      <div class="space-y-6 animate-section">
+        <div class="inline-flex items-center gap-2 text-emerald-400 font-bold text-sm tracking-widest uppercase"><i data-lucide="users" class="w-4 h-4"></i> For Buyers</div>
+        <h2 class="text-4xl font-extrabold text-white leading-tight">Know your farmer.<br /><span class="text-emerald-400">Trust your food.</span></h2>
+        <p class="text-neutral-400 text-lg">Every product shows the exact farm, district, quality grade, and APMC reference price. No mystery supply chains.</p>
+        <ul class="space-y-4">
+          <li class="flex items-start gap-3">
+            <i data-lucide="check-circle" class="w-5 h-5 text-emerald-400 mt-0.5 shrink-0"></i>
+            <div><span class="font-semibold text-white">Verified farm origins: </span><span class="text-neutral-400">Full traceability — farmer, district, harvest date and quality grade.</span></div>
+          </li>
+          <li class="flex items-start gap-3">
+            <i data-lucide="check-circle" class="w-5 h-5 text-emerald-400 mt-0.5 shrink-0"></i>
+            <div><span class="font-semibold text-white">Save 15-25% vs. retail: </span><span class="text-neutral-400">Skip the middlemen markup. Direct farm prices are consistently lower.</span></div>
+          </li>
+          <li class="flex items-start gap-3">
+            <i data-lucide="check-circle" class="w-5 h-5 text-emerald-400 mt-0.5 shrink-0"></i>
+            <div><span class="font-semibold text-white">Flexible delivery: </span><span class="text-neutral-400">Choose farm pickup or home delivery with real order tracking.</span></div>
+          </li>
+          <li class="flex items-start gap-3">
+            <i data-lucide="check-circle" class="w-5 h-5 text-emerald-400 mt-0.5 shrink-0"></i>
+            <div><span class="font-semibold text-white">COD + UPI: </span><span class="text-neutral-400">Pay on delivery or scan-and-pay. Zero payment friction.</span></div>
+          </li>
+        </ul>
+        <a href="market.html" class="group inline-flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-xl shadow-lg transition-all">
+          Browse Produce <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+        </a>
+      </div>
+      <div class="relative animate-section delay-200">
+        <div class="relative rounded-3xl overflow-hidden aspect-[4/3] shadow-2xl">
+          <img src="https://images.unsplash.com/photo-1610348725531-843dff563e2c?w=900&auto=format&fit=crop&q=80" alt="Produce" class="w-full h-full object-cover" />
+          <div class="absolute inset-0 bg-gradient-to-t from-neutral-900/50 via-transparent to-transparent"></div>
+          <div class="absolute bottom-6 left-6 right-6 bg-neutral-900/90 backdrop-blur-sm rounded-2xl p-4 border border-white/10">
+            <div class="flex items-center justify-between">
+              <div><div class="text-white font-semibold">Alphonso Mangoes</div><div class="text-neutral-400 text-sm">Devgad, Ratnagiri · Grade A</div></div>
+              <div class="text-right"><div class="text-emerald-400 font-extrabold text-lg">₹680<span class="text-sm font-normal">/dz</span></div><div class="text-neutral-500 text-xs line-through">₹820 APMC rate</div></div>
+            </div>
+            <div class="mt-3 flex gap-2">
+              <div class="flex-1 bg-emerald-600 text-white text-xs font-bold px-3 py-1.5 rounded-lg text-center">Add to Cart</div>
+              <div class="bg-white/10 text-white text-xs font-bold px-3 py-1.5 rounded-lg text-center">View Farm</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section id="testimonials-section" class="py-24 px-4 sm:px-6 lg:px-8 bg-neutral-50 fade-on-scroll">
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center mb-16 animate-section">
+        <div class="inline-flex items-center gap-2 text-primary font-bold text-sm tracking-widest uppercase mb-4"><i data-lucide="star" class="w-4 h-4"></i> Real Stories</div>
+        <h2 class="text-4xl font-extrabold text-neutral-900">Farmers and buyers love KisanMitra</h2>
+        <p class="mt-4 text-lg text-neutral-500 max-w-xl mx-auto">Real results from real people across India.</p>
+      </div>
+      <div class="grid md:grid-cols-3 gap-6" id="testimonials-grid">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- FINAL CTA -->
+  <section id="cta-section" class="py-24 px-4 sm:px-6 lg:px-8 bg-white fade-on-scroll">
+    <div class="max-w-5xl mx-auto">
+      <div class="text-center mb-12 animate-section">
+        <h2 class="text-4xl md:text-5xl font-extrabold text-neutral-900">Ready to get started?</h2>
+        <p class="mt-4 text-xl text-neutral-500">Join thousands of farmers and buyers transforming Indian agriculture.</p>
+      </div>
+      <div class="grid md:grid-cols-2 gap-6 animate-section delay-200">
+        <div class="relative group rounded-3xl overflow-hidden shadow-xl">
+          <img src="https://images.unsplash.com/photo-1595974482597-4b8da8879bc5?w=600&auto=format&fit=crop&q=80" alt="Farmer" class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500" />
+          <div class="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/50 to-transparent"></div>
+          <div class="absolute bottom-0 left-0 right-0 p-6 text-white">
+            <div class="text-xs font-bold uppercase tracking-widest mb-1 text-white/70">For Farmers</div>
+            <h3 class="text-2xl font-extrabold mb-2">Start Selling Today</h3>
+            <p class="text-sm text-white/80 mb-4">List your produce free. Reach buyers across India.</p>
+            <a href="register.html?role=farmer" class="inline-flex items-center gap-2 bg-white text-primary font-bold px-5 py-2.5 rounded-xl hover:bg-neutral-100 transition-colors text-sm">
+              I'm a Farmer <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </a>
+          </div>
+        </div>
+        <div class="relative group rounded-3xl overflow-hidden shadow-xl">
+          <img src="https://images.unsplash.com/photo-1610348725531-843dff563e2c?w=600&auto=format&fit=crop&q=80" alt="Produce" class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500" />
+          <div class="absolute inset-0 bg-gradient-to-t from-neutral-900/90 via-neutral-900/50 to-transparent"></div>
+          <div class="absolute bottom-0 left-0 right-0 p-6 text-white">
+            <div class="text-xs font-bold uppercase tracking-widest mb-1 text-white/70">For Buyers</div>
+            <h3 class="text-2xl font-extrabold mb-2">Find Fresh Produce</h3>
+            <p class="text-sm text-white/80 mb-4">Direct from verified farms. Transparent pricing.</p>
+            <a href="register.html?role=buyer" class="inline-flex items-center gap-2 bg-white text-neutral-900 font-bold px-5 py-2.5 rounded-xl hover:bg-neutral-100 transition-colors text-sm">
+              I'm a Buyer <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="bg-neutral-900 text-white">
+    <div class="border-b border-white/10 py-5">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-wrap justify-center md:justify-between gap-6 text-sm text-neutral-400">
+          <div class="flex items-center gap-2"><i data-lucide="badge-check" class="w-4 h-4 text-primary"></i><span>500+ APMC-verified farmers</span></div>
+          <div class="flex items-center gap-2"><i data-lucide="shield" class="w-4 h-4 text-primary"></i><span>Zero broker commissions</span></div>
+          <div class="flex items-center gap-2"><i data-lucide="map-pin" class="w-4 h-4 text-primary"></i><span>28 states across India</span></div>
+          <div class="flex items-center gap-2"><i data-lucide="mail" class="w-4 h-4 text-primary"></i><span>support@kisanmitra.in</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-8">
+      <div class="grid grid-cols-1 md:grid-cols-5 gap-10 mb-12">
+        <div class="md:col-span-2 space-y-4">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-xl bg-primary flex items-center justify-center font-bold">K</div>
+            <span class="text-xl font-extrabold text-white">KisanMitra</span>
+          </div>
+          <p class="text-neutral-400 text-sm leading-relaxed max-w-xs">
+            India's direct farm-to-market platform. Empowering farmers with fair prices, giving buyers transparent produce at the source.
+          </p>
+          <div class="flex items-center gap-2 text-xs text-neutral-500">
+            <i data-lucide="phone" class="w-3.5 h-3.5"></i>
+            <span>Farmer Helpline: 1800-XXX-XXXX (toll-free)</span>
+          </div>
+          <div class="inline-flex items-center gap-2 bg-primary/20 border border-primary/30 text-primary text-xs font-semibold px-3 py-1.5 rounded-full">
+            <i data-lucide="shield" class="w-3.5 h-3.5"></i>
+            APMC Benchmark Prices · Agmarknet Sourced
+          </div>
+        </div>
+        <div>
+          <h3 class="text-xs font-bold text-neutral-300 tracking-widest uppercase mb-5">Platform</h3>
+          <ul class="space-y-3">
+            <li><a href="market.html" class="text-sm text-neutral-400 hover:text-white transition-colors">Browse Market</a></li>
+            <li><a href="how-it-works.html" class="text-sm text-neutral-400 hover:text-white transition-colors">How It Works</a></li>
+            <li><a href="farmers.html" class="text-sm text-neutral-400 hover:text-white transition-colors">For Farmers</a></li>
+            <li><a href="register.html?role=buyer" class="text-sm text-neutral-400 hover:text-white transition-colors">For Buyers</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-xs font-bold text-neutral-300 tracking-widest uppercase mb-5">Company</h3>
+          <ul class="space-y-3">
+            <li><a href="about.html" class="text-sm text-neutral-400 hover:text-white transition-colors">About Us</a></li>
+            <li><a href="privacy.html" class="text-sm text-neutral-400 hover:text-white transition-colors">Privacy Policy</a></li>
+            <li><a href="terms.html" class="text-sm text-neutral-400 hover:text-white transition-colors">Terms of Service</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-xs font-bold text-neutral-300 tracking-widest uppercase mb-5">Support</h3>
+          <ul class="space-y-3">
+            <li><a href="help.html" class="text-sm text-neutral-400 hover:text-white transition-colors">Help Center</a></li>
+            <li><a href="faq.html" class="text-sm text-neutral-400 hover:text-white transition-colors">FAQ</a></li>
+            <li><a href="contact.html" class="text-sm text-neutral-400 hover:text-white transition-colors">Contact Us</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+        <p class="text-sm text-neutral-500">&copy; <span id="current-year"></span> KisanMitra Technologies Pvt. Ltd. All rights reserved.</p>
+        <p class="text-xs text-neutral-600">Prices sourced from Agmarknet (National Agriculture Market) APMC daily bulletins.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Firebase & App Scripts -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  
+
+  <!-- Page Specific Logic -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      if (window.lucide) lucide.createIcons();
+      lucide.createIcons();
+      document.getElementById('current-year').textContent = new Date().getFullYear();
+
+      // Top Nav Scroll Effect
+      const topNav = document.getElementById('top-nav');
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 20) {
+          topNav.classList.add('bg-white/90', 'backdrop-blur-md', 'shadow-sm', 'border-neutral-200/60');
+          topNav.classList.remove('bg-transparent', 'border-transparent');
+        } else {
+          topNav.classList.remove('bg-white/90', 'backdrop-blur-md', 'shadow-sm', 'border-neutral-200/60');
+          topNav.classList.add('bg-transparent', 'border-transparent');
+        }
+      });
+
+      // Mobile Menu
+      const mobileBtn = document.getElementById('mobile-menu-btn');
+      const mobileMenu = document.getElementById('mobile-menu');
+      const mobileClose = document.getElementById('mobile-menu-close');
+      const mobileOverlay = document.getElementById('mobile-menu-overlay');
+
+      function openMenu() { mobileMenu.classList.remove('hidden'); }
+      function closeMenu() { mobileMenu.classList.add('hidden'); }
+
+      mobileBtn.addEventListener('click', openMenu);
+      mobileClose.addEventListener('click', closeMenu);
+      mobileOverlay.addEventListener('click', closeMenu);
+
+      // Scroll Observer for Animations
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            const animates = entry.target.querySelectorAll('.animate-section');
+            animates.forEach(el => {
+              if(el.classList.contains('delay-100')) { el.classList.add('animate-fade-up', 'delay-100'); }
+              else if(el.classList.contains('delay-200')) { el.classList.add('animate-fade-up', 'delay-200'); }
+              else if(el.classList.contains('delay-300')) { el.classList.add('animate-fade-up', 'delay-300'); }
+              else if(el.classList.contains('delay-500')) { el.classList.add('animate-fade-up', 'delay-500'); }
+              else { el.classList.add('animate-fade-up'); el.style.opacity = '1'; }
+            });
+            observer.unobserve(entry.target);
+            
+            // Trigger counters if this is the stats section
+            
+            // Trigger process line
+            if (entry.target.id === 'how-section') {
+              setTimeout(() => {
+                const line = document.getElementById('process-line');
+                if (line) line.style.width = '100%';
+              }, 300);
+            }
+          }
+        });
+      }, { threshold: 0.15 });
+
+      document.querySelectorAll('.fade-on-scroll').forEach(el => observer.observe(el));
+
+      // Stats Counters
+      
+      tickerTrack.innerHTML = allTickerItems.map(item => `
+        <span class="inline-flex items-center gap-2 mx-6 text-white text-sm">
+          <span class="font-semibold">${item.name}</span>
+          <span class="text-white/60 text-xs">${item.mandi}</span>
+          <span class="font-bold bg-white/15 px-2 py-0.5 rounded-full">${item.price}</span>
+          <i data-lucide="${item.trend === 'up' ? 'trending-up' : 'trending-down'}" class="w-3.5 h-3.5 ${item.trend === 'up' ? 'text-green-300' : 'text-red-300'}"></i>
+          <span class="text-white/20 ml-2">•</span>
+        </span>
+      `).join('');
+      
+      // Populate Market Pulse
+      const MARKET_PULSE = [
+        { name: 'Tomato',    district: 'Nashik, MH',    farmerPrice: 26,  mandiPrice: 32,  unit: 'kg', grade: 'A' },
+        { name: 'Onion',     district: 'Lasalgaon, MH', farmerPrice: 32,  mandiPrice: 38,  unit: 'kg', grade: 'A' },
+        { name: 'Wheat',     district: 'Sehore, MP',    farmerPrice: 34,  mandiPrice: 40,  unit: 'kg', grade: 'A' },
+        { name: 'Potato',    district: 'Agra, UP',      farmerPrice: 22,  mandiPrice: 26,  unit: 'kg', grade: 'B' },
+        { name: 'Turmeric',  district: 'Salem, TN',     farmerPrice: 140, mandiPrice: 165, unit: 'kg', grade: 'A' },
+        { name: 'Chana Dal', district: 'Gulbarga, KA',  farmerPrice: 76,  mandiPrice: 88,  unit: 'kg', grade: 'A' },
+      ];
+      
+      const pulseGrid = document.getElementById('market-pulse-grid');
+      const pulseDelays = ['delay-100','delay-200','delay-300','delay-400','delay-500','delay-600'];
+      
+      pulseGrid.innerHTML = MARKET_PULSE.map((item, i) => {
+        const saving = item.mandiPrice - item.farmerPrice;
+        const savingPct = Math.round((saving / item.mandiPrice) * 100);
+        return `
+          <div class="bg-white rounded-2xl border border-neutral-100 p-5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 animate-section ${pulseDelays[i]} ">
+            <div class="flex justify-between items-start mb-4">
+              <div>
+                <h3 class="font-bold text-neutral-900 text-lg">${item.name}</h3>
+                <div class="flex items-center gap-1 text-xs text-neutral-400 mt-0.5"><i data-lucide="map-pin" class="w-3 h-3"></i>${item.district}</div>
+              </div>
+              <span class="text-xs font-bold px-2 py-1 rounded-full ${item.grade === 'A' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}">Grade ${item.grade}</span>
+            </div>
+            <div class="space-y-2">
+              <div class="flex justify-between items-center">
+                <span class="text-xs text-neutral-500">Farm Gate Price</span>
+                <span class="text-xl font-extrabold text-primary">₹${item.farmerPrice}/${item.unit}</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-xs text-neutral-500">Mandi Benchmark</span>
+                <span class="text-sm font-semibold text-neutral-400 line-through">₹${item.mandiPrice}/${item.unit}</span>
+              </div>
+            </div>
+            <div class="mt-4 pt-4 border-t border-neutral-50 flex items-center justify-between">
+              <div class="flex items-center gap-1.5 bg-green-50 text-green-700 text-xs font-bold px-2.5 py-1 rounded-full">
+                <i data-lucide="trending-down" class="w-3 h-3"></i> Save ₹${saving}/${item.unit} (${savingPct}% less)
+              </div>
+              <a href="market.html" class="text-xs text-primary font-semibold hover:underline">Buy now</a>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Populate Testimonials
+      const TESTIMONIALS = [
+        {
+          name: 'Ramesh Patil', role: 'Onion Farmer', district: 'Nashik, Maharashtra',
+          photo: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&auto=format&fit=crop&q=80',
+          quote: 'Middlemen used to take 40%. Now I sell directly through KisanMitra. Last month I earned ₹12,000 more.',
+          rating: 5, stat: '+₹12,000 / month',
+        },
+        {
+          name: 'Anita Mehta', role: 'Restaurant Buyer', district: 'Bandra, Mumbai',
+          photo: 'https://images.unsplash.com/photo-1494790108755-2616b612b18c?w=120&auto=format&fit=crop&q=80',
+          quote: 'I source all vegetables for my 3 restaurants through KisanMitra. Quality is consistent and prices are fair.',
+          rating: 5, stat: 'Saves ₹8,000/month',
+        },
+        {
+          name: 'Sukhwinder Singh', role: 'Wheat & Rice Farmer', district: 'Amritsar, Punjab',
+          photo: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=120&auto=format&fit=crop&q=80',
+          quote: 'Used to struggle getting fair rates at the mandi. KisanMitra gave me access to buyers in Delhi and Mumbai.',
+          rating: 5, stat: '+₹18,000 / month',
+        },
+      ];
+      
+      const tGrid = document.getElementById('testimonials-grid');
+      const tDelays = ['delay-200', 'delay-400', 'delay-600'];
+      
+      tGrid.innerHTML = TESTIMONIALS.map((t, i) => `
+        <div class="bg-white rounded-3xl p-6 shadow-sm border border-neutral-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col animate-section ${tDelays[i]} ">
+          <div class="flex gap-0.5 mb-4">
+            ${Array(t.rating).fill('<i data-lucide="star" class="w-4 h-4 text-amber-400 fill-amber-400"></i>').join('')}
+          </div>
+          <blockquote class="text-neutral-700 leading-relaxed flex-1 mb-6">"${t.quote}"</blockquote>
+          <div class="flex items-center gap-3 pt-4 border-t border-neutral-100">
+            <img src="${t.photo}" alt="${t.name}" class="w-11 h-11 rounded-full object-cover border-2 border-neutral-100" />
+            <div class="flex-1"><div class="font-bold text-neutral-900 text-sm">${t.name}</div><div class="text-xs text-neutral-500">${t.role} · ${t.district}</div></div>
+            <div class="text-xs font-bold text-green-700 bg-green-50 px-2 py-1 rounded-full">${t.stat}</div>
+          </div>
+        </div>
+      `).join('');
+
+      lucide.createIcons();
+    });
+  </script>
+  <script>
+    window.addEventListener('load', () => {
+      if (window.lucide) lucide.createIcons();
+    });
+  </script>
+</body>
+</html>

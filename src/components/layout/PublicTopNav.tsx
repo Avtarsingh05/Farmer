@@ -1,6 +1,7 @@
+import { getPlatformSettings } from '@/services/settingsService';
 import React, { useState, useEffect } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { Leaf, Menu, X, ShoppingCart } from 'lucide-react';
+import { Menu, X, ShoppingCart } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { GooeyNav, type GooeyNavItem } from '@/components/ui';
@@ -15,6 +16,7 @@ export const PublicTopNav: React.FC = () => {
   const location = useLocation();
   const { itemCount } = useCart();
   const { user } = useAuth();
+  const { logoUrl } = getPlatformSettings();
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -49,7 +51,8 @@ export const PublicTopNav: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center space-x-2 cursor-pointer shrink-0" onClick={() => navigate('/')}>
-            <Leaf className="h-8 w-8 text-primary" />
+            
+            {logoUrl ? <img src={logoUrl} alt="Logo" className="h-8 object-contain" /> : null}
             <span className="text-xl font-bold text-primary">KisanMitra</span>
           </div>
 
@@ -145,7 +148,7 @@ export const PublicTopNav: React.FC = () => {
             </div>
             <div className="flex-1 h-0 pt-5 pb-4 overflow-y-auto">
               <div className="flex-shrink-0 flex items-center px-4 space-x-2">
-                <Leaf className="h-8 w-8 text-primary" />
+                
                 <span className="text-xl font-bold text-primary">KisanMitra</span>
               </div>
               <nav className="mt-5 px-2 space-y-1">

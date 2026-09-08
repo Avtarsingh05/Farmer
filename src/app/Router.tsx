@@ -16,6 +16,7 @@ const FarmersPage          = lazy(() => import('@/pages/public/FarmersPage'));
 const FarmerProfilePage    = lazy(() => import('@/pages/public/FarmerProfilePage'));
 const AboutPage            = lazy(() => import('@/pages/public/AboutPage'));
 const HowItWorksPage       = lazy(() => import('@/pages/public/HowItWorksPage'));
+const NotFoundPage         = lazy(() => import('@/pages/public/NotFoundPage'));
 
 // ─── Auth pages ───────────────────────────────────────────────────────────────
 const LoginPage            = lazy(() => import('@/pages/auth/LoginPage'));
@@ -158,7 +159,7 @@ const router = createBrowserRouter([
       </div>
     ),
   },
-  { path: '*', element: <Navigate to="/" replace /> },
+  { path: '*', element: <Suspense fallback={<PageLoader />}><NotFoundPage /></Suspense> },
 ]);
 
 export function AppRouter() {

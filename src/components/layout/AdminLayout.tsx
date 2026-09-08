@@ -29,9 +29,9 @@ export const AdminLayout: React.FC = () => {
       {/* Mobile Drawer */}
       {isMobileMenuOpen && (
         <div className="lg:hidden fixed inset-0 z-50 flex">
-          <div className="fixed inset-0 bg-black/50" onClick={() => setIsMobileMenuOpen(false)}></div>
-          <div className="relative flex-1 flex flex-col max-w-xs w-full bg-slate-900 slide-in-left">
-            <AdminSidebar />
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsMobileMenuOpen(false)}></div>
+          <div className="relative flex-1 flex flex-col max-w-xs w-full bg-neutral-900 slide-in-left shadow-2xl">
+            <AdminSidebar isMobile onClose={() => setIsMobileMenuOpen(false)} />
           </div>
         </div>
       )}

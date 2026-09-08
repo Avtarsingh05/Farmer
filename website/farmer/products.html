@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Products | KisanMitra</title>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            primary: {
+              DEFAULT: '#2D5016',
+              50:  '#F2F7EC',
+              100: '#E0EDD0',
+              200: '#BEDBA2',
+              300: '#90C168',
+              400: '#68A83B',
+              500: '#4A7C23',
+              600: '#2D5016',
+              700: '#1A3009',
+              800: '#0E1C05',
+              900: '#060D02',
+            },
+            accent: {
+              DEFAULT: '#C17F24',
+              50:  '#FDF8EE',
+              100: '#F9EDD1',
+              200: '#F3D89E',
+              300: '#EAC060',
+              400: '#DEA737',
+              500: '#C17F24',
+              600: '#9A6119',
+              700: '#744912',
+              800: '#4E300B',
+              900: '#281805',
+            },
+            neutral: {
+              50:  '#F9F7F2',
+              100: '#F0EDE6',
+              200: '#E2DDD5',
+              300: '#C8C2B8',
+              400: '#A09890',
+              500: '#7A7268',
+              600: '#5A5450',
+              700: '#403C38',
+              800: '#2A2724',
+              900: '#1A1A18',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="../styles/main.css">
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="../firebase-config.js"></script>
+  <script src="../js/app.js"></script>
+  <script src="../js/cloudinary.js"></script>
+  <script src="../js/produce-images.js"></script>
+  <script src="../js/panel.js"></script>
+</head>
+<body class="bg-neutral-50 text-neutral-900 font-sans antialiased min-h-screen flex flex-col">
+  <main id="main-content" class="flex-1 lg:ml-72 transition-all duration-300 min-h-screen flex flex-col">
+    <div class="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
+
+      <div class="space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h1 class="text-3xl font-extrabold text-neutral-900 tracking-tight">My Products</h1>
+            <p class="text-sm text-neutral-500 mt-1">Manage and edit your active harvest listings.</p>
+          </div>
+          <a href="product-form.html" class="btn-primary rounded-full px-6 py-2.5 font-bold shadow-md hover:-translate-y-0.5 transition-all inline-flex items-center gap-2">
+            <i data-lucide="plus" class="w-5 h-5"></i> Add Product
+          </a>
+        </div>
+
+        <!-- Filter tabs & Search -->
+        <div class="bg-white rounded-3xl p-4 border border-neutral-100 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+          <div class="flex items-center gap-2 overflow-x-auto w-full md:w-auto">
+            <button onclick="filterProducts('all')" class="tab-btn px-4 py-2 rounded-full text-xs font-bold transition-colors bg-primary text-white" data-filter="all">All</button>
+            <button onclick="filterProducts('active')" class="tab-btn px-4 py-2 rounded-full text-xs font-bold transition-colors text-neutral-600 hover:bg-neutral-100" data-filter="active">Active</button>
+            <button onclick="filterProducts('inactive')" class="tab-btn px-4 py-2 rounded-full text-xs font-bold transition-colors text-neutral-600 hover:bg-neutral-100" data-filter="inactive">Inactive</button>
+          </div>
+          <div class="relative w-full md:w-72">
+            <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-3 text-neutral-400"></i>
+            <input type="text" id="product-search" placeholder="Search crops..." class="w-full pl-10 pr-4 py-2 text-sm bg-neutral-50 border border-neutral-200 rounded-full focus:outline-none focus:border-primary">
+          </div>
+        </div>
+
+        <!-- Products Table / Cards -->
+        <div class="bg-white rounded-3xl border border-neutral-100 shadow-sm overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left">
+              <thead>
+                <tr class="border-b border-neutral-100 text-xs font-semibold text-neutral-400 uppercase tracking-wider bg-neutral-50/50">
+                  <th class="py-4 px-6">Product</th>
+                  <th class="py-4 px-4">Category</th>
+                  <th class="py-4 px-4">Price / Unit</th>
+                  <th class="py-4 px-4">Stock</th>
+                  <th class="py-4 px-4">Grade</th>
+                  <th class="py-4 px-4">Status</th>
+                  <th class="py-4 px-6 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="products-tbody" class="divide-y divide-neutral-100 text-sm">
+                <tr><td colspan="7" class="py-12 text-center text-neutral-400">Loading your produce...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <script>
+        let allProducts = [];
+        let activeFilter = 'all';
+
+        document.addEventListener('DOMContentLoaded', () => {
+          window.initPanel({ role: 'farmer', currentPage: 'products', title: 'My Produce Listings' });
+
+          document.addEventListener('user-loaded', async (e) => {
+            const user = e.detail;
+            try {
+              const snap = await window.FM.db.collection('products').where('farmerId', '==', user.uid).get();
+              allProducts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+              renderProducts();
+            } catch(err) {
+              console.error(err);
+            }
+          });
+
+          document.getElementById('product-search').addEventListener('input', renderProducts);
+        });
+
+        function filterProducts(filter) {
+          activeFilter = filter;
+          document.querySelectorAll('.tab-btn').forEach(btn => {
+            if (btn.dataset.filter === filter) {
+              btn.className = 'tab-btn px-4 py-2 rounded-full text-xs font-bold transition-colors bg-primary text-white';
+            } else {
+              btn.className = 'tab-btn px-4 py-2 rounded-full text-xs font-bold transition-colors text-neutral-600 hover:bg-neutral-100';
+            }
+          });
+          renderProducts();
+        }
+
+        function renderProducts() {
+          const query = (document.getElementById('product-search').value || '').toLowerCase();
+          let filtered = allProducts.filter(p => {
+            const matchesQuery = (p.name || '').toLowerCase().includes(query) || (p.category || '').toLowerCase().includes(query);
+            const matchesTab = activeFilter === 'all' || (activeFilter === 'active' && p.status === 'active') || (activeFilter === 'inactive' && p.status !== 'active');
+            return matchesQuery && matchesTab;
+          });
+
+          const tbody = document.getElementById('products-tbody');
+          if (filtered.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" class="py-12 text-center text-neutral-400">No products found matching your search.</td></tr>';
+            return;
+          }
+
+          tbody.innerHTML = filtered.map(p => {
+            const img = p.images?.[0]?.secureUrl || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=100';
+            const priceStr = window.formatCurrency(p.askingPrice || p.price);
+            const statusBadge = p.status === 'active'
+              ? '<span class="px-2.5 py-1 text-xs font-bold rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">Active</span>'
+              : '<span class="px-2.5 py-1 text-xs font-bold rounded-full bg-neutral-100 text-neutral-600 border border-neutral-200">Inactive</span>';
+
+            return `
+              <tr class="hover:bg-neutral-50/50 transition-colors">
+                <td class="py-4 px-6">
+                  <div class="flex items-center gap-3">
+                    <img src="${img}" class="w-12 h-12 rounded-2xl object-cover shadow-sm shrink-0">
+                    <div>
+                      <p class="font-bold text-neutral-900">${p.name}</p>
+                      <p class="text-xs text-neutral-400 truncate max-w-xs">${p.description || ''}</p>
+                    </div>
+                  </div>
+                </td>
+                <td class="py-4 px-4 font-semibold text-neutral-600">${p.category || 'General'}</td>
+                <td class="py-4 px-4 font-extrabold text-primary">${priceStr} <span class="text-xs text-neutral-400 font-normal">/${p.unit || 'kg'}</span></td>
+                <td class="py-4 px-4 font-bold ${(p.stock||0) <= 10 ? 'text-red-600' : 'text-neutral-800'}">${p.stock || 0} ${p.unit || 'kg'}</td>
+                <td class="py-4 px-4"><span class="px-2 py-0.5 text-xs font-bold rounded-full bg-neutral-100 text-neutral-700">${p.qualityGrade || 'Grade A'}</span></td>
+                <td class="py-4 px-4">${statusBadge}</td>
+                <td class="py-4 px-6 text-right">
+                  <div class="flex items-center justify-end gap-2">
+                    <a href="product-form.html?id=${p.id}" class="p-2 rounded-xl text-neutral-500 hover:text-primary hover:bg-neutral-100 transition-colors" title="Edit">
+                      <i data-lucide="edit-3" class="w-4 h-4"></i>
+                    </a>
+                    <button onclick="deleteProduct('${p.id}')" class="p-2 rounded-xl text-neutral-500 hover:text-red-600 hover:bg-red-50 transition-colors" title="Delete">
+                      <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            `;
+          }).join('');
+          if (window.lucide) lucide.createIcons();
+        }
+
+        async function deleteProduct(id) {
+          if (!confirm('Are you sure you want to delete this product listing?')) return;
+          try {
+            await window.FM.db.collection('products').doc(id).delete();
+            allProducts = allProducts.filter(p => p.id !== id);
+            renderProducts();
+            window.toast({ type: 'success', message: 'Product deleted successfully.' });
+          } catch(err) {
+            window.toast({ type: 'error', message: 'Failed to delete product.' });
+          }
+        }
+      </script>
+
+    </div>
+  </main>
+</body>
+</html>

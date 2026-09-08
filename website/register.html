@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - KisanMitra</title>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- FontAwesome -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        primary: {
+                            DEFAULT: '#2D5016',
+                            dark: '#1A3009',
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            200: '#bbf7d0',
+                            600: '#16a34a',
+                            700: '#2D5016',
+                            800: '#1A3009',
+                            900: '#0f1f06',
+                        },
+                        accent: {
+                            DEFAULT: '#C17F24',
+                            50: '#fff8eb',
+                            100: '#ffefc6',
+                        },
+                        neutral: {
+                            50: '#F9F7F2',
+                            100: '#F0EDE6',
+                            200: '#E2DDD5',
+                            300: '#D0C8BD',
+                            400: '#B5AA9C',
+                            500: '#9A8D7E',
+                            600: '#7A7268',
+                            700: '#5A5349',
+                            800: '#3A352F',
+                            900: '#1A1A18',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="js/app.js"></script>
+</head>
+<body class="min-h-screen bg-neutral-50 flex font-sans antialiased text-neutral-900">
+    <!-- Left Promotional Panel -->
+    <div class="hidden lg:flex w-1/2 bg-gradient-to-br from-primary to-neutral-900 flex-col justify-between p-12 text-white">
+        <div>
+            <a href="index.html" class="flex items-center gap-3 mb-10 group">
+                <div class="bg-white/10 backdrop-blur-sm border border-white/20 w-11 h-11 flex items-center justify-center rounded-2xl shadow-lg group-hover:scale-105 transition-transform">
+                    <span class="text-white font-black text-2xl">K</span>
+                </div>
+                <span class="text-3xl font-bold tracking-tight">KisanMitra</span>
+            </a>
+            <h2 class="text-4xl lg:text-5xl font-extrabold leading-tight mb-6 tracking-tight">
+                Join India's agricultural<br><span class="text-accent">revolution.</span>
+            </h2>
+            <p class="text-neutral-300 text-lg max-w-md leading-relaxed font-medium">
+                Create an account to start selling produce directly to buyers or purchasing verified farm-fresh harvests at fair APMC prices.
+            </p>
+        </div>
+        <div>
+            <div class="p-6 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/10">
+                <div class="flex items-center gap-3 mb-2">
+                    <i data-lucide="shield-check" class="w-6 h-6 text-primary-200"></i>
+                    <h3 class="font-bold text-white text-lg">Verified Network</h3>
+                </div>
+                <p class="text-sm text-neutral-300 leading-relaxed">
+                    Over 5,200 verified farmers and 50,000 satisfied buyers across 12 states rely on KisanMitra daily.
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Right Form Container -->
+    <div class="w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-8 py-12">
+        <div class="w-full max-w-md bg-white rounded-3xl shadow-xl border border-neutral-200 p-8 sm:p-10">
+            <div class="text-center mb-6">
+                <a href="index.html" class="inline-flex items-center space-x-2.5 mb-3 group">
+                    <div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-white font-black text-xl shadow-md shadow-primary/20 group-hover:scale-105 transition-transform">K</div>
+                    <span class="text-2xl font-bold tracking-tight text-primary">KisanMitra</span>
+                </a>
+                <h2 class="text-2xl font-extrabold text-neutral-900 tracking-tight">Create Account</h2>
+                <p class="text-xs text-neutral-500 mt-1">Join the KisanMitra community today</p>
+            </div>
+            
+            <!-- Google Sign Up Button -->
+            <button type="button" id="googleSignUpBtn" onclick="googleSignUp()" class="w-full bg-white border border-neutral-300 hover:border-neutral-400 text-neutral-800 hover:bg-neutral-50 py-3 rounded-xl font-bold text-sm shadow-sm transition-all flex items-center justify-center gap-3 mb-6 active:scale-95">
+                <svg class="w-5 h-5" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                <span>Sign up with Google</span>
+            </button>
+
+            <div class="relative mb-6">
+                <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-neutral-200"></div></div>
+                <div class="relative flex justify-center text-xs uppercase"><span class="bg-white px-3 text-neutral-400 font-semibold">Or register with email</span></div>
+            </div>
+
+            <!-- Error message alert -->
+            <div id="errorMsg" class="hidden p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-semibold mb-4 flex items-center gap-2">
+                <i data-lucide="alert-circle" class="w-4 h-4 shrink-0"></i>
+                <span id="errorMsgText"></span>
+            </div>
+            
+            <form id="registerForm" class="space-y-4">
+                <!-- Role selector -->
+                <div>
+                    <label class="block mb-2 font-semibold text-neutral-700 text-xs uppercase tracking-wider">I want to...</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div id="role-farmer" onclick="selectRole('farmer')" class="flex flex-col items-center justify-center p-3.5 border-2 border-primary bg-primary-50 text-primary rounded-2xl transition-all cursor-pointer shadow-sm">
+                            <i data-lucide="sprout" class="w-6 h-6 mb-1.5"></i>
+                            <span class="font-bold text-xs">Sell Produce (Farmer)</span>
+                        </div>
+                        <div id="role-buyer" onclick="selectRole('buyer')" class="flex flex-col items-center justify-center p-3.5 border-2 border-neutral-200 bg-white text-neutral-600 hover:border-neutral-300 rounded-2xl transition-all cursor-pointer">
+                            <i data-lucide="shopping-bag" class="w-6 h-6 mb-1.5"></i>
+                            <span class="font-bold text-xs">Buy Produce (Buyer)</span>
+                        </div>
+                    </div>
+                    <input type="hidden" id="role" value="farmer">
+                </div>
+                
+                <div>
+                    <label for="name" class="block mb-1.5 font-semibold text-neutral-700 text-xs uppercase tracking-wider">Full Name</label>
+                    <input id="name" type="text" placeholder="Ramesh Patil" class="w-full px-4 py-2.5 bg-neutral-50 border border-neutral-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm transition-all" required>
+                </div>
+                
+                <div>
+                    <label for="email" class="block mb-1.5 font-semibold text-neutral-700 text-xs uppercase tracking-wider">Email Address</label>
+                    <input id="email" type="email" placeholder="ramesh@gmail.com" class="w-full px-4 py-2.5 bg-neutral-50 border border-neutral-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm transition-all" required>
+                </div>
+                
+                <div>
+                    <label for="phone" class="block mb-1.5 font-semibold text-neutral-700 text-xs uppercase tracking-wider">Phone Number</label>
+                    <input id="phone" type="tel" placeholder="+91 98765 43210" class="w-full px-4 py-2.5 bg-neutral-50 border border-neutral-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm transition-all">
+                </div>
+                
+                <!-- Farmer specific fields -->
+                <div id="farmerFields" class="space-y-4 pt-2 border-t border-neutral-100">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label for="state" class="block mb-1.5 font-semibold text-neutral-700 text-xs uppercase tracking-wider">State</label>
+                            <input id="state" type="text" placeholder="Maharashtra" class="w-full px-4 py-2.5 bg-neutral-50 border border-neutral-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm transition-all">
+                        </div>
+                        <div>
+                            <label for="district" class="block mb-1.5 font-semibold text-neutral-700 text-xs uppercase tracking-wider">District</label>
+                            <input id="district" type="text" placeholder="Nashik" class="w-full px-4 py-2.5 bg-neutral-50 border border-neutral-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm transition-all">
+                        </div>
+                    </div>
+                    <div>
+                        <label for="crops" class="block mb-1.5 font-semibold text-neutral-700 text-xs uppercase tracking-wider">Main Crops</label>
+                        <input id="crops" type="text" placeholder="e.g. Onions, Tomatoes, Wheat" class="w-full px-4 py-2.5 bg-neutral-50 border border-neutral-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm transition-all">
+                    </div>
+                </div>
+                
+                <div>
+                    <label for="password" class="block mb-1.5 font-semibold text-neutral-700 text-xs uppercase tracking-wider">Password</label>
+                    <div class="relative">
+                        <input id="password" type="password" oninput="checkStrength()" placeholder="••••••••" class="w-full pl-4 pr-10 py-2.5 bg-neutral-50 border border-neutral-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm transition-all" required>
+                        <button type="button" onclick="togglePassword('password', 'eye1')" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600">
+                            <i id="eye1" data-lucide="eye" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                    <div class="w-full bg-neutral-200 h-1.5 rounded-full mt-2 overflow-hidden">
+                        <div id="strengthBar" class="w-0 h-full transition-all duration-300"></div>
+                    </div>
+                </div>
+                
+                <div>
+                    <label for="confirmPassword" class="block mb-1.5 font-semibold text-neutral-700 text-xs uppercase tracking-wider">Confirm Password</label>
+                    <div class="relative">
+                        <input id="confirmPassword" type="password" placeholder="••••••••" class="w-full pl-4 pr-10 py-2.5 bg-neutral-50 border border-neutral-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm transition-all" required>
+                        <button type="button" onclick="togglePassword('confirmPassword', 'eye2')" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600">
+                            <i id="eye2" data-lucide="eye" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <button type="submit" id="submitBtn" class="w-full bg-primary hover:bg-primary-dark text-white py-3 rounded-xl font-bold text-sm shadow-md shadow-primary/20 transition-all hover:-translate-y-0.5 active:scale-95 flex items-center justify-center gap-2">
+                    Create Account
+                </button>
+            </form>
+            
+            <div class="mt-6 text-center text-xs text-neutral-600">
+                Already have an account? 
+                <a href="login.html" class="text-primary font-bold hover:underline">Sign In</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Google OAuth Fallback Modal -->
+    <div id="googleFallbackModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-neutral-100">
+            <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mb-4">
+                <svg class="w-6 h-6" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+            </div>
+            <h3 class="text-xl font-bold text-neutral-900 mb-2">Google Sign-Up</h3>
+            <p class="text-sm text-neutral-600 mb-6 leading-relaxed">
+                Google OAuth requires an HTTP server (e.g. <code>http://localhost:5173</code>) per Google security rules. When testing locally via <code>file://</code>, click below to register with a simulated Google account:
+            </p>
+            <div class="space-y-3">
+                <button onclick="signInDemoGoogle('farmer')" class="w-full py-3 px-4 rounded-xl bg-primary hover:bg-primary-dark text-white font-bold text-sm shadow-md transition-colors flex items-center justify-center gap-2">
+                    <i data-lucide="sprout" class="w-4 h-4"></i> Register as Google Farmer
+                </button>
+                <button onclick="signInDemoGoogle('buyer')" class="w-full py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-md transition-colors flex items-center justify-center gap-2">
+                    <i data-lucide="shopping-bag" class="w-4 h-4"></i> Register as Google Buyer
+                </button>
+                <button onclick="closeGoogleFallbackModal()" class="w-full py-2 text-xs text-neutral-400 hover:text-neutral-600 font-medium">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function selectRole(role) {
+            document.getElementById('role').value = role;
+            const farmerBtn = document.getElementById('role-farmer');
+            const buyerBtn = document.getElementById('role-buyer');
+            const farmerFields = document.getElementById('farmerFields');
+            
+            if (role === 'farmer') {
+                farmerBtn.className = "flex flex-col items-center justify-center p-3.5 border-2 border-primary bg-primary-50 text-primary rounded-2xl transition-all cursor-pointer shadow-sm";
+                buyerBtn.className = "flex flex-col items-center justify-center p-3.5 border-2 border-neutral-200 bg-white text-neutral-600 hover:border-neutral-300 rounded-2xl transition-all cursor-pointer";
+                if(farmerFields) farmerFields.classList.remove('hidden');
+            } else {
+                buyerBtn.className = "flex flex-col items-center justify-center p-3.5 border-2 border-primary bg-primary-50 text-primary rounded-2xl transition-all cursor-pointer shadow-sm";
+                farmerBtn.className = "flex flex-col items-center justify-center p-3.5 border-2 border-neutral-200 bg-white text-neutral-600 hover:border-neutral-300 rounded-2xl transition-all cursor-pointer";
+                if(farmerFields) farmerFields.classList.add('hidden');
+            }
+        }
+
+        function togglePassword(id, iconId) {
+            const input = document.getElementById(id);
+            const icon = document.getElementById(iconId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.setAttribute('data-lucide', 'eye-off');
+            } else {
+                input.type = 'password';
+                icon.setAttribute('data-lucide', 'eye');
+            }
+            if(window.lucide) lucide.createIcons();
+        }
+
+        function checkStrength() {
+            const val = document.getElementById('password').value;
+            const bar = document.getElementById('strengthBar');
+            if (!bar) return;
+            if (val.length === 0) { bar.style.width = '0'; }
+            else if (val.length < 6) { bar.style.width = '33%'; bar.className = 'h-full bg-red-500 transition-all duration-300'; }
+            else if (val.length < 10) { bar.style.width = '66%'; bar.className = 'h-full bg-yellow-500 transition-all duration-300'; }
+            else { bar.style.width = '100%'; bar.className = 'h-full bg-green-500 transition-all duration-300'; }
+        }
+
+        function showRegisterAlert(msg) {
+            const errorMsg = document.getElementById('errorMsg');
+            const errorMsgText = document.getElementById('errorMsgText');
+            if (errorMsg && errorMsgText) {
+                errorMsgText.textContent = msg;
+                errorMsg.classList.remove('hidden');
+            } else {
+                alert(msg);
+            }
+            if(window.lucide) lucide.createIcons();
+        }
+
+        function showGoogleFallbackModal() {
+            const modal = document.getElementById('googleFallbackModal');
+            if (modal) modal.classList.remove('hidden');
+            if(window.lucide) lucide.createIcons();
+        }
+
+        function closeGoogleFallbackModal() {
+            const modal = document.getElementById('googleFallbackModal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        async function signInDemoGoogle(role) {
+            closeGoogleFallbackModal();
+            const chosenRole = role || document.getElementById('role').value || 'buyer';
+            const demoGoogleUser = {
+                uid: 'google-demo-' + (chosenRole === 'farmer' ? 'farmer123' : 'buyer456'),
+                displayName: chosenRole === 'farmer' ? 'Ramesh Patil (Google)' : 'Priya Sharma (Google)',
+                email: chosenRole === 'farmer' ? 'ramesh.farmer@gmail.com' : 'priya.buyer@gmail.com',
+                photoURL: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=120&auto=format&fit=crop&q=80'
+            };
+            await handleRegisterSuccess(demoGoogleUser, chosenRole);
+        }
+
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const confirm = document.getElementById('confirmPassword').value;
+            const name = document.getElementById('name').value.trim();
+            const phone = document.getElementById('phone') ? document.getElementById('phone').value.trim() : '';
+            const role = document.getElementById('role').value;
+            const errorMsg = document.getElementById('errorMsg');
+            const btn = document.getElementById('submitBtn');
+            
+            if (errorMsg) errorMsg.classList.add('hidden');
+            
+            if (password !== confirm) {
+                showRegisterAlert("Passwords do not match.");
+                return;
+            }
+            
+            btn.disabled = true;
+            btn.innerHTML = '<span class="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2"></span> Registering...';
+            
+            try {
+                const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
+                await handleRegisterSuccess(userCredential.user, role, { name, phone });
+            } catch (error) {
+                showRegisterAlert(error.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'Create Account';
+            }
+        });
+
+        // Real Google Sign Up
+        async function googleSignUp() {
+            const googleBtn = document.getElementById('googleSignUpBtn');
+            const originalHTML = googleBtn.innerHTML;
+            const chosenRole = document.getElementById('role').value || 'buyer';
+
+            googleBtn.disabled = true;
+            googleBtn.innerHTML = '<span class="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2"></span> Connecting to Google...';
+
+            try {
+                if (window.location.protocol === 'file:') {
+                    showGoogleFallbackModal();
+                    return;
+                }
+
+                const provider = new firebase.auth.GoogleAuthProvider();
+                provider.addScope('profile');
+                provider.addScope('email');
+                provider.setCustomParameters({ prompt: 'select_account' });
+
+                const userCredential = await firebase.auth().signInWithPopup(provider);
+                await handleRegisterSuccess(userCredential.user, chosenRole);
+            } catch (error) {
+                console.error("Google sign up notice:", error);
+                if (error.code === 'auth/popup-closed-by-user') {
+                    showRegisterAlert("Google sign-up popup was closed.");
+                } else if (error.code === 'auth/operation-not-supported-in-this-environment' || error.code === 'auth/unauthorized-domain') {
+                    showGoogleFallbackModal();
+                } else {
+                    showRegisterAlert(error.message || "Failed to sign up with Google.");
+                }
+            } finally {
+                googleBtn.disabled = false;
+                googleBtn.innerHTML = originalHTML;
+            }
+        }
+
+        async function handleRegisterSuccess(user, role, extra = {}) {
+            const name = extra.name || user.displayName || (role === 'farmer' ? 'Farmer' : 'Buyer');
+            const email = user.email || '';
+            const phone = extra.phone || '';
+
+            try {
+                if (window.FM && window.FM.db) {
+                    await window.FM.db.collection('users').doc(user.uid).set({
+                        name, email, phone, role,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        status: 'active'
+                    });
+                    
+                    if (role === 'farmer') {
+                        const stateEl = document.getElementById('state');
+                        const districtEl = document.getElementById('district');
+                        const cropsEl = document.getElementById('crops');
+                        await window.FM.db.collection('farmers').doc(user.uid).set({
+                            userId: user.uid,
+                            displayName: name,
+                            state: stateEl ? stateEl.value : 'Maharashtra',
+                            district: districtEl ? districtEl.value : 'Nashik',
+                            mainCrops: cropsEl ? cropsEl.value : 'Vegetables',
+                            isVerified: false,
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                    }
+                }
+            } catch (e) {
+                console.warn("Firestore registration warning:", e);
+            }
+
+            localStorage.setItem('kisanmitra_user', JSON.stringify({
+                uid: user.uid,
+                name: name,
+                email: email,
+                role: role,
+                photoURL: user.photoURL || ''
+            }));
+
+            if (role === 'farmer') {
+                window.location.href = 'farmer/dashboard.html';
+            } else {
+                window.location.href = 'buyer/dashboard.html';
+            }
+        }
+
+        window.addEventListener('load', () => { if(window.lucide) lucide.createIcons(); });
+    </script>
+</body>
+</html>

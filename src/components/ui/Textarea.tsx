@@ -23,7 +23,8 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
     },
     ref
   ) => {
-    const textareaId = id || React.useId();
+    const generatedId = React.useId();
+    const textareaId = id || generatedId;
     const [charCount, setCharCount] = useState(0);
 
     const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {

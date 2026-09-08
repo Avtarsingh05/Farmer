@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Farmer Verification | KisanMitra Admin</title>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            primary: {
+              DEFAULT: '#2D5016',
+              50:  '#F2F7EC',
+              100: '#E0EDD0',
+              200: '#BEDBA2',
+              300: '#90C168',
+              400: '#68A83B',
+              500: '#4A7C23',
+              600: '#2D5016',
+              700: '#1A3009',
+              800: '#0E1C05',
+              900: '#060D02',
+            },
+            accent: {
+              DEFAULT: '#C17F24',
+              50:  '#FDF8EE',
+              100: '#F9EDD1',
+              200: '#F3D89E',
+              300: '#EAC060',
+              400: '#DEA737',
+              500: '#C17F24',
+              600: '#9A6119',
+              700: '#744912',
+              800: '#4E300B',
+              900: '#281805',
+            },
+            neutral: {
+              50:  '#F9F7F2',
+              100: '#F0EDE6',
+              200: '#E2DDD5',
+              300: '#C8C2B8',
+              400: '#A09890',
+              500: '#7A7268',
+              600: '#5A5450',
+              700: '#403C38',
+              800: '#2A2724',
+              900: '#1A1A18',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="../styles/main.css">
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="../firebase-config.js"></script>
+  <script src="../js/app.js"></script>
+  <script src="../js/cloudinary.js"></script>
+  <script src="../js/produce-images.js"></script>
+  <script src="../js/panel.js"></script>
+</head>
+<body class="bg-neutral-50 text-neutral-900 font-sans antialiased min-h-screen flex flex-col">
+  <main id="main-content" class="flex-1 lg:ml-72 transition-all duration-300 min-h-screen flex flex-col">
+    <div class="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
+
+      <div class="space-y-6">
+        <div>
+          <h1 class="text-3xl font-extrabold text-neutral-900 tracking-tight">Verified Farmers</h1>
+          <p class="text-sm text-neutral-500 mt-1">Review farmer credentials and maintain quality integrity.</p>
+        </div>
+
+        <div id="farmers-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <p class="col-span-full py-12 text-center text-neutral-400 bg-white rounded-3xl border border-neutral-100">Loading farmers...</p>
+        </div>
+      </div>
+
+      <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          window.initPanel({ role: 'admin', currentPage: 'farmers', title: 'Farmer Approvals' });
+          loadFarmers();
+        });
+
+        async function loadFarmers() {
+          try {
+            const snap = await window.FM.db.collection('users').where('role', '==', 'farmer').get();
+            const farmers = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+            const container = document.getElementById('farmers-container');
+            if (farmers.length === 0) {
+              container.innerHTML = '<div class="col-span-full py-16 text-center text-neutral-400 bg-white rounded-3xl">No farmers registered yet.</div>';
+              return;
+            }
+
+            container.innerHTML = farmers.map(f => {
+              const isVerified = f.verificationStatus === 'verified';
+              return `
+                <div class="bg-white rounded-3xl border border-neutral-100 p-6 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+                  <div>
+                    <div class="flex items-center gap-3 mb-4">
+                      <div class="w-12 h-12 rounded-2xl bg-primary/10 text-primary font-black flex items-center justify-center text-lg">
+                        ${(f.name||'F').charAt(0)}
+                      </div>
+                      <div>
+                        <h3 class="font-bold text-neutral-900">${f.name || 'Farmer'}</h3>
+                        <p class="text-xs text-neutral-400">${f.district || ''} ${f.state || ''}</p>
+                      </div>
+                    </div>
+                    <div class="space-y-2 text-xs text-neutral-600 mb-6">
+                      <p><strong>Phone:</strong> ${f.phone || '—'}</p>
+                      <p><strong>Email:</strong> ${f.email || '—'}</p>
+                      <p><strong>Bio:</strong> ${f.bio || 'Authentic regional crop producer.'}</p>
+                    </div>
+                  </div>
+                  <div class="flex items-center justify-between pt-4 border-t border-neutral-100">
+                    <span class="px-2.5 py-1 text-xs font-bold rounded-full ${isVerified ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
+                      ${isVerified ? 'Verified' : 'Pending'}
+                    </span>
+                    <button onclick="toggleVerify('${f.id}', ${!isVerified})" class="px-4 py-1.5 rounded-full text-xs font-bold ${isVerified ? 'bg-red-50 text-red-600 hover:bg-red-100' : 'btn-primary'} transition-colors">
+                      ${isVerified ? 'Revoke Verification' : 'Verify Farmer'}
+                    </button>
+                  </div>
+                </div>
+              `;
+            }).join('');
+          } catch(err) {
+            console.error(err);
+          }
+        }
+
+        async function toggleVerify(uid, shouldVerify) {
+          try {
+            await window.FM.db.collection('users').doc(uid).update({
+              verificationStatus: shouldVerify ? 'verified' : 'rejected'
+            });
+            window.toast({ type: 'success', message: shouldVerify ? 'Farmer verified!' : 'Verification revoked.' });
+            loadFarmers();
+          } catch(err) {
+            window.toast({ type: 'error', message: 'Action failed.' });
+          }
+        }
+      </script>
+
+    </div>
+  </main>
+</body>
+</html>

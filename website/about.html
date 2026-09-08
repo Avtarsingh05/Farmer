@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us | KisanMitra</title>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- FontAwesome -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: { sans: ['Inter', 'sans-serif'] },
+            colors: {
+              primary: {
+                DEFAULT: '#2D5016',
+                dark: '#1A3009',
+                50: '#f0fdf4',
+                100: '#dcfce7',
+                200: '#bbf7d0',
+                600: '#16a34a',
+                700: '#2D5016',
+                800: '#1A3009',
+                900: '#0f1f06',
+              },
+              accent: {
+                DEFAULT: '#C17F24',
+                50: '#fff8eb',
+                100: '#ffefc6',
+              },
+              neutral: {
+                50: '#F9F7F2',
+                100: '#F0EDE6',
+                200: '#E2DDD5',
+                300: '#D0C8BD',
+                400: '#B5AA9C',
+                500: '#9A8D7E',
+                600: '#7A7268',
+                700: '#5A5349',
+                800: '#3A352F',
+                900: '#1A1A18',
+              }
+            }
+          }
+        }
+      }
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/nav.js"></script>
+
+</head>
+<body class="bg-white min-h-screen flex flex-col font-sans antialiased text-neutral-900">
+    <div id="nav-container"></div>
+
+    <!-- Hero Section -->
+    <section class="relative pt-24 pb-32 overflow-hidden">
+        <div class="absolute inset-0 z-0">
+            <img src="https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=2000&auto=format&fit=crop&q=80" alt="Farm landscape" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-neutral-900/75 backdrop-blur-[2px]"></div>
+        </div>
+        <div class="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 text-white border border-white/20 backdrop-blur-sm text-sm font-semibold mb-6 shadow-sm">
+                <i data-lucide="target" class="w-4 h-4 text-accent"></i> Our Mission
+            </span>
+            <h1 class="text-4xl md:text-6xl font-extrabold text-white mb-8 leading-tight tracking-tight">
+                Empowering Farmers.<br class="hidden md:block"> Fresh for Buyers.
+            </h1>
+            <p class="text-xl text-neutral-200 max-w-3xl mx-auto leading-relaxed font-medium">
+                We are building India's most transparent agricultural marketplace to eliminate middlemen exploitation and ensure fair value for both producers and consumers.
+            </p>
+        </div>
+    </section>
+
+    <!-- Problem & Solution Section -->
+    <section class="py-24 px-4 sm:px-6 lg:px-8 bg-neutral-50 relative -mt-10 rounded-t-3xl z-20">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid md:grid-cols-2 gap-12 items-center mb-20">
+                <div class="space-y-6">
+                    <div class="inline-flex items-center gap-2 text-red-600 font-bold text-xs uppercase tracking-widest bg-red-50 px-3 py-1 rounded-full border border-red-100">
+                        <span class="w-2 h-2 rounded-full bg-red-500"></span> The Challenge
+                    </div>
+                    <h2 class="text-3xl md:text-4xl font-extrabold text-neutral-900 tracking-tight">Broken Supply Chains Hurt Farmers</h2>
+                    <p class="text-lg text-neutral-600 leading-relaxed">
+                        For decades, smallholder farmers across India have been trapped by an opaque 4-to-6 tier intermediary chain. Produce passes from village aggregators to commission agents, APMC traders, and wholesalers before reaching buyers.
+                    </p>
+                    <p class="text-lg text-neutral-600 leading-relaxed">
+                        By the time produce arrives in cities, prices inflate by up to 300%, yet the farmer who invested months of hard labor receives only 20-30% of the consumer rupee.
+                    </p>
+                </div>
+                <div class="bg-white rounded-3xl p-8 border border-neutral-200 shadow-sm space-y-6">
+                    <div class="inline-flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-widest bg-primary-50 px-3 py-1 rounded-full border border-primary-100">
+                        <span class="w-2 h-2 rounded-full bg-primary"></span> The Solution
+                    </div>
+                    <h3 class="text-2xl font-bold text-neutral-900">Direct, Transparent Digital Mandi</h3>
+                    <p class="text-neutral-600 leading-relaxed">
+                        KisanMitra creates a direct bridge. Farmers set their own farm-gate prices backed by live APMC Agmarknet benchmark data. Buyers purchase directly, knowing exactly where their food came from.
+                    </p>
+                    <div class="grid grid-cols-2 gap-4 pt-4 border-t border-neutral-100">
+                        <div>
+                            <div class="text-3xl font-extrabold text-primary">₹0</div>
+                            <div class="text-xs text-neutral-500 font-semibold mt-1">Middlemen Commission</div>
+                        </div>
+                        <div>
+                            <div class="text-3xl font-extrabold text-accent">100%</div>
+                            <div class="text-xs text-neutral-500 font-semibold mt-1">Verified Produce Origin</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Core Values -->
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <span class="text-primary font-bold text-xs uppercase tracking-widest">Our Principles</span>
+                <h2 class="text-3xl font-extrabold text-neutral-900 mt-2">Built on Core Values</h2>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-white p-8 rounded-3xl border border-neutral-200 shadow-sm hover:shadow-md transition-all">
+                    <div class="w-12 h-12 rounded-2xl bg-primary-50 text-primary flex items-center justify-center mb-6">
+                        <i data-lucide="shield-check" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-neutral-900 mb-2">Absolute Transparency</h3>
+                    <p class="text-neutral-600 text-sm leading-relaxed">Every price is referenced against official government APMC market rates so farmers and buyers always negotiate fairly.</p>
+                </div>
+                <div class="bg-white p-8 rounded-3xl border border-neutral-200 shadow-sm hover:shadow-md transition-all">
+                    <div class="w-12 h-12 rounded-2xl bg-accent-50 text-accent flex items-center justify-center mb-6">
+                        <i data-lucide="heart" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-neutral-900 mb-2">Farmer First</h3>
+                    <p class="text-neutral-600 text-sm leading-relaxed">We protect farmer livelihoods with instant payouts, transparent grading criteria, and dedicated regional support.</p>
+                </div>
+                <div class="bg-white p-8 rounded-3xl border border-neutral-200 shadow-sm hover:shadow-md transition-all">
+                    <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mb-6">
+                        <i data-lucide="sprout" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-neutral-900 mb-2">Quality Verified</h3>
+                    <p class="text-neutral-600 text-sm leading-relaxed">Standardized produce grading ensures commercial and retail buyers receive consistent harvests every single delivery.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+    <script>
+        window.addEventListener('load', () => { if(window.lucide) lucide.createIcons(); });
+    </script>
+</body>
+</html>

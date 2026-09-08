@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Categories | KisanMitra Admin</title>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            primary: {
+              DEFAULT: '#2D5016',
+              50:  '#F2F7EC',
+              100: '#E0EDD0',
+              200: '#BEDBA2',
+              300: '#90C168',
+              400: '#68A83B',
+              500: '#4A7C23',
+              600: '#2D5016',
+              700: '#1A3009',
+              800: '#0E1C05',
+              900: '#060D02',
+            },
+            accent: {
+              DEFAULT: '#C17F24',
+              50:  '#FDF8EE',
+              100: '#F9EDD1',
+              200: '#F3D89E',
+              300: '#EAC060',
+              400: '#DEA737',
+              500: '#C17F24',
+              600: '#9A6119',
+              700: '#744912',
+              800: '#4E300B',
+              900: '#281805',
+            },
+            neutral: {
+              50:  '#F9F7F2',
+              100: '#F0EDE6',
+              200: '#E2DDD5',
+              300: '#C8C2B8',
+              400: '#A09890',
+              500: '#7A7268',
+              600: '#5A5450',
+              700: '#403C38',
+              800: '#2A2724',
+              900: '#1A1A18',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="../styles/main.css">
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="../firebase-config.js"></script>
+  <script src="../js/app.js"></script>
+  <script src="../js/cloudinary.js"></script>
+  <script src="../js/produce-images.js"></script>
+  <script src="../js/panel.js"></script>
+</head>
+<body class="bg-neutral-50 text-neutral-900 font-sans antialiased min-h-screen flex flex-col">
+  <main id="main-content" class="flex-1 lg:ml-72 transition-all duration-300 min-h-screen flex flex-col">
+    <div class="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
+
+      <div class="space-y-6">
+        <div class="flex justify-between items-center">
+          <div>
+            <h1 class="text-3xl font-extrabold text-neutral-900 tracking-tight">Produce Categories</h1>
+            <p class="text-sm text-neutral-500 mt-1">Organize produce into marketplace categories.</p>
+          </div>
+          <button onclick="openAddCatModal()" class="btn-primary rounded-full px-6 py-2.5 font-bold shadow-md inline-flex items-center gap-2">
+            <i data-lucide="plus" class="w-5 h-5"></i> Add Category
+          </button>
+        </div>
+
+        <div id="cat-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <p class="col-span-full py-12 text-center text-neutral-400 bg-white rounded-3xl border border-neutral-100">Loading categories...</p>
+        </div>
+      </div>
+
+      <div id="cat-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+        <div class="fixed inset-0 bg-black/60 backdrop-blur-sm" onclick="closeAddCatModal()"></div>
+        <div class="relative bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl space-y-4">
+          <h2 class="text-xl font-bold text-neutral-900">Add Category</h2>
+          <input type="text" id="cat-name-input" placeholder="Category Name (e.g. Exotic Fruits)" class="w-full px-4 py-2.5 rounded-xl bg-neutral-50 border border-neutral-200 text-sm">
+          <input type="text" id="cat-icon-input" placeholder="Emoji or Icon (e.g. 🥭)" class="w-full px-4 py-2.5 rounded-xl bg-neutral-50 border border-neutral-200 text-sm">
+          <div class="flex justify-end gap-3 pt-3">
+            <button onclick="closeAddCatModal()" class="px-4 py-2 rounded-full font-bold text-neutral-600 text-sm">Cancel</button>
+            <button onclick="submitCategory()" class="btn-primary rounded-full px-6 py-2 font-bold text-sm">Save</button>
+          </div>
+        </div>
+      </div>
+
+      <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          window.initPanel({ role: 'admin', currentPage: 'categories', title: 'Categories' });
+          loadCategories();
+        });
+
+        async function loadCategories() {
+          try {
+            const snap = await window.FM.db.collection('categories').get();
+            const cats = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+            const grid = document.getElementById('cat-grid');
+            grid.innerHTML = cats.map(c => `
+              <div class="bg-white rounded-3xl border border-neutral-100 p-6 shadow-sm flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <span class="text-3xl">${c.icon || '🌱'}</span>
+                  <div>
+                    <h3 class="font-bold text-neutral-900 text-base">${c.name}</h3>
+                    <p class="text-xs text-neutral-400">/${c.id}</p>
+                  </div>
+                </div>
+                <button onclick="deleteCategory('${c.id}')" class="text-neutral-400 hover:text-red-500 p-2" title="Delete">
+                  <i data-lucide="trash-2" class="w-4 h-4"></i>
+                </button>
+              </div>
+            `).join('');
+            if (window.lucide) lucide.createIcons();
+          } catch(err) {
+            console.error(err);
+          }
+        }
+
+        function openAddCatModal() { document.getElementById('cat-modal').classList.remove('hidden'); }
+        function closeAddCatModal() { document.getElementById('cat-modal').classList.add('hidden'); }
+
+        async function submitCategory() {
+          const name = document.getElementById('cat-name-input').value.trim();
+          const icon = document.getElementById('cat-icon-input').value.trim() || '🌱';
+          if (!name) return;
+
+          const slug = name.toLowerCase().replace(/\s+/g, '-');
+          try {
+            await window.FM.db.collection('categories').doc(slug).set({ name, icon, slug });
+            window.toast({ type: 'success', message: 'Category added!' });
+            closeAddCatModal();
+            loadCategories();
+          } catch(err) {
+            window.toast({ type: 'error', message: 'Failed to add.' });
+          }
+        }
+
+        async function deleteCategory(id) {
+          if (!confirm('Delete category ' + id + '?')) return;
+          try {
+            await window.FM.db.collection('categories').doc(id).delete();
+            window.toast({ type: 'success', message: 'Category removed.' });
+            loadCategories();
+          } catch(err) {
+            window.toast({ type: 'error', message: 'Delete failed.' });
+          }
+        }
+      </script>
+
+    </div>
+  </main>
+</body>
+</html>

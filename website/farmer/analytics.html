@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analytics & Performance | KisanMitra</title>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            primary: {
+              DEFAULT: '#2D5016',
+              50:  '#F2F7EC',
+              100: '#E0EDD0',
+              200: '#BEDBA2',
+              300: '#90C168',
+              400: '#68A83B',
+              500: '#4A7C23',
+              600: '#2D5016',
+              700: '#1A3009',
+              800: '#0E1C05',
+              900: '#060D02',
+            },
+            accent: {
+              DEFAULT: '#C17F24',
+              50:  '#FDF8EE',
+              100: '#F9EDD1',
+              200: '#F3D89E',
+              300: '#EAC060',
+              400: '#DEA737',
+              500: '#C17F24',
+              600: '#9A6119',
+              700: '#744912',
+              800: '#4E300B',
+              900: '#281805',
+            },
+            neutral: {
+              50:  '#F9F7F2',
+              100: '#F0EDE6',
+              200: '#E2DDD5',
+              300: '#C8C2B8',
+              400: '#A09890',
+              500: '#7A7268',
+              600: '#5A5450',
+              700: '#403C38',
+              800: '#2A2724',
+              900: '#1A1A18',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="../styles/main.css">
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="../firebase-config.js"></script>
+  <script src="../js/app.js"></script>
+  <script src="../js/cloudinary.js"></script>
+  <script src="../js/produce-images.js"></script>
+  <script src="../js/panel.js"></script>
+</head>
+<body class="bg-neutral-50 text-neutral-900 font-sans antialiased min-h-screen flex flex-col">
+  <main id="main-content" class="flex-1 lg:ml-72 transition-all duration-300 min-h-screen flex flex-col">
+    <div class="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
+
+      <div class="space-y-8">
+        <div>
+          <h1 class="text-3xl font-extrabold text-neutral-900 tracking-tight">Analytics</h1>
+          <p class="text-sm text-neutral-500 mt-1">Deep-dive performance insights from your real marketplace metrics.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="bg-white p-6 rounded-3xl border border-neutral-100 shadow-sm">
+            <p class="text-xs font-semibold text-neutral-400 uppercase tracking-wider mb-1">Fulfillment Rate</p>
+            <p id="fulfillment-rate" class="text-4xl font-extrabold text-emerald-700">100%</p>
+            <p class="text-xs text-neutral-500 mt-2">Delivered vs Cancelled ratio</p>
+          </div>
+          <div class="bg-white p-6 rounded-3xl border border-neutral-100 shadow-sm">
+            <p class="text-xs font-semibold text-neutral-400 uppercase tracking-wider mb-1">Unique Buyers</p>
+            <p id="unique-buyers" class="text-4xl font-extrabold text-neutral-900">0</p>
+            <p class="text-xs text-neutral-500 mt-2">Direct farm patrons</p>
+          </div>
+          <div class="bg-white p-6 rounded-3xl border border-neutral-100 shadow-sm">
+            <p class="text-xs font-semibold text-neutral-400 uppercase tracking-wider mb-1">Total Produce Volume</p>
+            <p id="total-volume" class="text-4xl font-extrabold text-primary">0 kg</p>
+            <p class="text-xs text-neutral-500 mt-2">Cumulative units shipped</p>
+          </div>
+        </div>
+
+        <!-- Breakdown Tables -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div class="bg-white rounded-3xl p-6 border border-neutral-100 shadow-sm space-y-4">
+            <h2 class="text-lg font-bold text-neutral-900">Order Status Breakdown</h2>
+            <div id="status-bars" class="space-y-3">
+              <p class="text-sm text-neutral-400 py-4 text-center">Loading status breakdown...</p>
+            </div>
+          </div>
+          <div class="bg-white rounded-3xl p-6 border border-neutral-100 shadow-sm space-y-4">
+            <h2 class="text-lg font-bold text-neutral-900">Top Selling Produce</h2>
+            <div id="top-produce-list" class="space-y-3">
+              <p class="text-sm text-neutral-400 py-4 text-center">Loading top produce...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          window.initPanel({ role: 'farmer', currentPage: 'analytics', title: 'Farm Analytics' });
+
+          document.addEventListener('user-loaded', async (e) => {
+            const user = e.detail;
+            try {
+              const snap = await window.FM.db.collection('orders').where('farmerId', '==', user.uid).get();
+              const orders = snap.docs.map(d => d.data());
+
+              const buyers = new Set(orders.map(o => o.buyerId).filter(Boolean));
+              document.getElementById('unique-buyers').textContent = buyers.size;
+
+              let totalVol = 0;
+              const prodCounts = {};
+              const statusCounts = {};
+
+              orders.forEach(o => {
+                const st = o.status || 'pending';
+                statusCounts[st] = (statusCounts[st] || 0) + 1;
+                (o.items || []).forEach(i => {
+                  totalVol += (i.quantity || 0);
+                  prodCounts[i.name] = (prodCounts[i.name] || 0) + (i.quantity || 0);
+                });
+              });
+
+              document.getElementById('total-volume').textContent = totalVol.toLocaleString() + ' units';
+
+              const delivered = statusCounts['delivered'] || 0;
+              const cancelled = statusCounts['cancelled'] || 0;
+              const totalFinished = delivered + cancelled;
+              const rate = totalFinished > 0 ? Math.round((delivered / totalFinished) * 100) : 100;
+              document.getElementById('fulfillment-rate').textContent = rate + '%';
+
+              // Status Bars
+              const statusContainer = document.getElementById('status-bars');
+              if (orders.length === 0) {
+                statusContainer.innerHTML = '<p class="text-sm text-neutral-400 text-center py-4">No order activity recorded.</p>';
+              } else {
+                statusContainer.innerHTML = Object.entries(statusCounts).map(([st, cnt]) => {
+                  const pct = Math.round((cnt / orders.length) * 100);
+                  return `
+                    <div class="space-y-1">
+                      <div class="flex justify-between text-xs font-bold text-neutral-700 capitalize">
+                        <span>${st.replace(/_/g, ' ')}</span>
+                        <span>${cnt} (${pct}%)</span>
+                      </div>
+                      <div class="w-full bg-neutral-100 rounded-full h-2 overflow-hidden">
+                        <div class="bg-primary h-full rounded-full" style="width: ${pct}%"></div>
+                      </div>
+                    </div>
+                  `;
+                }).join('');
+              }
+
+              // Top Produce
+              const topContainer = document.getElementById('top-produce-list');
+              const topList = Object.entries(prodCounts).sort((a,b) => b[1] - a[1]).slice(0, 5);
+              if (topList.length === 0) {
+                topContainer.innerHTML = '<p class="text-sm text-neutral-400 text-center py-4">No produce sales data recorded yet.</p>';
+              } else {
+                topContainer.innerHTML = topList.map(([name, qty]) => `
+                  <div class="flex items-center justify-between p-3 rounded-2xl bg-neutral-50 border border-neutral-100">
+                    <span class="font-bold text-neutral-800 text-sm">${name}</span>
+                    <span class="font-black text-primary text-sm">${qty} sold</span>
+                  </div>
+                `).join('');
+              }
+            } catch(err) {
+              console.error(err);
+            }
+          });
+        });
+      </script>
+
+    </div>
+  </main>
+</body>
+</html>

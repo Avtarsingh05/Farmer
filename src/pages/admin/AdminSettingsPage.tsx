@@ -4,8 +4,12 @@ import {
   AlertTriangle, Plus, Trash2, Download, Upload, Server, Sprout, 
   HelpCircle, RefreshCw, Key, Store, Truck, IndianRupee, Bell, Package
 } from 'lucide-react';
+import { Image as ImageIcon } from 'lucide-react';
 import { useToast } from '@/components/ui/Toast';
+import { seedFirestoreContainers, checkFirebaseStatus, type FirebaseConnectionStatus } from '@/services/firebaseInit';
+import { enableFirestore } from '@/services/mockStore';
 import { useAuth } from '@/hooks';
+import { uploadImage } from '@/services/cloudinaryService';
 import { 
   getPlatformSettings, 
   updatePlatformSettings, 
@@ -30,6 +34,10 @@ export default function AdminSettingsPage() {
   const [newAdminUid, setNewAdminUid] = useState('');
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const [isSeeding, setIsSeeding] = useState(false);
+  const [firestoreStatus, setFirestoreStatus] = useState<FirebaseConnectionStatus | null>(null);
+  const [isCheckingStatus, setIsCheckingStatus] = useState(false);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
   useEffect(() => { getTestimonials().then(setTestimonials); }, []);
 
   useEffect(() => {
@@ -37,7 +45,54 @@ export default function AdminSettingsPage() {
       if (e.detail) setSettings(e.detail);
     };
     window.addEventListener('kisanmitra_settings_updated', handleSettingsUpdated);
-    return () => window.removeEventListener('kisanmitra_settings_updated', handleSettingsUpdated);
+    const handleCheckFirestoreStatus = async () => {
+    setIsCheckingStatus(true);
+    try {
+      const status = await checkFirebaseStatus();
+      setFirestoreStatus(status);
+    } catch (err: any) {
+      toast({ type: 'error', message: 'Failed to check Firestore status: ' + err.message });
+    } finally {
+      setIsCheckingStatus(false);
+    }
+  };
+
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingLogo(true);
+    try {
+      const res = await uploadImage(file, { folder: 'settings' });
+      setSettings(prev => ({ ...prev, logoUrl: res.secureUrl }));
+      toast({ type: 'success', message: 'Logo uploaded successfully. Save settings to apply.' });
+    } catch(err: any) {
+      toast({ type: 'error', message: err.message || 'Failed to upload logo' });
+    } finally {
+      setUploadingLogo(false);
+    }
+  };
+
+  const handleSeedFirestore = async () => {
+    if (!window.confirm('This will seed all Firestore collections with demo data. Existing data will NOT be overwritten (uses setDoc with fixed IDs). Continue?')) return;
+    setIsSeeding(true);
+    enableFirestore();
+    try {
+      const result = await seedFirestoreContainers();
+      if (result.success) {
+        toast({ type: 'success', message: `Firestore seeded! ${result.counts.products} products, ${result.counts.farmers} farmers, ${result.counts.categories} categories.` });
+        const status = await checkFirebaseStatus();
+        setFirestoreStatus(status);
+      } else {
+        toast({ type: 'error', message: result.message || 'Seeding failed. Check Firestore rules.' });
+      }
+    } catch (err: any) {
+      toast({ type: 'error', message: 'Seeding error: ' + (err.message || String(err)) });
+    } finally {
+      setIsSeeding(false);
+    }
+  };
+
+  return () => window.removeEventListener('kisanmitra_settings_updated', handleSettingsUpdated);
   }, []);
 
   const handleChange = <K extends keyof PlatformSettings>(key: K, value: PlatformSettings[K]) => {
@@ -137,6 +192,38 @@ export default function AdminSettingsPage() {
       });
     } catch {
       toast({ type: 'error', message: 'Unable to access sessionStorage' });
+    }
+  };
+
+  const handleCheckFirestoreStatus = async () => {
+    setIsCheckingStatus(true);
+    try {
+      const status = await checkFirebaseStatus();
+      setFirestoreStatus(status);
+    } catch (err: any) {
+      toast({ type: 'error', message: 'Failed to check Firestore status: ' + err.message });
+    } finally {
+      setIsCheckingStatus(false);
+    }
+  };
+
+  const handleSeedFirestore = async () => {
+    if (!window.confirm('This will seed all Firestore collections with demo data. Existing records will NOT be overwritten (idempotent). Continue?')) return;
+    setIsSeeding(true);
+    enableFirestore();
+    try {
+      const result = await seedFirestoreContainers();
+      if (result.success) {
+        toast({ type: 'success', message: `Firestore seeded! ${result.counts.products} products, ${result.counts.farmers} farmers, ${result.counts.categories} categories.` });
+        const status = await checkFirebaseStatus();
+        setFirestoreStatus(status);
+      } else {
+        toast({ type: 'error', message: result.message || 'Seeding failed. Check Firestore security rules.' });
+      }
+    } catch (err: any) {
+      toast({ type: 'error', message: 'Seeding error: ' + (err.message || String(err)) });
+    } finally {
+      setIsSeeding(false);
     }
   };
 
@@ -562,12 +649,66 @@ export default function AdminSettingsPage() {
                       <p className="text-sm font-mono font-bold text-indigo-900">farmer-bfd33</p>
                     </div>
                     <div className="p-4 bg-emerald-50/50 rounded-xl border border-emerald-100">
-                      <p className="text-xs font-semibold text-emerald-600/70 uppercase tracking-wider mb-1">Operation Mode</p>
-                      <p className="text-sm font-bold text-emerald-900">Sub-5ms Local Cache</p>
+                      <p className="text-xs font-semibold text-emerald-600/70 uppercase tracking-wider mb-1">Firestore Status</p>
+                      <p className={cn("text-sm font-bold", firestoreStatus?.isConnected ? "text-emerald-700" : "text-amber-700")}>
+                        {firestoreStatus ? (firestoreStatus.isConnected ? "Live Connected" : "Demo / Offline") : "Not Checked"}
+                      </p>
                     </div>
                     <div className="p-4 bg-amber-50/50 rounded-xl border border-amber-100">
                       <p className="text-xs font-semibold text-amber-600/70 uppercase tracking-wider mb-1">Network Policy</p>
-                      <p className="text-sm font-bold text-amber-900">800ms Fail-Fast</p>
+                      <p className="text-sm font-bold text-amber-900">5s Smart Timeout</p>
+                    </div>
+                  </div>
+
+                  {/* Firestore Status Details */}
+                  {firestoreStatus && (
+                    <div className="p-4 rounded-xl border border-neutral-200 bg-neutral-50 space-y-2">
+                      <h4 className="text-sm font-bold text-neutral-900 mb-2">Collection Counts (Live)</h4>
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        {Object.entries(firestoreStatus.collections).map(([key, count]) => (
+                          <div key={key} className="bg-white rounded-lg p-3 border border-neutral-100 text-center">
+                            <p className="text-xl font-extrabold text-neutral-900">{count as number}</p>
+                            <p className="text-xs text-neutral-500 capitalize">{key}</p>
+                          </div>
+                        ))}
+                      </div>
+                      {firestoreStatus.error && (
+                        <p className="text-xs text-red-600 font-medium mt-2 p-2 bg-red-50 rounded-lg border border-red-100">{firestoreStatus.error}</p>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Seed Data Section */}
+                  <div className="p-5 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl border border-emerald-200">
+                    <div className="flex items-start justify-between gap-4 mb-4">
+                      <div>
+                        <h4 className="text-sm font-bold text-emerald-900 flex items-center gap-2">
+                          <Database className="w-4 h-4" /> Firestore Data Seeding
+                        </h4>
+                        <p className="text-xs text-emerald-700 mt-1 max-w-md">
+                          Populate Firestore with demo farmers, products, categories, inventory and market prices. Safe to run multiple times — uses idempotent setDoc with fixed IDs.
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap gap-3">
+                      <button
+                        type="button"
+                        onClick={handleCheckFirestoreStatus}
+                        disabled={isCheckingStatus}
+                        className="px-4 py-2.5 bg-white border border-emerald-200 text-emerald-700 rounded-xl text-sm font-bold hover:bg-emerald-50 transition-all flex items-center gap-2 shadow-sm disabled:opacity-60"
+                      >
+                        <RefreshCw className={cn("w-4 h-4", isCheckingStatus && "animate-spin")} />
+                        {isCheckingStatus ? 'Checking...' : 'Check Status'}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleSeedFirestore}
+                        disabled={isSeeding}
+                        className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-bold transition-all flex items-center gap-2 shadow-md disabled:opacity-60"
+                      >
+                        <Upload className={cn("w-4 h-4", isSeeding && "animate-bounce")} />
+                        {isSeeding ? 'Seeding Firestore...' : 'Seed All Data to Firestore'}
+                      </button>
                     </div>
                   </div>
 

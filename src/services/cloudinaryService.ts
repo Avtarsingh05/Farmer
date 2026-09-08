@@ -147,3 +147,23 @@ export function buildCloudinaryUrl(
 export function getProductThumbnail(publicId: string, width = 400): string {
   return buildCloudinaryUrl(publicId, { width, format: 'webp' });
 }
+
+
+/**
+ * Returns the best image URL to display.
+ * For stock images or local previews, returns the raw secureUrl.
+ * For actual Cloudinary uploads, requests a highly optimized webp thumbnail.
+ */
+export function getOptimizedImageUrl(image?: CloudinaryUploadResult | { publicId?: string; secureUrl?: string; }, width = 600): string {
+  if (!image) return 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=600&auto=format&fit=crop&q=80';
+  
+  if (image.publicId?.startsWith('stock/') || image.publicId?.startsWith('local-')) {
+    return image.secureUrl || '';
+  }
+  
+  if (image.publicId) {
+    return getProductThumbnail(image.publicId, width);
+  }
+  
+  return image.secureUrl || 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=600&auto=format&fit=crop&q=80';
+}

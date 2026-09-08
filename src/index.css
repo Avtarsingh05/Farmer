@@ -304,3 +304,13 @@
 
 /* Ticker pause on hover */
 .marquee-track:hover .animate-marquee { animation-play-state: paused; }
+
+
+/* Utility class to hide scrollbars but keep functionality */
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none;    /* Firefox */
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+}

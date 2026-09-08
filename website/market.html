@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Market - KisanMitra</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            DEFAULT: '#2D5016',
+                            dark: '#1A3009',
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            200: '#bbf7d0',
+                            600: '#16a34a',
+                            700: '#2D5016',
+                            800: '#1A3009',
+                            900: '#0f1f06',
+                        },
+                        accent: {
+                            DEFAULT: '#C17F24',
+                            50: '#fff8eb',
+                            100: '#ffefc6',
+                        },
+                        neutral: {
+                            50: '#F9F7F2',
+                            100: '#F0EDE6',
+                            200: '#E2DDD5',
+                            300: '#D0C8BD',
+                            400: '#B5AA9C',
+                            500: '#9A8D7E',
+                            600: '#7A7268',
+                            700: '#5A5349',
+                            800: '#3A352F',
+                            900: '#1A1A18',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/app.js"></script>
+    <style>
+        .text-primary { color: #2D5016; }
+        .bg-primary { background-color: #2D5016; }
+        .hover\:bg-primary-dark:hover { background-color: #1A3009; }
+        .border-primary { border-color: #2D5016; }
+        .focus\:ring-primary:focus { --tw-ring-color: #2D5016; }
+        .line-clamp-1 { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+    </style>
+</head>
+<body class="min-h-screen bg-neutral-50 font-sans pb-20">
+    <!-- Navbar -->
+    <nav class="bg-white border-b border-neutral-200 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <div class="bg-primary w-10 h-10 flex items-center justify-center rounded-xl shadow-lg shadow-primary/20 shrink-0 overflow-hidden"><span class="text-white font-black text-xl">K</span></div>
+                <span class="text-xl font-bold text-primary">KisanMitra</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <a href="login.html" class="text-neutral-600 hover:text-primary font-medium">Login</a>
+                <a href="register.html" class="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg font-medium transition-colors">Sign Up</a>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Hero Banner -->
+    <section class="bg-white border-b border-neutral-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+            <div class="relative rounded-2xl overflow-hidden shadow-sm aspect-[21/9] md:aspect-[21/6] flex items-center">
+                <img src="https://images.unsplash.com/photo-1488459716781-31db52582fe9?w=2000&auto=format&fit=crop&q=80" alt="Fresh produce market" class="absolute inset-0 w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-r from-neutral-900/80 via-neutral-900/60 to-transparent"></div>
+                <div class="relative z-10 p-8 md:p-12 max-w-2xl">
+                    <h1 class="text-3xl md:text-5xl font-bold text-white mb-4">Fresh Produce Market</h1>
+                    <p class="text-lg text-neutral-200">Sourced directly from verified farmers across India. Quality assured, transparent pricing.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Search + filter bar -->
+        <div class="bg-white p-4 rounded-xl shadow-sm border border-neutral-200 mb-8 flex flex-col sm:flex-row gap-3">
+            <div class="relative flex-1">
+                <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400 pointer-events-none"></i>
+                <input type="search" id="searchInput" placeholder="Search produce, farmer, location..." class="w-full bg-neutral-50 border border-neutral-200 rounded-lg pl-10 pr-10 py-3 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-neutral-900">
+                <button id="clearSearch" class="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 hidden">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <button id="toggleFilters" class="flex items-center justify-center gap-2 sm:w-auto py-3 px-6 h-auto bg-white border border-neutral-300 text-neutral-700 rounded-lg hover:bg-neutral-50 font-medium transition-colors">
+                <i data-lucide="sliders-horizontal" class="w-4 h-4"></i>
+                Filters
+                <i data-lucide="chevron-down" id="filterIcon" class="w-4 h-4 transition-transform"></i>
+            </button>
+        </div>
+        
+        <!-- Filter panel -->
+        <div id="filterPanel" class="bg-white p-5 rounded-xl shadow-sm border border-neutral-200 mb-8 grid grid-cols-1 sm:grid-cols-4 gap-6 hidden">
+            <div>
+                <label class="text-sm font-medium text-neutral-700 mb-1.5 block">Category</label>
+                <select id="categoryFilter" class="w-full p-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none bg-white">
+                    <option value="">All Categories</option>
+                    <option value="vegetables">Vegetables</option>
+                    <option value="fruits">Fruits</option>
+                    <option value="grains">Grains</option>
+                </select>
+            </div>
+            <div>
+                <label class="text-sm font-medium text-neutral-700 mb-1.5 block">Quality Grade</label>
+                <select id="qualityFilter" class="w-full p-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none bg-white">
+                    <option value="">All Grades</option>
+                    <option value="A">Grade A</option>
+                    <option value="B">Grade B</option>
+                    <option value="C">Grade C</option>
+                    <option value="mixed">Mixed</option>
+                </select>
+            </div>
+            <div>
+                <label class="text-sm font-medium text-neutral-700 mb-1.5 block">Sort By</label>
+                <select id="sortFilter" class="w-full p-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none bg-white">
+                    <option value="newest">Newest</option>
+                    <option value="price_asc">Price: Low to High</option>
+                    <option value="price_desc">Price: High to Low</option>
+                </select>
+            </div>
+            <div class="flex items-end">
+                <button id="clearFilters" class="text-sm w-full text-neutral-600 hover:text-neutral-900 py-2.5 px-4 rounded-lg hover:bg-neutral-100 flex items-center justify-center transition-colors">
+                    <i data-lucide="x" class="w-4 h-4 mr-2"></i> Clear filters
+                </button>
+            </div>
+        </div>
+        
+        <!-- Results -->
+        <div>
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-bold text-neutral-900">Available Listings</h2>
+                <p class="text-sm font-medium text-neutral-500 bg-neutral-100 px-3 py-1 rounded-full">
+                    <span id="productCount">0</span> products
+                </p>
+            </div>
+            
+            <div id="productsGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <!-- Skeleton Loader injected here -->
+                <div class="col-span-full py-12 flex justify-center">
+                    <i data-lucide="loader-2" class="w-8 h-8 text-primary animate-spin"></i>
+                </div>
+            </div>
+            
+            <div id="emptyState" class="hidden py-16 flex flex-col items-center justify-center text-center bg-white rounded-xl border border-neutral-200">
+                <div class="w-16 h-16 bg-neutral-100 rounded-full flex items-center justify-center mb-4">
+                    <i data-lucide="package" class="w-8 h-8 text-neutral-400"></i>
+                </div>
+                <h3 class="text-lg font-bold text-neutral-900 mb-1">No produce found</h3>
+                <p class="text-neutral-500 max-w-sm mb-6">No products match your filters. Try clearing them to see more listings.</p>
+                <button onclick="document.getElementById('clearFilters').click()" class="bg-primary hover:bg-primary-dark text-white px-6 py-2.5 rounded-lg font-medium transition-colors">
+                    Clear all filters
+                </button>
+            </div>
+        </div>
+        
+        <div class="mt-8 flex justify-center">
+            <button class="bg-white border border-neutral-300 text-neutral-700 hover:bg-neutral-50 py-2.5 px-6 rounded-lg font-medium transition-colors">
+                Load More
+            </button>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="bg-white border-t border-neutral-200 py-8 mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-neutral-500 text-sm">
+            &copy; 2026 KisanMitra. All rights reserved.
+        </div>
+    </footer>
+    
+    <script>
+        lucide.createIcons();
+        
+        // Filter UI logic
+        const toggleFilters = document.getElementById('toggleFilters');
+        const filterPanel = document.getElementById('filterPanel');
+        const filterIcon = document.getElementById('filterIcon');
+        
+        toggleFilters.addEventListener('click', () => {
+            filterPanel.classList.toggle('hidden');
+            if (filterPanel.classList.contains('hidden')) {
+                filterIcon.classList.remove('rotate-180');
+            } else {
+                filterIcon.classList.add('rotate-180');
+            }
+        });
+        
+        // Search and Filter logic
+        const searchInput = document.getElementById('searchInput');
+        const clearSearch = document.getElementById('clearSearch');
+        const categoryFilter = document.getElementById('categoryFilter');
+        const qualityFilter = document.getElementById('qualityFilter');
+        const sortFilter = document.getElementById('sortFilter');
+        const clearFiltersBtn = document.getElementById('clearFilters');
+        
+        let debounceTimer;
+        searchInput.addEventListener('input', () => {
+            if (searchInput.value) clearSearch.classList.remove('hidden');
+            else clearSearch.classList.add('hidden');
+            
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(filterProducts, 350);
+        });
+        
+        clearSearch.addEventListener('click', () => {
+            searchInput.value = '';
+            clearSearch.classList.add('hidden');
+            filterProducts();
+        });
+        
+        categoryFilter.addEventListener('change', filterProducts);
+        qualityFilter.addEventListener('change', filterProducts);
+        sortFilter.addEventListener('change', filterProducts);
+        
+        clearFiltersBtn.addEventListener('click', () => {
+            categoryFilter.value = '';
+            qualityFilter.value = '';
+            sortFilter.value = 'newest';
+            searchInput.value = '';
+            clearSearch.classList.add('hidden');
+            filterProducts();
+        });
+        
+        let allProducts = [];
+        
+        async function loadProducts() {
+            try {
+                // Mock products for the demo since we might not have a populated Firestore
+                const mockProducts = [
+                    { id: '1', name: 'Fresh Organic Tomatoes', category: 'vegetables', qualityGrade: 'A', price: 40, unit: 'kg', farmerName: 'Ramesh Patel', state: 'Gujarat', district: 'Surat', image: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&q=80&w=400', status: 'available', createdAt: 1 },
+                    { id: '2', name: 'Premium Basmati Rice', category: 'grains', qualityGrade: 'A', price: 85, unit: 'kg', farmerName: 'Sukhdev Singh', state: 'Punjab', district: 'Ludhiana', image: 'https://images.unsplash.com/photo-1586201375761-83865001e8ac?auto=format&fit=crop&q=80&w=400', status: 'available', createdAt: 2 },
+                    { id: '3', name: 'Alphonso Mangoes', category: 'fruits', qualityGrade: 'A', price: 600, unit: 'dozen', farmerName: 'Anil Desai', state: 'Maharashtra', district: 'Ratnagiri', image: 'https://images.unsplash.com/photo-1553279768-865429fd0072?auto=format&fit=crop&q=80&w=400', status: 'available', createdAt: 3 },
+                    { id: '4', name: 'Red Onions', category: 'vegetables', qualityGrade: 'B', price: 25, unit: 'kg', farmerName: 'Vijay Kumar', state: 'Maharashtra', district: 'Nashik', image: 'https://images.unsplash.com/photo-1618512496248-a07fe83aa8cb?auto=format&fit=crop&q=80&w=400', status: 'available', createdAt: 4 }
+                ];
+                
+                try {
+                    const snapshot = await firebase.firestore().collection('products').where('status', '==', 'approved').limit(24).get();
+                    if (!snapshot.empty) {
+                        allProducts = snapshot.docs.map(doc => ({id: doc.id, ...doc.data()}));
+                    } else {
+                        allProducts = mockProducts;
+                    }
+                } catch(e) {
+                    allProducts = mockProducts;
+                }
+                
+                filterProducts();
+            } catch (error) {
+                console.error("Error loading products", error);
+            }
+        }
+        
+        function filterProducts() {
+            const search = searchInput.value.toLowerCase();
+            const category = categoryFilter.value;
+            const quality = qualityFilter.value;
+            const sort = sortFilter.value;
+            
+            let filtered = allProducts.filter(p => {
+                const matchSearch = p.name.toLowerCase().includes(search) || 
+                                    (p.farmerName && p.farmerName.toLowerCase().includes(search)) || 
+                                    (p.district && p.district.toLowerCase().includes(search));
+                const matchCategory = category === '' || p.category === category;
+                const matchQuality = quality === '' || p.qualityGrade === quality;
+                return matchSearch && matchCategory && matchQuality;
+            });
+            
+            if (sort === 'price_asc') {
+                filtered.sort((a, b) => a.price - b.price);
+            } else if (sort === 'price_desc') {
+                filtered.sort((a, b) => b.price - a.price);
+            } else {
+                // newest
+                filtered.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+            }
+            
+            renderProducts(filtered);
+        }
+        
+        function renderProducts(products) {
+            const grid = document.getElementById('productsGrid');
+            const emptyState = document.getElementById('emptyState');
+            const count = document.getElementById('productCount');
+            
+            count.textContent = products.length;
+            grid.innerHTML = '';
+            
+            if (products.length === 0) {
+                grid.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            
+            grid.classList.remove('hidden');
+            emptyState.classList.add('hidden');
+            
+            products.forEach(p => {
+                const img = p.image || p.images?.[0] || 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=600&auto=format&fit=crop&q=80';
+                const loc = p.district ? `${p.district}, ${p.state}` : p.state || 'Local Farm';
+                
+                const card = document.createElement('div');
+                card.className = "bg-white rounded-2xl overflow-hidden flex flex-col group h-full shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-200 border border-neutral-100 relative";
+                
+                card.innerHTML = `
+                    <div class="relative aspect-[3/2] w-full overflow-hidden bg-neutral-100">
+                        <img src="${img}" alt="${p.name}" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105">
+                        ${p.qualityGrade ? `
+                        <div class="absolute top-2 left-2">
+                            <span class="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-white/90 backdrop-blur-sm text-blue-700 border border-blue-200 shadow-sm">
+                                <i data-lucide="shield-check" class="w-3 h-3 mr-1"></i> Grade ${p.qualityGrade}
+                            </span>
+                        </div>
+                        ` : ''}
+                        <button class="absolute top-2 right-2 p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-sm hover:bg-white transition-colors">
+                            <i data-lucide="heart" class="w-4 h-4 text-neutral-500 hover:text-red-500 hover:fill-red-500"></i>
+                        </button>
+                    </div>
+                    <div class="p-4 flex flex-col flex-1">
+                        <div class="flex justify-between items-start gap-2 mb-1">
+                            <h3 class="font-semibold text-neutral-900 line-clamp-1 flex-1">${p.name}</h3>
+                        </div>
+                        <div class="flex items-center text-sm text-neutral-600 mb-3 gap-1">
+                            <i data-lucide="map-pin" class="w-3.5 h-3.5 text-neutral-400 shrink-0"></i>
+                            <span class="truncate">${loc}</span>
+                            <span class="mx-1">·</span>
+                            <span class="truncate text-neutral-500">${p.farmerName}</span>
+                        </div>
+                        <div class="mt-auto border-t border-neutral-100 pt-3">
+                            <div class="mb-3">
+                                <span class="text-xs text-neutral-500 block">Price</span>
+                                <span class="font-bold text-primary text-lg">₹${p.price}/${p.unit}</span>
+                            </div>
+                            <button class="w-full bg-primary hover:bg-primary-dark text-white py-2 rounded-xl text-sm font-medium transition-colors flex items-center justify-center gap-2 shadow-sm active:scale-95 duration-200">
+                                <i data-lucide="shopping-cart" class="w-4 h-4"></i> Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+            lucide.createIcons();
+        }
+        
+        // Wait for Firebase to be ready before loading products
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(loadProducts, 500); // Small delay to ensure Firebase initializes
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shopping Cart & Checkout | KisanMitra</title>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            primary: {
+              DEFAULT: '#2D5016',
+              50:  '#F2F7EC',
+              100: '#E0EDD0',
+              200: '#BEDBA2',
+              300: '#90C168',
+              400: '#68A83B',
+              500: '#4A7C23',
+              600: '#2D5016',
+              700: '#1A3009',
+              800: '#0E1C05',
+              900: '#060D02',
+            },
+            accent: {
+              DEFAULT: '#C17F24',
+              50:  '#FDF8EE',
+              100: '#F9EDD1',
+              200: '#F3D89E',
+              300: '#EAC060',
+              400: '#DEA737',
+              500: '#C17F24',
+              600: '#9A6119',
+              700: '#744912',
+              800: '#4E300B',
+              900: '#281805',
+            },
+            neutral: {
+              50:  '#F9F7F2',
+              100: '#F0EDE6',
+              200: '#E2DDD5',
+              300: '#C8C2B8',
+              400: '#A09890',
+              500: '#7A7268',
+              600: '#5A5450',
+              700: '#403C38',
+              800: '#2A2724',
+              900: '#1A1A18',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="../styles/main.css">
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="../firebase-config.js"></script>
+  <script src="../js/app.js"></script>
+  <script src="../js/cloudinary.js"></script>
+  <script src="../js/produce-images.js"></script>
+  <script src="../js/panel.js"></script>
+</head>
+<body class="bg-neutral-50 text-neutral-900 font-sans antialiased min-h-screen flex flex-col">
+  <main id="main-content" class="flex-1 lg:ml-72 transition-all duration-300 min-h-screen flex flex-col">
+    <div class="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
+
+      <!-- Razorpay SDK -->
+      <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+      <div class="space-y-8 max-w-5xl mx-auto pb-16">
+        <div>
+          <h1 class="text-3xl font-extrabold text-neutral-900 tracking-tight">Shopping Cart</h1>
+          <p class="text-sm text-neutral-500 mt-1">Review your fresh harvest haul and complete order checkout.</p>
+        </div>
+
+        <div id="cart-content" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <!-- Items List (2 Cols) -->
+          <div class="lg:col-span-2 space-y-4">
+            <!-- Free delivery progress meter matching React CartPage -->
+            <div id="free-delivery-meter" class="bg-white rounded-3xl p-5 border border-neutral-100 shadow-sm space-y-2">
+              <div class="flex justify-between items-center text-xs font-bold">
+                <span id="meter-label" class="text-neutral-700">Add ₹500 more for FREE delivery</span>
+                <span id="meter-percent" class="text-primary font-black">0%</span>
+              </div>
+              <div class="w-full bg-neutral-100 rounded-full h-2.5 overflow-hidden">
+                <div id="meter-bar" class="bg-primary h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+              </div>
+            </div>
+
+            <!-- Cart Items -->
+            <div id="cart-items-list" class="space-y-3">
+              <p class="text-neutral-400 py-12 text-center bg-white rounded-3xl border border-neutral-100">Your cart is empty.</p>
+            </div>
+          </div>
+
+          <!-- Checkout & Order Summary (1 Col) -->
+          <div class="space-y-6">
+            <div class="bg-white rounded-3xl p-6 border border-neutral-100 shadow-sm space-y-6">
+              <h2 class="text-lg font-bold text-neutral-900">Order Summary</h2>
+
+              <div class="space-y-3 text-sm">
+                <div class="flex justify-between text-neutral-600">
+                  <span>Subtotal</span>
+                  <span id="summary-subtotal" class="font-bold text-neutral-900">₹0</span>
+                </div>
+                <div class="flex justify-between text-neutral-600">
+                  <span>Delivery Fee</span>
+                  <span id="summary-fee" class="font-bold text-neutral-900">₹50</span>
+                </div>
+                <div class="pt-3 border-t border-neutral-100 flex justify-between text-lg font-black text-neutral-900">
+                  <span>Total Amount</span>
+                  <span id="summary-total" class="text-primary text-xl">₹0</span>
+                </div>
+              </div>
+
+              <!-- Delivery Mode Selection -->
+              <div class="space-y-2 pt-3 border-t border-neutral-100">
+                <label class="text-xs font-bold text-neutral-400 uppercase tracking-wider">Fulfillment Mode</label>
+                <div class="grid grid-cols-2 gap-2">
+                  <button type="button" onclick="setDeliveryMode('delivery')" id="mode-delivery" class="px-3 py-2.5 rounded-2xl border-2 border-primary bg-primary-50/50 text-primary text-xs font-bold flex items-center justify-center gap-1.5">
+                    <i data-lucide="truck" class="w-4 h-4"></i> Delivery
+                  </button>
+                  <button type="button" onclick="setDeliveryMode('pickup')" id="mode-pickup" class="px-3 py-2.5 rounded-2xl border-2 border-neutral-200 text-neutral-600 text-xs font-bold flex items-center justify-center gap-1.5">
+                    <i data-lucide="store" class="w-4 h-4"></i> Farm Pickup
+                  </button>
+                </div>
+              </div>
+
+              <!-- Payment Method Selection matching React CartPage -->
+              <div class="space-y-2 pt-3 border-t border-neutral-100">
+                <label class="text-xs font-bold text-neutral-400 uppercase tracking-wider">Payment Method</label>
+                <div class="grid grid-cols-2 gap-2">
+                  <button type="button" onclick="setPaymentMethod('razorpay')" id="pay-razorpay" class="px-3 py-2.5 rounded-2xl border-2 border-primary bg-primary-50/50 text-primary text-xs font-bold flex items-center justify-center gap-1.5">
+                    <i data-lucide="credit-card" class="w-4 h-4"></i> Pay Online
+                  </button>
+                  <button type="button" onclick="setPaymentMethod('cod')" id="pay-cod" class="px-3 py-2.5 rounded-2xl border-2 border-neutral-200 text-neutral-600 text-xs font-bold flex items-center justify-center gap-1.5">
+                    <i data-lucide="banknote" class="w-4 h-4"></i> COD
+                  </button>
+                </div>
+              </div>
+
+              <!-- Delivery Address Form -->
+              <div id="address-section" class="space-y-3 pt-3 border-t border-neutral-100">
+                <label class="text-xs font-bold text-neutral-400 uppercase tracking-wider">Delivery Address</label>
+                <input type="text" id="cust-name" placeholder="Full Recipient Name" class="w-full px-3.5 py-2.5 rounded-xl bg-neutral-50 border border-neutral-200 text-xs font-medium">
+                <input type="tel" id="cust-phone" placeholder="Phone Number" class="w-full px-3.5 py-2.5 rounded-xl bg-neutral-50 border border-neutral-200 text-xs font-medium">
+                <input type="text" id="cust-address" placeholder="Flat, Street, Area" class="w-full px-3.5 py-2.5 rounded-xl bg-neutral-50 border border-neutral-200 text-xs font-medium">
+                <div class="grid grid-cols-2 gap-2">
+                  <input type="text" id="cust-city" placeholder="City" class="w-full px-3.5 py-2.5 rounded-xl bg-neutral-50 border border-neutral-200 text-xs font-medium">
+                  <input type="text" id="cust-pin" placeholder="PIN Code" class="w-full px-3.5 py-2.5 rounded-xl bg-neutral-50 border border-neutral-200 text-xs font-medium">
+                </div>
+              </div>
+
+              <!-- Error Banner -->
+              <div id="checkout-error" class="hidden p-3 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-xs font-bold flex items-center gap-2">
+                <i data-lucide="alert-circle" class="w-4 h-4 shrink-0"></i>
+                <span id="checkout-error-msg">Payment failed.</span>
+              </div>
+
+              <!-- Place Order Button -->
+              <button onclick="handleCheckout()" id="checkout-btn" class="w-full btn-primary rounded-full py-3.5 font-extrabold text-sm shadow-xl shadow-primary/30 flex items-center justify-center gap-2">
+                <span>Place Order</span> <i data-lucide="arrow-right" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <script>
+        let cart = { items: [] };
+        let deliveryMode = 'delivery';
+        let paymentMethod = 'razorpay';
+        const FREE_DELIVERY_THRESHOLD = 500;
+        const DELIVERY_FEE = 50;
+
+        document.addEventListener('DOMContentLoaded', () => {
+          window.initPanel({ role: 'buyer', currentPage: 'cart', title: 'Cart & Checkout' });
+          loadCart();
+
+          document.addEventListener('user-loaded', (e) => {
+            const user = e.detail;
+            document.getElementById('cust-name').value = user.displayName || user.name || '';
+            document.getElementById('cust-phone').value = user.phone || '';
+            if (user.address) {
+              document.getElementById('cust-address').value = user.address.line1 || '';
+              document.getElementById('cust-city').value = user.address.city || '';
+              document.getElementById('cust-pin').value = user.address.pincode || '';
+            }
+          });
+        });
+
+        function loadCart() {
+          try {
+            cart = JSON.parse(localStorage.getItem('kisanmitra_cart') || '{"items":[]}');
+          } catch(e) {
+            cart = { items: [] };
+          }
+          renderCart();
+        }
+
+        function setDeliveryMode(mode) {
+          deliveryMode = mode;
+          const isDel = mode === 'delivery';
+          document.getElementById('mode-delivery').className = isDel 
+            ? 'px-3 py-2.5 rounded-2xl border-2 border-primary bg-primary-50/50 text-primary text-xs font-bold flex items-center justify-center gap-1.5' 
+            : 'px-3 py-2.5 rounded-2xl border-2 border-neutral-200 text-neutral-600 text-xs font-bold flex items-center justify-center gap-1.5';
+          document.getElementById('mode-pickup').className = !isDel 
+            ? 'px-3 py-2.5 rounded-2xl border-2 border-primary bg-primary-50/50 text-primary text-xs font-bold flex items-center justify-center gap-1.5' 
+            : 'px-3 py-2.5 rounded-2xl border-2 border-neutral-200 text-neutral-600 text-xs font-bold flex items-center justify-center gap-1.5';
+          document.getElementById('address-section').style.display = isDel ? 'block' : 'none';
+          renderSummary();
+        }
+
+        function setPaymentMethod(method) {
+          paymentMethod = method;
+          const isRzp = method === 'razorpay';
+          document.getElementById('pay-razorpay').className = isRzp 
+            ? 'px-3 py-2.5 rounded-2xl border-2 border-primary bg-primary-50/50 text-primary text-xs font-bold flex items-center justify-center gap-1.5' 
+            : 'px-3 py-2.5 rounded-2xl border-2 border-neutral-200 text-neutral-600 text-xs font-bold flex items-center justify-center gap-1.5';
+          document.getElementById('pay-cod').className = !isRzp 
+            ? 'px-3 py-2.5 rounded-2xl border-2 border-primary bg-primary-50/50 text-primary text-xs font-bold flex items-center justify-center gap-1.5' 
+            : 'px-3 py-2.5 rounded-2xl border-2 border-neutral-200 text-neutral-600 text-xs font-bold flex items-center justify-center gap-1.5';
+        }
+
+        function renderCart() {
+          const container = document.getElementById('cart-items-list');
+          if (!cart.items || cart.items.length === 0) {
+            container.innerHTML = `
+              <div class="bg-white rounded-3xl p-12 text-center border border-neutral-100 space-y-4">
+                <i data-lucide="shopping-cart" class="w-12 h-12 text-neutral-300 mx-auto"></i>
+                <h3 class="text-lg font-bold text-neutral-800">Your Basket is Empty</h3>
+                <p class="text-xs text-neutral-500 max-w-sm mx-auto">Explore local seasonal produce and support farmers directly.</p>
+                <a href="search.html" class="btn-primary rounded-full px-6 py-2.5 font-bold text-xs inline-block">Browse Produce</a>
+              </div>
+            `;
+            document.getElementById('checkout-btn').disabled = true;
+            renderSummary();
+            if (window.lucide) lucide.createIcons();
+            return;
+          }
+
+          document.getElementById('checkout-btn').disabled = false;
+          container.innerHTML = cart.items.map((item, idx) => `
+            <div class="bg-white rounded-3xl p-4 sm:p-5 border border-neutral-100 shadow-sm flex items-center justify-between gap-4">
+              <div class="flex items-center gap-4">
+                <img src="${item.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=100'}" class="w-16 h-16 rounded-2xl object-cover shadow-sm shrink-0">
+                <div>
+                  <h3 class="font-extrabold text-neutral-900 text-base">${item.name}</h3>
+                  <p class="text-xs text-neutral-500 font-medium">Farm: ${item.farmerName || 'Verified'}</p>
+                  <p class="text-xs font-black text-primary mt-1">${window.formatCurrency(item.price || item.unitPrice)} <span class="text-[10px] font-normal text-neutral-400">/${item.unit||'kg'}</span></p>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-4">
+                <!-- Quantity Selector matching QuantitySelector.tsx -->
+                <div class="flex items-center gap-2 bg-neutral-100 p-1 rounded-2xl">
+                  <button onclick="updateQty(${idx}, -1)" class="w-8 h-8 rounded-xl bg-white text-neutral-800 font-bold flex items-center justify-center shadow-sm hover:bg-neutral-200 transition-colors">-</button>
+                  <span class="w-8 text-center font-extrabold text-sm text-neutral-900">${item.quantity}</span>
+                  <button onclick="updateQty(${idx}, 1)" class="w-8 h-8 rounded-xl bg-white text-neutral-800 font-bold flex items-center justify-center shadow-sm hover:bg-neutral-200 transition-colors">+</button>
+                </div>
+                <div class="text-right min-w-[70px]">
+                  <p class="font-black text-neutral-900 text-base">${window.formatCurrency((item.price||item.unitPrice) * item.quantity)}</p>
+                </div>
+                <button onclick="removeItem(${idx})" class="p-2 text-neutral-400 hover:text-red-500 transition-colors" title="Remove">
+                  <i data-lucide="trash-2" class="w-4 h-4"></i>
+                </button>
+              </div>
+            </div>
+          `).join('');
+
+          renderSummary();
+          if (window.lucide) lucide.createIcons();
+        }
+
+        function updateQty(idx, change) {
+          cart.items[idx].quantity += change;
+          if (cart.items[idx].quantity <= 0) {
+            cart.items.splice(idx, 1);
+          }
+          saveCart();
+        }
+
+        function removeItem(idx) {
+          cart.items.splice(idx, 1);
+          saveCart();
+        }
+
+        function saveCart() {
+          localStorage.setItem('kisanmitra_cart', JSON.stringify(cart));
+          window.dispatchEvent(new Event('storage'));
+          renderCart();
+        }
+
+        function renderSummary() {
+          const subtotal = (cart.items || []).reduce((acc, item) => acc + ((item.price || item.unitPrice) * item.quantity), 0);
+          const freeDelivery = deliveryMode === 'pickup' || subtotal >= FREE_DELIVERY_THRESHOLD;
+          const fee = freeDelivery ? 0 : DELIVERY_FEE;
+          const total = subtotal + fee;
+
+          document.getElementById('summary-subtotal').textContent = window.formatCurrency(subtotal);
+          document.getElementById('summary-fee').textContent = freeDelivery ? 'FREE' : window.formatCurrency(fee);
+          document.getElementById('summary-total').textContent = window.formatCurrency(total);
+
+          // Delivery Meter
+          const meterLabel = document.getElementById('meter-label');
+          const meterBar = document.getElementById('meter-bar');
+          const meterPercent = document.getElementById('meter-percent');
+
+          if (deliveryMode === 'pickup') {
+            meterLabel.textContent = 'Farm Pickup selected (Free delivery applied)';
+            meterBar.style.width = '100%';
+            meterPercent.textContent = '100%';
+          } else if (subtotal >= FREE_DELIVERY_THRESHOLD) {
+            meterLabel.textContent = 'You have unlocked FREE delivery! 🎉';
+            meterBar.style.width = '100%';
+            meterPercent.textContent = '100%';
+          } else {
+            const diff = FREE_DELIVERY_THRESHOLD - subtotal;
+            const pct = Math.min(100, Math.round((subtotal / FREE_DELIVERY_THRESHOLD) * 100));
+            meterLabel.textContent = `Add ${window.formatCurrency(diff)} more for FREE delivery`;
+            meterBar.style.width = pct + '%';
+            meterPercent.textContent = pct + '%';
+          }
+        }
+
+        async function handleCheckout() {
+          const user = window.currentUser;
+          if (!user) {
+            window.location.href = '../login.html';
+            return;
+          }
+
+          if (!cart.items || cart.items.length === 0) return;
+
+          // Address validation if delivery mode
+          let address = null;
+          if (deliveryMode === 'delivery') {
+            const name = document.getElementById('cust-name').value.trim();
+            const phone = document.getElementById('cust-phone').value.trim();
+            const line1 = document.getElementById('cust-address').value.trim();
+            const city = document.getElementById('cust-city').value.trim();
+            const pin = document.getElementById('cust-pin').value.trim();
+
+            if (!name || !phone || !line1 || !city || !pin) {
+              window.toast({ type: 'warning', message: 'Please fill out all delivery address fields.' });
+              return;
+            }
+            address = { name, phone, line1, city, pincode: pin, state: 'India' };
+          }
+
+          const subtotal = cart.items.reduce((acc, i) => acc + ((i.price||i.unitPrice) * i.quantity), 0);
+          const fee = (deliveryMode === 'pickup' || subtotal >= FREE_DELIVERY_THRESHOLD) ? 0 : DELIVERY_FEE;
+          const total = subtotal + fee;
+
+          const btn = document.getElementById('checkout-btn');
+          btn.disabled = true;
+          btn.innerHTML = '<span class="animate-spin mr-2">⏳</span> Processing Checkout...';
+
+          if (paymentMethod === 'razorpay') {
+            // Razorpay Payment Gateway Trigger
+            const options = {
+              key: 'rzp_test_TZYVTc8Sd71rVR',
+              amount: Math.round(total * 100), // paisa
+              currency: 'INR',
+              name: 'KisanMitra',
+              description: 'Farm fresh produce purchase',
+              handler: async function (response) {
+                await commitOrder(user, total, subtotal, fee, address, 'razorpay', response.razorpay_payment_id);
+              },
+              modal: {
+                ondismiss: function() {
+                  btn.disabled = false;
+                  btn.innerHTML = '<span>Place Order</span> <i data-lucide="arrow-right" class="w-4 h-4"></i>';
+                  if (window.lucide) lucide.createIcons();
+                  window.toast({ type: 'warning', message: 'Payment window closed.' });
+                }
+              },
+              prefill: {
+                name: address?.name || user.displayName || '',
+                contact: address?.phone || user.phone || ''
+              },
+              theme: { color: '#2D5016' }
+            };
+
+            const rzp = new Razorpay(options);
+            rzp.on('payment.failed', function (res) {
+              btn.disabled = false;
+              btn.innerHTML = '<span>Place Order</span> <i data-lucide="arrow-right" class="w-4 h-4"></i>';
+              if (window.lucide) lucide.createIcons();
+              const errBox = document.getElementById('checkout-error');
+              errBox.classList.remove('hidden');
+              document.getElementById('checkout-error-msg').textContent = 'Payment Failed: ' + (res.error?.description || 'Transaction declined');
+              window.toast({ type: 'error', message: 'Payment Failed.' });
+            });
+            rzp.open();
+          } else {
+            // Cash on Delivery
+            await commitOrder(user, total, subtotal, fee, address, 'cod', null);
+          }
+        }
+
+        async function commitOrder(user, total, subtotal, fee, address, paymentType, paymentId) {
+          try {
+            // Group items by farmer
+            const farmerId = cart.items[0]?.farmerId || 'unknown';
+            const farmerName = cart.items[0]?.farmerName || 'Verified Farm';
+
+            const orderDoc = {
+              buyerId: user.uid,
+              buyerName: address?.name || user.displayName || user.name || 'Buyer',
+              buyerPhone: address?.phone || user.phone || '',
+              farmerId: farmerId,
+              farmerName: farmerName,
+              items: cart.items,
+              subtotal: subtotal,
+              deliveryFee: fee,
+              total: total,
+              deliveryType: deliveryMode,
+              deliveryAddress: address,
+              paymentMethod: paymentType,
+              paymentId: paymentId || null,
+              status: 'pending',
+              createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            const ref = await window.FM.db.collection('orders').add(orderDoc);
+
+            // Clear cart
+            localStorage.removeItem('kisanmitra_cart');
+            window.dispatchEvent(new Event('storage'));
+
+            window.toast({ type: 'success', message: 'Order placed successfully!' });
+            setTimeout(() => {
+              window.location.href = 'orders.html';
+            }, 1000);
+
+          } catch(err) {
+            console.error(err);
+            window.toast({ type: 'error', message: 'Failed to record order: ' + err.message });
+            const btn = document.getElementById('checkout-btn');
+            btn.disabled = false;
+            btn.innerHTML = '<span>Place Order</span> <i data-lucide="arrow-right" class="w-4 h-4"></i>';
+            if (window.lucide) lucide.createIcons();
+          }
+        }
+      </script>
+
+    </div>
+  </main>
+</body>
+</html>

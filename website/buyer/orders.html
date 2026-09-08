@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Orders | KisanMitra</title>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            primary: {
+              DEFAULT: '#2D5016',
+              50:  '#F2F7EC',
+              100: '#E0EDD0',
+              200: '#BEDBA2',
+              300: '#90C168',
+              400: '#68A83B',
+              500: '#4A7C23',
+              600: '#2D5016',
+              700: '#1A3009',
+              800: '#0E1C05',
+              900: '#060D02',
+            },
+            accent: {
+              DEFAULT: '#C17F24',
+              50:  '#FDF8EE',
+              100: '#F9EDD1',
+              200: '#F3D89E',
+              300: '#EAC060',
+              400: '#DEA737',
+              500: '#C17F24',
+              600: '#9A6119',
+              700: '#744912',
+              800: '#4E300B',
+              900: '#281805',
+            },
+            neutral: {
+              50:  '#F9F7F2',
+              100: '#F0EDE6',
+              200: '#E2DDD5',
+              300: '#C8C2B8',
+              400: '#A09890',
+              500: '#7A7268',
+              600: '#5A5450',
+              700: '#403C38',
+              800: '#2A2724',
+              900: '#1A1A18',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="../styles/main.css">
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="../firebase-config.js"></script>
+  <script src="../js/app.js"></script>
+  <script src="../js/cloudinary.js"></script>
+  <script src="../js/produce-images.js"></script>
+  <script src="../js/panel.js"></script>
+</head>
+<body class="bg-neutral-50 text-neutral-900 font-sans antialiased min-h-screen flex flex-col">
+  <main id="main-content" class="flex-1 lg:ml-72 transition-all duration-300 min-h-screen flex flex-col">
+    <div class="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
+
+      <div class="space-y-6">
+        <div>
+          <h1 class="text-3xl font-extrabold text-neutral-900 tracking-tight">My Orders</h1>
+          <p class="text-sm text-neutral-500 mt-1">Track your deliveries and order history.</p>
+        </div>
+
+        <div id="buyer-orders-list" class="space-y-4">
+          <p class="text-center text-neutral-400 py-12 bg-white rounded-3xl border border-neutral-100">Loading your orders...</p>
+        </div>
+      </div>
+
+      <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          window.initPanel({ role: 'buyer', currentPage: 'orders', title: 'My Order History' });
+
+          document.addEventListener('user-loaded', async (e) => {
+            const user = e.detail;
+            try {
+              const snap = await window.FM.db.collection('orders').where('buyerId', '==', user.uid).get();
+              const orders = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+              const container = document.getElementById('buyer-orders-list');
+              if (orders.length === 0) {
+                container.innerHTML = `
+                  <div class="bg-white rounded-3xl p-12 text-center border border-neutral-100 space-y-4">
+                    <i data-lucide="clipboard-list" class="w-12 h-12 text-neutral-300 mx-auto"></i>
+                    <h3 class="text-lg font-bold text-neutral-800">No Orders Placed Yet</h3>
+                    <p class="text-xs text-neutral-500 max-w-sm mx-auto">Explore produce from farmers and place your first order today!</p>
+                    <a href="search.html" class="btn-primary rounded-full px-6 py-2.5 font-bold text-xs inline-block">Explore Produce</a>
+                  </div>
+                `;
+              } else {
+                orders.sort((a,b) => {
+                  const ta = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
+                  const tb = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
+                  return tb - ta;
+                });
+
+                container.innerHTML = orders.map(o => {
+                  const dt = o.createdAt?.toDate ? o.createdAt.toDate() : new Date(o.createdAt);
+                  const dateStr = dt.toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' });
+                  const itemsSummary = (o.items || []).map(i => `${i.name} (${i.quantity} ${i.unit||'kg'})`).join(', ');
+
+                  return `
+                    <div class="bg-white rounded-3xl p-6 border border-neutral-100 shadow-sm hover:shadow-md transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+                      <div class="space-y-2">
+                        <div class="flex items-center gap-3">
+                          <span class="font-mono font-bold text-neutral-700 bg-neutral-100 px-3 py-1 rounded-lg text-xs">#${o.id.slice(0,8)}</span>
+                          ${window.getOrderStatusBadge(o.status || 'pending')}
+                          <span class="text-xs text-neutral-400">${dateStr}</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-neutral-900">Farm: ${o.farmerName || 'Verified Farm'}</h3>
+                        <p class="text-xs text-neutral-500 line-clamp-1 max-w-xl">${itemsSummary || 'Produce items'}</p>
+                      </div>
+                      <div class="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-3 pt-4 sm:pt-0 border-t sm:border-t-0 border-neutral-100">
+                        <div class="text-right">
+                          <p class="text-xs text-neutral-400 font-semibold uppercase">Total</p>
+                          <p class="text-2xl font-black text-primary">${window.formatCurrency(o.total)}</p>
+                        </div>
+                        <a href="order-detail.html?id=${o.id}" class="btn-primary rounded-full px-5 py-2 text-xs font-bold shadow-md inline-flex items-center gap-1">
+                          Order Details <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                        </a>
+                      </div>
+                    </div>
+                  `;
+                }).join('');
+              }
+              if (window.lucide) lucide.createIcons();
+            } catch(err) {
+              console.error(err);
+            }
+          });
+        });
+      </script>
+
+    </div>
+  </main>
+</body>
+</html>

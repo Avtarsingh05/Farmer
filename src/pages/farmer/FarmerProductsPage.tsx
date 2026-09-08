@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { getOptimizedImageUrl } from '@/services/cloudinaryService';
 import { Edit, Trash2, Plus, Search, Package } from 'lucide-react';
 import { useAuth } from '@/hooks';
 import { getFarmerProducts, deleteProduct } from '@/services/productService';
@@ -137,7 +138,7 @@ export default function FarmerProductsPage() {
               <div key={product.id} className="group bg-white border border-neutral-100 rounded-3xl overflow-hidden hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:-translate-y-1 transition-all duration-300 animate-fade-up" style={{ animationDelay: `${(idx % 10) * 50}ms` }}>
                 <div className="relative aspect-square overflow-hidden bg-neutral-50">
                   <img 
-                    src={product.images[0]?.secureUrl || 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=500&auto=format&fit=crop&q=80'} 
+                    src={getOptimizedImageUrl(product.images[0], 500)} 
                     alt={product.name} 
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
                     onError={(e) => {

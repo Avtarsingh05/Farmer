@@ -8,7 +8,7 @@ import { getProduct } from '@/services/productService';
 import type { Product } from '@/types';
 import { formatCurrency, formatPricePerUnit } from '@/utils/currency';
 import { useAuth, useCart } from '@/hooks';
-import { getProductThumbnail } from '@/services/cloudinaryService';
+import { getOptimizedImageUrl } from '@/services/cloudinaryService';
 import { getMandiBenchmark } from '@/services/mockStore';
 import { Badge } from '@/components/ui/Badge';
 
@@ -94,9 +94,7 @@ export default function ProductDetailPage() {
 
   const DEFAULT_PRODUCE_IMAGE = 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=900&auto=format&fit=crop&q=80';
   const primaryImage = product.images?.[0];
-  const imageUrl = primaryImage?.secureUrl
-    || (primaryImage?.publicId ? getProductThumbnail(primaryImage.publicId, 800) : DEFAULT_PRODUCE_IMAGE)
-    || DEFAULT_PRODUCE_IMAGE;
+  const imageUrl = getOptimizedImageUrl(primaryImage, 800);
   const isAvailable = ['available', 'limited'].includes(product.availabilityStatus);
   const cartItem = getItem(product.id);
   const mandi = getMandiBenchmark(product.id);
@@ -135,7 +133,7 @@ export default function ProductDetailPage() {
               {product.images.slice(1, 5).map((img, i) => (
                 <div key={i} className="aspect-square rounded-lg overflow-hidden bg-neutral-100 border border-neutral-200">
                   <img
-                    src={img.secureUrl || (img.publicId ? getProductThumbnail(img.publicId, 200) : DEFAULT_PRODUCE_IMAGE)}
+                    src={getOptimizedImageUrl(img, 200)}
                     alt={`${product.name} image ${i + 2}`}
                     onError={(e) => {
                       (e.currentTarget as HTMLImageElement).src = DEFAULT_PRODUCE_IMAGE;

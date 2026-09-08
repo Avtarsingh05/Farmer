@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How It Works | KisanMitra</title>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- FontAwesome -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: { sans: ['Inter', 'sans-serif'] },
+            colors: {
+              primary: {
+                DEFAULT: '#2D5016',
+                dark: '#1A3009',
+                50: '#f0fdf4',
+                100: '#dcfce7',
+                200: '#bbf7d0',
+                600: '#16a34a',
+                700: '#2D5016',
+                800: '#1A3009',
+                900: '#0f1f06',
+              },
+              accent: {
+                DEFAULT: '#C17F24',
+                50: '#fff8eb',
+                100: '#ffefc6',
+              },
+              neutral: {
+                50: '#F9F7F2',
+                100: '#F0EDE6',
+                200: '#E2DDD5',
+                300: '#D0C8BD',
+                400: '#B5AA9C',
+                500: '#9A8D7E',
+                600: '#7A7268',
+                700: '#5A5349',
+                800: '#3A352F',
+                900: '#1A1A18',
+              }
+            }
+          }
+        }
+      }
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/nav.js"></script>
+
+</head>
+<body class="bg-neutral-50 min-h-screen flex flex-col font-sans antialiased text-neutral-900">
+    <div id="nav-container"></div>
+
+    <!-- Hero Banner -->
+    <section class="bg-white border-b border-neutral-200 overflow-hidden relative">
+        <div class="absolute inset-0 z-0">
+            <img src="https://images.unsplash.com/photo-1595974482597-4b8da8879bc5?w=2000&auto=format&fit=crop&q=80" alt="Farming" class="w-full h-full object-cover opacity-10">
+        </div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center relative z-10">
+            <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary-50 text-primary text-xs font-bold uppercase tracking-wider mb-6">
+                Simple & Transparent
+            </span>
+            <h1 class="text-4xl md:text-6xl font-extrabold text-neutral-900 mb-6 tracking-tight">
+                How KisanMitra Works
+            </h1>
+            <p class="text-xl md:text-2xl text-neutral-600 max-w-3xl mx-auto font-medium">
+                A simple, direct process connecting Indian farms directly to household and business buyers.
+            </p>
+        </div>
+    </section>
+
+    <!-- For Farmers Section -->
+    <section class="py-24 px-4 sm:px-6 lg:px-8 bg-white border-b border-neutral-200">
+        <div class="max-w-7xl mx-auto">
+            <div class="mb-16 text-center">
+                <span class="inline-block py-1 px-3 rounded-full bg-primary/10 text-primary text-xs font-bold uppercase tracking-widest mb-4">For Farmers</span>
+                <h2 class="text-3xl md:text-4xl font-extrabold text-neutral-900">Sell your harvest directly</h2>
+            </div>
+            <div class="grid md:grid-cols-4 gap-8 max-w-6xl mx-auto">
+                <div class="bg-neutral-50 p-6 rounded-3xl border border-neutral-100 hover:shadow-md transition-all">
+                    <div class="w-12 h-12 rounded-2xl bg-primary text-white flex items-center justify-center font-bold text-lg mb-4">1</div>
+                    <h3 class="text-lg font-bold text-neutral-900 mb-2">Register & Verify</h3>
+                    <p class="text-neutral-600 text-sm leading-relaxed">Sign up and complete basic verification to gain trust badge recognition with city buyers.</p>
+                </div>
+                <div class="bg-neutral-50 p-6 rounded-3xl border border-neutral-100 hover:shadow-md transition-all">
+                    <div class="w-12 h-12 rounded-2xl bg-primary text-white flex items-center justify-center font-bold text-lg mb-4">2</div>
+                    <h3 class="text-lg font-bold text-neutral-900 mb-2">List Produce</h3>
+                    <p class="text-neutral-600 text-sm leading-relaxed">Add crop name, quality grade, quantity, and set your own price backed by mandi rate references.</p>
+                </div>
+                <div class="bg-neutral-50 p-6 rounded-3xl border border-neutral-100 hover:shadow-md transition-all">
+                    <div class="w-12 h-12 rounded-2xl bg-primary text-white flex items-center justify-center font-bold text-lg mb-4">3</div>
+                    <h3 class="text-lg font-bold text-neutral-900 mb-2">Receive Orders</h3>
+                    <p class="text-neutral-600 text-sm leading-relaxed">Get instant order notifications on your phone. Accept or schedule fulfillment easily.</p>
+                </div>
+                <div class="bg-neutral-50 p-6 rounded-3xl border border-neutral-100 hover:shadow-md transition-all">
+                    <div class="w-12 h-12 rounded-2xl bg-primary text-white flex items-center justify-center font-bold text-lg mb-4">4</div>
+                    <h3 class="text-lg font-bold text-neutral-900 mb-2">Dispatch & Earn</h3>
+                    <p class="text-neutral-600 text-sm leading-relaxed">Hand over produce for delivery and receive secure, guaranteed payment directly.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- For Buyers Section -->
+    <section class="py-24 px-4 sm:px-6 lg:px-8 bg-neutral-50">
+        <div class="max-w-7xl mx-auto">
+            <div class="mb-16 text-center">
+                <span class="inline-block py-1 px-3 rounded-full bg-accent-50 text-accent text-xs font-bold uppercase tracking-widest mb-4">For Buyers</span>
+                <h2 class="text-3xl md:text-4xl font-extrabold text-neutral-900">Fresh produce delivered to your doorstep</h2>
+            </div>
+            <div class="grid md:grid-cols-4 gap-8 max-w-6xl mx-auto">
+                <div class="bg-white p-6 rounded-3xl border border-neutral-200 shadow-sm hover:shadow-md transition-all">
+                    <div class="w-12 h-12 rounded-2xl bg-accent text-white flex items-center justify-center font-bold text-lg mb-4">1</div>
+                    <h3 class="text-lg font-bold text-neutral-900 mb-2">Browse the Mandi</h3>
+                    <p class="text-neutral-600 text-sm leading-relaxed">Explore farm-fresh produce with clear price breakdowns and origin details.</p>
+                </div>
+                <div class="bg-white p-6 rounded-3xl border border-neutral-200 shadow-sm hover:shadow-md transition-all">
+                    <div class="w-12 h-12 rounded-2xl bg-accent text-white flex items-center justify-center font-bold text-lg mb-4">2</div>
+                    <h3 class="text-lg font-bold text-neutral-900 mb-2">Order Directly</h3>
+                    <p class="text-neutral-600 text-sm leading-relaxed">Select quantities with no minimum order hurdles and choose home delivery or pickup.</p>
+                </div>
+                <div class="bg-white p-6 rounded-3xl border border-neutral-200 shadow-sm hover:shadow-md transition-all">
+                    <div class="w-12 h-12 rounded-2xl bg-accent text-white flex items-center justify-center font-bold text-lg mb-4">3</div>
+                    <h3 class="text-lg font-bold text-neutral-900 mb-2">Pay Securely</h3>
+                    <p class="text-neutral-600 text-sm leading-relaxed">Checkout with Razorpay online payment or choose Cash on Delivery with zero risk.</p>
+                </div>
+                <div class="bg-white p-6 rounded-3xl border border-neutral-200 shadow-sm hover:shadow-md transition-all">
+                    <div class="w-12 h-12 rounded-2xl bg-accent text-white flex items-center justify-center font-bold text-lg mb-4">4</div>
+                    <h3 class="text-lg font-bold text-neutral-900 mb-2">Track Delivery</h3>
+                    <p class="text-neutral-600 text-sm leading-relaxed">Get real-time updates as your order transitions from farm dispatch to your doorstep.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+    <script>
+        window.addEventListener('load', () => { if(window.lucide) lucide.createIcons(); });
+    </script>
+</body>
+</html>

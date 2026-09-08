@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Moderate Produce | KisanMitra Admin</title>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            primary: {
+              DEFAULT: '#2D5016',
+              50:  '#F2F7EC',
+              100: '#E0EDD0',
+              200: '#BEDBA2',
+              300: '#90C168',
+              400: '#68A83B',
+              500: '#4A7C23',
+              600: '#2D5016',
+              700: '#1A3009',
+              800: '#0E1C05',
+              900: '#060D02',
+            },
+            accent: {
+              DEFAULT: '#C17F24',
+              50:  '#FDF8EE',
+              100: '#F9EDD1',
+              200: '#F3D89E',
+              300: '#EAC060',
+              400: '#DEA737',
+              500: '#C17F24',
+              600: '#9A6119',
+              700: '#744912',
+              800: '#4E300B',
+              900: '#281805',
+            },
+            neutral: {
+              50:  '#F9F7F2',
+              100: '#F0EDE6',
+              200: '#E2DDD5',
+              300: '#C8C2B8',
+              400: '#A09890',
+              500: '#7A7268',
+              600: '#5A5450',
+              700: '#403C38',
+              800: '#2A2724',
+              900: '#1A1A18',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="../styles/main.css">
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="../firebase-config.js"></script>
+  <script src="../js/app.js"></script>
+  <script src="../js/cloudinary.js"></script>
+  <script src="../js/produce-images.js"></script>
+  <script src="../js/panel.js"></script>
+</head>
+<body class="bg-neutral-50 text-neutral-900 font-sans antialiased min-h-screen flex flex-col">
+  <main id="main-content" class="flex-1 lg:ml-72 transition-all duration-300 min-h-screen flex flex-col">
+    <div class="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
+
+      <div class="space-y-6">
+        <div>
+          <h1 class="text-3xl font-extrabold text-neutral-900 tracking-tight">Moderate Listings</h1>
+          <p class="text-sm text-neutral-500 mt-1">Platform-wide produce listings management.</p>
+        </div>
+
+        <div class="bg-white rounded-3xl border border-neutral-100 shadow-sm overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left">
+              <thead>
+                <tr class="border-b border-neutral-100 text-xs font-semibold text-neutral-400 uppercase tracking-wider bg-neutral-50/50">
+                  <th class="py-4 px-6">Product</th>
+                  <th class="py-4 px-4">Farmer</th>
+                  <th class="py-4 px-4">Category</th>
+                  <th class="py-4 px-4">Price</th>
+                  <th class="py-4 px-4">Stock</th>
+                  <th class="py-4 px-4">Status</th>
+                  <th class="py-4 px-6 text-right">Moderation</th>
+                </tr>
+              </thead>
+              <tbody id="admin-prod-tbody" class="divide-y divide-neutral-100 text-sm">
+                <tr><td colspan="7" class="py-12 text-center text-neutral-400">Loading produce listings...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <script>
+        let adminProds = [];
+
+        document.addEventListener('DOMContentLoaded', () => {
+          window.initPanel({ role: 'admin', currentPage: 'products', title: 'Produce Moderation' });
+          loadProds();
+        });
+
+        async function loadProds() {
+          try {
+            const snap = await window.FM.db.collection('products').get();
+            adminProds = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+            const tbody = document.getElementById('admin-prod-tbody');
+            if (adminProds.length === 0) {
+              tbody.innerHTML = '<tr><td colspan="7" class="py-12 text-center text-neutral-400">No products listed.</td></tr>';
+              return;
+            }
+
+            tbody.innerHTML = adminProds.map(p => `
+              <tr class="hover:bg-neutral-50/50">
+                <td class="py-4 px-6">
+                  <div class="flex items-center gap-3">
+                    <img src="${p.images?.[0]?.secureUrl || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=100'}" class="w-10 h-10 rounded-xl object-cover">
+                    <span class="font-bold text-neutral-900">${p.name}</span>
+                  </div>
+                </td>
+                <td class="py-4 px-4 text-xs font-semibold text-neutral-700">${p.farmerName || 'Farmer'}</td>
+                <td class="py-4 px-4 text-xs text-neutral-500">${p.category || 'General'}</td>
+                <td class="py-4 px-4 font-bold text-primary">${window.formatCurrency(p.askingPrice||p.price)}</td>
+                <td class="py-4 px-4 font-semibold text-xs">${p.stock || 0} ${p.unit || 'kg'}</td>
+                <td class="py-4 px-4">
+                  <span class="px-2.5 py-1 text-xs font-bold rounded-full ${p.status === 'active' ? 'bg-emerald-100 text-emerald-800' : 'bg-neutral-100 text-neutral-600'}">
+                    ${p.status || 'active'}
+                  </span>
+                </td>
+                <td class="py-4 px-6 text-right">
+                  <div class="flex items-center justify-end gap-2">
+                    <button onclick="toggleActive('${p.id}', '${p.status === 'active' ? 'inactive' : 'active'}')" class="px-3 py-1 rounded-xl text-xs font-bold bg-neutral-100 hover:bg-neutral-200">
+                      ${p.status === 'active' ? 'Deactivate' : 'Activate'}
+                    </button>
+                    <button onclick="delProd('${p.id}')" class="p-1.5 text-neutral-400 hover:text-red-600" title="Delete">
+                      <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            `);
+            if (window.lucide) lucide.createIcons();
+          } catch(err) {
+            console.error(err);
+          }
+        }
+
+        async function toggleActive(id, status) {
+          try {
+            await window.FM.db.collection('products').doc(id).update({ status });
+            window.toast({ type: 'success', message: 'Product status changed to ' + status });
+            loadProds();
+          } catch(err) {
+            window.toast({ type: 'error', message: 'Action failed.' });
+          }
+        }
+
+        async function delProd(id) {
+          if (!confirm('Permanently delete this product listing?')) return;
+          try {
+            await window.FM.db.collection('products').doc(id).delete();
+            window.toast({ type: 'success', message: 'Product deleted.' });
+            loadProds();
+          } catch(err) {
+            window.toast({ type: 'error', message: 'Failed to delete.' });
+          }
+        }
+      </script>
+
+    </div>
+  </main>
+</body>
+</html>

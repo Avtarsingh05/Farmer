@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verified Farmers | KisanMitra</title>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- FontAwesome -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: { sans: ['Inter', 'sans-serif'] },
+            colors: {
+              primary: {
+                DEFAULT: '#2D5016',
+                dark: '#1A3009',
+                50: '#f0fdf4',
+                100: '#dcfce7',
+                200: '#bbf7d0',
+                600: '#16a34a',
+                700: '#2D5016',
+                800: '#1A3009',
+                900: '#0f1f06',
+              },
+              accent: {
+                DEFAULT: '#C17F24',
+                50: '#fff8eb',
+                100: '#ffefc6',
+              },
+              neutral: {
+                50: '#F9F7F2',
+                100: '#F0EDE6',
+                200: '#E2DDD5',
+                300: '#D0C8BD',
+                400: '#B5AA9C',
+                500: '#9A8D7E',
+                600: '#7A7268',
+                700: '#5A5349',
+                800: '#3A352F',
+                900: '#1A1A18',
+              }
+            }
+          }
+        }
+      }
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/nav.js"></script>
+
+</head>
+<body class="bg-neutral-50 min-h-screen flex flex-col font-sans antialiased text-neutral-900">
+    <div id="nav-container"></div>
+
+    <!-- Header Banner -->
+    <section class="bg-white border-b border-neutral-200 py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-50 text-primary text-xs font-bold uppercase tracking-wider mb-4">
+                <i data-lucide="shield-check" class="w-4 h-4"></i> Verified Producers
+            </span>
+            <h1 class="text-3xl md:text-5xl font-extrabold text-neutral-900 mb-4 tracking-tight">Meet Our Verified Farmers</h1>
+            <p class="text-lg text-neutral-600 max-w-2xl mx-auto">Discover the dedicated individuals growing fresh produce across India.</p>
+        </div>
+    </section>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex-1 w-full">
+        <!-- Search & Filter Bar -->
+        <div class="bg-white p-4 rounded-2xl shadow-sm border border-neutral-200 mb-8 flex flex-col sm:flex-row gap-4">
+            <div class="relative flex-1">
+                <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400 pointer-events-none"></i>
+                <input type="search" id="searchFarmer" placeholder="Search farmers by name or location..." class="w-full pl-10 pr-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm font-medium">
+            </div>
+            <select id="stateFilter" class="py-3 px-4 bg-neutral-50 border border-neutral-200 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/20">
+                <option value="">All States</option>
+                <option value="Maharashtra">Maharashtra</option>
+                <option value="Punjab">Punjab</option>
+                <option value="Karnataka">Karnataka</option>
+                <option value="Madhya Pradesh">Madhya Pradesh</option>
+                <option value="Tamil Nadu">Tamil Nadu</option>
+            </select>
+        </div>
+
+        <!-- Farmers Grid -->
+        <div id="farmersGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Loading state -->
+            <div class="col-span-full text-center py-16 text-neutral-500">
+                <div class="inline-block animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full mb-3"></div>
+                <p class="font-medium">Loading verified farmers...</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="footer-container"></div>
+
+    <script>
+        const SAMPLE_FARMERS = [
+            { userId: '1', displayName: 'Ramesh Patil', district: 'Nashik', state: 'Maharashtra', isVerified: true, photoUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&auto=format&fit=crop&q=80', crops: 'Onions, Grapes, Tomatoes' },
+            { userId: '2', displayName: 'Sukhwinder Singh', district: 'Amritsar', state: 'Punjab', isVerified: true, photoUrl: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300&auto=format&fit=crop&q=80', crops: 'Basmati Rice, Wheat' },
+            { userId: '3', displayName: 'Anand Gowda', district: 'Mandya', state: 'Karnataka', isVerified: true, photoUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&auto=format&fit=crop&q=80', crops: 'Sugarcane, Bananas' },
+            { userId: '4', displayName: 'Mahesh Sharma', district: 'Sehore', state: 'Madhya Pradesh', isVerified: true, photoUrl: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=300&auto=format&fit=crop&q=80', crops: 'Soybean, Garlic' },
+            { userId: '5', displayName: 'P. Murugesan', district: 'Salem', state: 'Tamil Nadu', isVerified: true, photoUrl: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300&auto=format&fit=crop&q=80', crops: 'Turmeric, Coconut' },
+            { userId: '6', displayName: 'Kavita Deshmukh', district: 'Pune', state: 'Maharashtra', isVerified: true, photoUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300&auto=format&fit=crop&q=80', crops: 'Strawberries, Exotic Veggies' }
+        ];
+
+        function renderFarmers(list) {
+            const grid = document.getElementById('farmersGrid');
+            if (!grid) return;
+            if (list.length === 0) {
+                grid.innerHTML = '<div class="col-span-full text-center py-16 text-neutral-500 font-medium">No farmers match your criteria.</div>';
+                return;
+            }
+            grid.innerHTML = list.map(f => `
+                <div class="bg-white rounded-3xl p-6 border border-neutral-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group">
+                    <div>
+                        <div class="flex items-start gap-4 mb-4">
+                            <div class="w-16 h-16 rounded-2xl bg-primary/10 overflow-hidden shadow-sm shrink-0 border border-neutral-100">
+                                <img src="${f.photoUrl}" alt="${f.displayName}" class="w-full h-full object-cover">
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h3 class="font-bold text-lg text-neutral-900 group-hover:text-primary transition-colors truncate">${f.displayName}</h3>
+                                <div class="inline-flex items-center gap-1 text-green-700 bg-green-50 px-2.5 py-0.5 rounded-full text-xs font-semibold my-1 border border-green-200/50">
+                                    <i data-lucide="shield-check" class="w-3.5 h-3.5"></i> Verified Farmer
+                                </div>
+                                <div class="flex items-center gap-1.5 text-xs text-neutral-500">
+                                    <i data-lucide="map-pin" class="w-3.5 h-3.5 text-neutral-400"></i> ${f.district}, ${f.state}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-neutral-50 rounded-xl p-3 text-xs text-neutral-600 mb-4 font-medium">
+                            <span class="text-neutral-400 block mb-1">Crops Grown:</span> ${f.crops}
+                        </div>
+                    </div>
+                    <a href="farmer-profile.html?id=${f.userId}" class="inline-flex items-center justify-between w-full pt-3 border-t border-neutral-100 text-xs font-bold text-primary group-hover:underline">
+                        <span>View Harvest & Profile</span>
+                        <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i>
+                    </a>
+                </div>
+            `).join('');
+            if(window.lucide) lucide.createIcons();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderFarmers(SAMPLE_FARMERS);
+
+            const searchInput = document.getElementById('searchFarmer');
+            const stateFilter = document.getElementById('stateFilter');
+
+            function filterData() {
+                const q = searchInput.value.toLowerCase();
+                const st = stateFilter.value;
+                const filtered = SAMPLE_FARMERS.filter(f => {
+                    const matchQ = f.displayName.toLowerCase().includes(q) || f.district.toLowerCase().includes(q);
+                    const matchSt = !st || f.state === st;
+                    return matchQ && matchSt;
+                });
+                renderFarmers(filtered);
+            }
+
+            if (searchInput) searchInput.addEventListener('input', filterData);
+            if (stateFilter) stateFilter.addEventListener('change', filterData);
+        });
+    </script>
+</body>
+</html>

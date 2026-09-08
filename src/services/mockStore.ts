@@ -12,49 +12,40 @@ export function disableFirestore(reason?: string) {
   if (!firestoreDisabled) {
     console.warn(`[KisanMitra] Live Firestore bypassed (${reason || 'unprovisioned/offline'}). Instant local high-speed store active.`);
     firestoreDisabled = true;
-    try {
-      sessionStorage.setItem('kisanmitra_fs_disabled', 'true');
-    } catch {}
+
   }
 }
 
 export function enableFirestore() {
   firestoreDisabled = false;
-  try {
-    sessionStorage.removeItem('kisanmitra_fs_disabled');
-  } catch {}
+
 }
 
 export function isFirestoreDisabled(): boolean {
-  if (firestoreDisabled) return true;
-  try {
-    if (sessionStorage.getItem('kisanmitra_fs_disabled') === 'true') {
-      firestoreDisabled = true;
-      return true;
-    }
-  } catch {}
-  return false;
+  return firestoreDisabled;
 }
 
 // Helper to determine if we should use local high-speed store
 export function isDemoMode(): boolean {
+  // Check session-level override first (e.g. manually disabled by admin)
   if (isFirestoreDisabled()) return true;
   const key = import.meta.env.VITE_FIREBASE_API_KEY;
-  if (!key || key.startsWith('AIzaSyDemo') || key === 'YOUR_FIREBASE_API_KEY') {
+  // Only use demo mode if no real API key is present
+  if (!key || key === 'YOUR_FIREBASE_API_KEY' || key === '' ) {
     return true;
   }
   return false;
 }
 
 /**
- * Wraps any Firestore promise with an aggressive timeout (default 800ms).
- * If Firestore hangs because the database is not provisioned, this prevents the UI from freezing.
+ * Wraps any Firestore promise with a timeout (default 5000ms).
+ * Only permanently disables Firestore on hard provisioning errors,
+ * NOT on temporary network timeouts.
  */
-export async function withFirestoreTimeout<T>(promise: Promise<T>, timeoutMs = 800): Promise<T> {
+export async function withFirestoreTimeout<T>(promise: Promise<T>, timeoutMs = 5000): Promise<T> {
   let timer: ReturnType<typeof setTimeout>;
   const timeoutPromise = new Promise<never>((_, reject) => {
     timer = setTimeout(() => {
-      disableFirestore(`Firestore operation timed out after ${timeoutMs}ms`);
       reject(new Error(`Firestore timed out after ${timeoutMs}ms`));
     }, timeoutMs);
   });
@@ -62,12 +53,11 @@ export async function withFirestoreTimeout<T>(promise: Promise<T>, timeoutMs = 8
     return await Promise.race([promise, timeoutPromise]);
   } catch (err: unknown) {
     const msg = String(err);
+    // Only permanently disable on hard infra errors (database not provisioned, etc.)
     if (
-      msg.includes('not found') ||
-      msg.includes('Database') ||
-      msg.includes('permission-denied') ||
-      msg.includes('unavailable') ||
-      msg.includes('timed out')
+      msg.includes('Cloud Firestore API') ||
+      msg.includes('database') && msg.includes('not found') ||
+      msg.includes('NOT_FOUND') && msg.includes('Database')
     ) {
       disableFirestore(msg);
     }

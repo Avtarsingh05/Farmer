@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add / Edit Product | KisanMitra</title>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            primary: {
+              DEFAULT: '#2D5016',
+              50:  '#F2F7EC',
+              100: '#E0EDD0',
+              200: '#BEDBA2',
+              300: '#90C168',
+              400: '#68A83B',
+              500: '#4A7C23',
+              600: '#2D5016',
+              700: '#1A3009',
+              800: '#0E1C05',
+              900: '#060D02',
+            },
+            accent: {
+              DEFAULT: '#C17F24',
+              50:  '#FDF8EE',
+              100: '#F9EDD1',
+              200: '#F3D89E',
+              300: '#EAC060',
+              400: '#DEA737',
+              500: '#C17F24',
+              600: '#9A6119',
+              700: '#744912',
+              800: '#4E300B',
+              900: '#281805',
+            },
+            neutral: {
+              50:  '#F9F7F2',
+              100: '#F0EDE6',
+              200: '#E2DDD5',
+              300: '#C8C2B8',
+              400: '#A09890',
+              500: '#7A7268',
+              600: '#5A5450',
+              700: '#403C38',
+              800: '#2A2724',
+              900: '#1A1A18',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="../styles/main.css">
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="../firebase-config.js"></script>
+  <script src="../js/app.js"></script>
+  <script src="../js/cloudinary.js"></script>
+  <script src="../js/produce-images.js"></script>
+  <script src="../js/panel.js"></script>
+</head>
+<body class="bg-neutral-50 text-neutral-900 font-sans antialiased min-h-screen flex flex-col">
+  <main id="main-content" class="flex-1 lg:ml-72 transition-all duration-300 min-h-screen flex flex-col">
+    <div class="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
+
+      <div class="max-w-4xl mx-auto space-y-8">
+        <div class="flex items-center justify-between">
+          <div>
+            <a href="products.html" class="text-neutral-500 text-xs font-bold hover:text-primary mb-2 inline-flex items-center gap-1">
+              <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Back to Products
+            </a>
+            <h1 id="form-title" class="text-3xl font-extrabold text-neutral-900 tracking-tight">Add New Produce</h1>
+          </div>
+        </div>
+
+        <form id="product-form" class="space-y-6">
+          <div class="bg-white rounded-3xl p-6 sm:p-8 border border-neutral-100 shadow-sm space-y-6">
+            <!-- Product Name with Live Stock Suggestions -->
+            <div>
+              <label class="block text-sm font-bold text-neutral-800 mb-2">Produce Name *</label>
+              <input type="text" id="name" required placeholder="e.g. Fresh Red Tomatoes, Alphonso Mangoes, Basmati Rice" 
+                     class="w-full px-4 py-3 rounded-2xl bg-neutral-50 border border-neutral-200 focus:outline-none focus:border-primary font-medium">
+              <p class="text-xs text-neutral-500 mt-1.5">Type crop name to automatically preview and pick stock images below.</p>
+            </div>
+
+            <!-- Image Selection Tabs (Stock Images vs Upload) -->
+            <div class="border border-neutral-200 rounded-3xl p-5 bg-neutral-50/50 space-y-4">
+              <div class="flex items-center justify-between">
+                <label class="text-sm font-bold text-neutral-800">Produce Image *</label>
+                <div class="flex gap-2 bg-neutral-200/60 p-1 rounded-full text-xs font-bold">
+                  <button type="button" id="tab-stock" onclick="switchImageTab('stock')" class="px-4 py-1.5 rounded-full bg-white text-neutral-900 shadow-sm">Stock Photos</button>
+                  <button type="button" id="tab-upload" onclick="switchImageTab('upload')" class="px-4 py-1.5 rounded-full text-neutral-600">Upload Photo</button>
+                </div>
+              </div>
+
+              <!-- Selected Image Preview -->
+              <div class="flex items-center gap-4 p-3 bg-white rounded-2xl border border-neutral-200">
+                <img id="selected-image-preview" src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200" class="w-16 h-16 rounded-xl object-cover shrink-0 shadow-sm">
+                <div class="flex-1 min-w-0">
+                  <p class="text-xs font-bold text-neutral-400 uppercase">Selected Photo</p>
+                  <p id="selected-image-name" class="text-sm font-semibold text-neutral-800 truncate">Default Produce Image</p>
+                </div>
+              </div>
+
+              <!-- Tab 1: Stock Images Grid -->
+              <div id="stock-images-panel" class="space-y-3">
+                <p class="text-xs text-neutral-500">Quick-pick from verified produce photography:</p>
+                <div id="stock-grid" class="grid grid-cols-3 sm:grid-cols-6 gap-3 max-h-56 overflow-y-auto p-1 scrollbar-hide">
+                  <!-- Dynamically populated from ProduceImages -->
+                </div>
+              </div>
+
+              <!-- Tab 2: Cloudinary Upload -->
+              <div id="upload-image-panel" class="hidden space-y-3">
+                <div id="drop-zone" class="border-2 border-dashed border-neutral-300 hover:border-primary rounded-2xl p-8 text-center bg-white cursor-pointer transition-colors">
+                  <i data-lucide="upload-cloud" class="w-10 h-10 text-neutral-400 mx-auto mb-2"></i>
+                  <p class="text-sm font-bold text-neutral-700">Click to upload or drag & drop farm photo</p>
+                  <p class="text-xs text-neutral-400 mt-1">PNG, JPG up to 10MB</p>
+                  <input type="file" id="file-input" accept="image/*" class="hidden">
+                </div>
+                <div id="upload-progress-container" class="hidden space-y-2">
+                  <div class="w-full bg-neutral-200 rounded-full h-2 overflow-hidden">
+                    <div id="upload-progress-bar" class="bg-primary h-full transition-all duration-200" style="width: 0%"></div>
+                  </div>
+                  <p id="upload-progress-text" class="text-xs text-neutral-500 text-center font-bold">Uploading to Cloudinary...</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Category & Quality Grade -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-bold text-neutral-800 mb-2">Category *</label>
+                <select id="category" required class="w-full px-4 py-3 rounded-2xl bg-neutral-50 border border-neutral-200 focus:outline-none focus:border-primary font-medium">
+                  <option value="Vegetables">Vegetables</option>
+                  <option value="Fruits">Fruits</option>
+                  <option value="Grains">Grains</option>
+                  <option value="Pulses">Pulses</option>
+                  <option value="Spices">Spices</option>
+                  <option value="Dairy">Dairy</option>
+                  <option value="Oilseeds">Oilseeds</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-bold text-neutral-800 mb-2">Quality Grade *</label>
+                <select id="qualityGrade" required class="w-full px-4 py-3 rounded-2xl bg-neutral-50 border border-neutral-200 focus:outline-none focus:border-primary font-medium">
+                  <option value="Grade A">Grade A (Premium)</option>
+                  <option value="Grade B">Grade B (Standard Market)</option>
+                  <option value="Grade C">Grade C (Processing)</option>
+                  <option value="Mixed">Mixed Quality</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Price & Unit -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-bold text-neutral-800 mb-2">Asking Price (₹) *</label>
+                <input type="number" id="askingPrice" required min="1" step="0.5" placeholder="e.g. 45" 
+                       class="w-full px-4 py-3 rounded-2xl bg-neutral-50 border border-neutral-200 focus:outline-none focus:border-primary font-medium">
+              </div>
+              <div>
+                <label class="block text-sm font-bold text-neutral-800 mb-2">Measurement Unit *</label>
+                <select id="unit" required class="w-full px-4 py-3 rounded-2xl bg-neutral-50 border border-neutral-200 focus:outline-none focus:border-primary font-medium">
+                  <option value="kg">Kilogram (kg)</option>
+                  <option value="quintal">Quintal (100 kg)</option>
+                  <option value="tonne">Tonne</option>
+                  <option value="piece">Piece</option>
+                  <option value="dozen">Dozen</option>
+                  <option value="litre">Litre</option>
+                  <option value="bundle">Bundle</option>
+                  <option value="bag">Bag</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Stock & Low Stock Threshold -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-bold text-neutral-800 mb-2">Available Quantity (Stock) *</label>
+                <input type="number" id="stock" required min="1" placeholder="e.g. 500" 
+                       class="w-full px-4 py-3 rounded-2xl bg-neutral-50 border border-neutral-200 focus:outline-none focus:border-primary font-medium">
+              </div>
+              <div>
+                <label class="block text-sm font-bold text-neutral-800 mb-2">Low Stock Alert Threshold</label>
+                <input type="number" id="lowStockThreshold" min="1" value="10" 
+                       class="w-full px-4 py-3 rounded-2xl bg-neutral-50 border border-neutral-200 focus:outline-none focus:border-primary font-medium">
+              </div>
+            </div>
+
+            <!-- Description -->
+            <div>
+              <label class="block text-sm font-bold text-neutral-800 mb-2">Harvest Description</label>
+              <textarea id="description" rows="4" placeholder="Detail the harvest date, organic certification, packing type, etc." 
+                        class="w-full px-4 py-3 rounded-2xl bg-neutral-50 border border-neutral-200 focus:outline-none focus:border-primary font-medium"></textarea>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-end gap-4">
+            <a href="products.html" class="px-6 py-3 rounded-full font-bold text-neutral-600 hover:bg-neutral-200 transition-colors">Cancel</a>
+            <button type="submit" id="save-btn" class="btn-primary rounded-full px-8 py-3 font-bold shadow-lg shadow-primary/30 flex items-center gap-2">
+              <i data-lucide="check" class="w-5 h-5"></i> Save Produce Listing
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <script>
+        let selectedImageUrl = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400';
+        let selectedImagePublicId = null;
+        let editingProductId = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+          window.initPanel({ role: 'farmer', currentPage: 'products', title: 'Produce Form' });
+
+          const params = new URLSearchParams(window.location.search);
+          editingProductId = params.get('id');
+
+          // Populate initial stock suggestions from produce-images.js
+          populateStockGrid();
+
+          // Auto-suggest stock images when user types name
+          document.getElementById('name').addEventListener('input', (e) => {
+            const query = e.target.value.trim();
+            if (window.ProduceImages && query.length >= 2) {
+              const suggestions = window.ProduceImages.getSuggestions(query);
+              if (suggestions.length > 0) {
+                renderStockList(suggestions);
+                // Auto-pick first if no image chosen yet
+                if (!selectedImagePublicId) {
+                  selectStockImage(suggestions[0].name, suggestions[0].url);
+                }
+              }
+            }
+          });
+
+          // Cloudinary Dropzone
+          const dropZone = document.getElementById('drop-zone');
+          const fileInput = document.getElementById('file-input');
+          dropZone.addEventListener('click', () => fileInput.click());
+          fileInput.addEventListener('change', handleFileUpload);
+
+          // If Edit Mode, load product
+          if (editingProductId) {
+            document.getElementById('form-title').textContent = 'Edit Produce Listing';
+            loadExistingProduct(editingProductId);
+          }
+
+          // Submit Handler
+          document.getElementById('product-form').addEventListener('submit', handleSaveProduct);
+        });
+
+        function populateStockGrid() {
+          if (!window.ProduceImages) return;
+          const list = Object.entries(window.ProduceImages.stockImages).slice(0, 18).map(([name, url]) => ({ name, url }));
+          renderStockList(list);
+        }
+
+        function renderStockList(items) {
+          const grid = document.getElementById('stock-grid');
+          grid.innerHTML = items.map(item => `
+            <div onclick="selectStockImage('${item.name}', '${item.url}')" 
+                 class="group cursor-pointer rounded-2xl overflow-hidden border-2 border-transparent hover:border-primary transition-all p-1 bg-white flex flex-col items-center">
+              <img src="${item.url}" class="w-14 h-14 rounded-xl object-cover">
+              <span class="text-[10px] font-bold text-neutral-600 truncate w-full text-center mt-1 capitalize">${item.name}</span>
+            </div>
+          `).join('');
+        }
+
+        function selectStockImage(name, url) {
+          selectedImageUrl = url;
+          selectedImagePublicId = null;
+          document.getElementById('selected-image-preview').src = url;
+          document.getElementById('selected-image-name').textContent = name + ' (Stock Photo)';
+        }
+
+        function switchImageTab(tab) {
+          if (tab === 'stock') {
+            document.getElementById('stock-images-panel').classList.remove('hidden');
+            document.getElementById('upload-image-panel').classList.add('hidden');
+            document.getElementById('tab-stock').className = 'px-4 py-1.5 rounded-full bg-white text-neutral-900 shadow-sm';
+            document.getElementById('tab-upload').className = 'px-4 py-1.5 rounded-full text-neutral-600';
+          } else {
+            document.getElementById('stock-images-panel').classList.add('hidden');
+            document.getElementById('upload-image-panel').classList.remove('hidden');
+            document.getElementById('tab-upload').className = 'px-4 py-1.5 rounded-full bg-white text-neutral-900 shadow-sm';
+            document.getElementById('tab-stock').className = 'px-4 py-1.5 rounded-full text-neutral-600';
+            if (window.lucide) lucide.createIcons();
+          }
+        }
+
+        async function handleFileUpload(e) {
+          const file = e.target.files[0];
+          if (!file) return;
+
+          const progressContainer = document.getElementById('upload-progress-container');
+          const progressBar = document.getElementById('upload-progress-bar');
+          const progressText = document.getElementById('upload-progress-text');
+          progressContainer.classList.remove('hidden');
+
+          try {
+            const res = await window.Cloudinary.uploadImage(file, 'produce', (percent) => {
+              progressBar.style.width = percent + '%';
+              progressText.textContent = 'Uploading... ' + percent + '%';
+            });
+            selectedImageUrl = res.secureUrl;
+            selectedImagePublicId = res.publicId;
+            document.getElementById('selected-image-preview').src = res.secureUrl;
+            document.getElementById('selected-image-name').textContent = file.name + ' (Uploaded to Cloudinary)';
+            window.toast({ type: 'success', message: 'Photo uploaded successfully!' });
+          } catch(err) {
+            window.toast({ type: 'error', message: 'Failed to upload photo.' });
+          } finally {
+            progressContainer.classList.add('hidden');
+          }
+        }
+
+        async function loadExistingProduct(id) {
+          try {
+            const doc = await window.FM.db.collection('products').doc(id).get();
+            if (!doc.exists) return;
+            const p = doc.data();
+            document.getElementById('name').value = p.name || '';
+            document.getElementById('category').value = p.category || 'Vegetables';
+            document.getElementById('qualityGrade').value = p.qualityGrade || 'Grade A';
+            document.getElementById('askingPrice').value = p.askingPrice || p.price || 0;
+            document.getElementById('unit').value = p.unit || 'kg';
+            document.getElementById('stock').value = p.stock || 0;
+            document.getElementById('lowStockThreshold').value = p.lowStockThreshold || 10;
+            document.getElementById('description').value = p.description || '';
+
+            if (p.images && p.images[0]) {
+              selectedImageUrl = p.images[0].secureUrl;
+              selectedImagePublicId = p.images[0].publicId || null;
+              document.getElementById('selected-image-preview').src = selectedImageUrl;
+              document.getElementById('selected-image-name').textContent = p.name;
+            }
+          } catch(err) {
+            console.error('Error loading product:', err);
+          }
+        }
+
+        async function handleSaveProduct(e) {
+          e.preventDefault();
+          const saveBtn = document.getElementById('save-btn');
+          saveBtn.disabled = true;
+          saveBtn.innerHTML = '<span class="animate-spin mr-2">⏳</span> Saving...';
+
+          try {
+            const user = window.currentUser;
+            const productData = {
+              name: document.getElementById('name').value.trim(),
+              category: document.getElementById('category').value,
+              qualityGrade: document.getElementById('qualityGrade').value,
+              askingPrice: parseFloat(document.getElementById('askingPrice').value),
+              price: parseFloat(document.getElementById('askingPrice').value),
+              unit: document.getElementById('unit').value,
+              stock: parseInt(document.getElementById('stock').value),
+              availableQty: parseInt(document.getElementById('stock').value),
+              lowStockThreshold: parseInt(document.getElementById('lowStockThreshold').value) || 10,
+              description: document.getElementById('description').value.trim(),
+              farmerId: user.uid,
+              farmerName: user.displayName || user.name || 'Farmer',
+              status: 'active',
+              images: [{
+                secureUrl: selectedImageUrl,
+                publicId: selectedImagePublicId || 'stock_' + Date.now()
+              }],
+              updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            if (editingProductId) {
+              await window.FM.db.collection('products').doc(editingProductId).update(productData);
+              window.toast({ type: 'success', message: 'Produce updated successfully!' });
+            } else {
+              productData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+              await window.FM.db.collection('products').add(productData);
+              window.toast({ type: 'success', message: 'New produce listed successfully!' });
+            }
+
+            setTimeout(() => {
+              window.location.href = 'products.html';
+            }, 800);
+
+          } catch(err) {
+            console.error(err);
+            window.toast({ type: 'error', message: 'Failed to save product: ' + err.message });
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = '<i data-lucide="check" class="w-5 h-5"></i> Save Produce Listing';
+            if (window.lucide) lucide.createIcons();
+          }
+        }
+      </script>
+
+    </div>
+  </main>
+</body>
+</html>

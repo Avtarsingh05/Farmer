@@ -10,7 +10,6 @@ export const FarmerLayout: React.FC = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const location = useLocation();
 
-  // Simple title mapper based on pathname
   const getPageTitle = () => {
     const path = location.pathname;
     if (path === '/farmer') return 'Dashboard';
@@ -30,12 +29,12 @@ export const FarmerLayout: React.FC = () => {
     <div className="min-h-screen bg-neutral-50">
       <FarmerSidebar isCollapsed={isSidebarCollapsed} onToggle={() => setIsSidebarCollapsed(!isSidebarCollapsed)} />
       
-      {/* Mobile Drawer (visible only when toggled on mobile) */}
+      {/* Mobile Drawer */}
       {isMobileMenuOpen && (
         <div className="lg:hidden fixed inset-0 z-50 flex">
-          <div className="fixed inset-0 bg-black/50" onClick={() => setIsMobileMenuOpen(false)}></div>
-          <div className="relative flex-1 flex flex-col max-w-xs w-full bg-white slide-in-left">
-            <FarmerSidebar />
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsMobileMenuOpen(false)}></div>
+          <div className="relative flex-1 flex flex-col max-w-xs w-full bg-neutral-900 slide-in-left shadow-2xl">
+            <FarmerSidebar isMobile onClose={() => setIsMobileMenuOpen(false)} />
           </div>
         </div>
       )}

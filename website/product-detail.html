@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Detail | KisanMitra</title>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- FontAwesome -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: { sans: ['Inter', 'sans-serif'] },
+            colors: {
+              primary: {
+                DEFAULT: '#2D5016',
+                dark: '#1A3009',
+                50: '#f0fdf4',
+                100: '#dcfce7',
+                200: '#bbf7d0',
+                600: '#16a34a',
+                700: '#2D5016',
+                800: '#1A3009',
+                900: '#0f1f06',
+              },
+              accent: {
+                DEFAULT: '#C17F24',
+                50: '#fff8eb',
+                100: '#ffefc6',
+              },
+              neutral: {
+                50: '#F9F7F2',
+                100: '#F0EDE6',
+                200: '#E2DDD5',
+                300: '#D0C8BD',
+                400: '#B5AA9C',
+                500: '#9A8D7E',
+                600: '#7A7268',
+                700: '#5A5349',
+                800: '#3A352F',
+                900: '#1A1A18',
+              }
+            }
+          }
+        }
+      }
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/nav.js"></script>
+
+</head>
+<body class="bg-neutral-50 min-h-screen flex flex-col font-sans antialiased text-neutral-900">
+    <div id="nav-container"></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex-1 w-full">
+        <!-- Breadcrumbs -->
+        <div class="flex items-center gap-2 text-sm text-neutral-500 mb-8">
+            <a href="index.html" class="hover:text-primary">Home</a>
+            <i data-lucide="chevron-right" class="w-4 h-4"></i>
+            <a href="market.html" class="hover:text-primary">Market</a>
+            <i data-lucide="chevron-right" class="w-4 h-4"></i>
+            <span id="breadcrumbProduct" class="text-neutral-900 font-semibold">Fresh Tomatoes</span>
+        </div>
+
+        <div class="grid lg:grid-cols-2 gap-12 bg-white rounded-3xl p-8 border border-neutral-200 shadow-sm mb-16">
+            <!-- Image gallery -->
+            <div class="space-y-4">
+                <div class="rounded-2xl overflow-hidden aspect-[4/3] bg-neutral-100 border border-neutral-100 shadow-inner">
+                    <img id="mainProductImg" src="https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=800&auto=format&fit=crop&q=80" alt="Produce" class="w-full h-full object-cover">
+                </div>
+                <div class="grid grid-cols-4 gap-3">
+                    <img onclick="document.getElementById('mainProductImg').src=this.src" src="https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=300&auto=format&fit=crop&q=80" class="rounded-xl aspect-square object-cover border-2 border-primary cursor-pointer hover:opacity-90">
+                    <img onclick="document.getElementById('mainProductImg').src=this.src" src="https://images.unsplash.com/photo-1582284540020-8acbe03f4924?w=300&auto=format&fit=crop&q=80" class="rounded-xl aspect-square object-cover border border-neutral-200 cursor-pointer hover:opacity-90">
+                </div>
+            </div>
+
+            <!-- Product info -->
+            <div class="flex flex-col justify-between">
+                <div class="space-y-6">
+                    <div class="flex items-center justify-between">
+                        <span id="productGrade" class="px-3 py-1 rounded-full bg-green-50 text-green-700 text-xs font-bold border border-green-200/60">
+                            Grade A Quality
+                        </span>
+                        <div class="flex items-center gap-1.5 text-xs text-neutral-500 font-medium">
+                            <i data-lucide="map-pin" class="w-4 h-4 text-neutral-400"></i>
+                            <span id="productLocation">Nashik, Maharashtra</span>
+                        </div>
+                    </div>
+
+                    <h1 id="productTitle" class="text-3xl sm:text-4xl font-extrabold text-neutral-900 tracking-tight">Fresh Farm Tomatoes</h1>
+                    
+                    <!-- Price Card -->
+                    <div class="p-5 bg-neutral-50 rounded-2xl border border-neutral-100 space-y-2">
+                        <div class="flex items-baseline gap-3">
+                            <span id="productPrice" class="text-3xl sm:text-4xl font-black text-primary">₹26</span>
+                            <span class="text-neutral-500 font-semibold text-lg">/ kg</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-xs text-neutral-500">
+                            <span>APMC Mandi Reference: <span class="line-through">₹32/kg</span></span>
+                            <span class="bg-green-100 text-green-800 font-bold px-2 py-0.5 rounded-full">Save 19%</span>
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <div>
+                        <h3 class="font-bold text-sm text-neutral-900 mb-2">Produce Details</h3>
+                        <p id="productDesc" class="text-neutral-600 text-sm leading-relaxed">
+                            Naturally ripened, pesticide-tested red tomatoes directly harvested from Nashik soil. Packed within 12 hours of order for maximum freshness.
+                        </p>
+                    </div>
+
+                    <!-- Farmer Info Card -->
+                    <div class="p-4 bg-primary-50/50 rounded-2xl border border-primary-100 flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-primary text-white flex items-center justify-center font-bold text-lg overflow-hidden shrink-0">
+                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&auto=format&fit=crop&q=80" alt="Farmer" class="w-full h-full object-cover">
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="font-bold text-neutral-900 text-sm">Grown by Ramesh Patil</div>
+                            <div class="text-xs text-neutral-500">APMC Registered Farmer · 500+ orders fulfilled</div>
+                        </div>
+                        <a href="farmers.html" class="text-xs font-bold text-primary hover:underline">View Farm</a>
+                    </div>
+                </div>
+
+                <!-- Add to cart area -->
+                <div class="pt-6 border-t border-neutral-100 mt-6 flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+                    <div class="flex items-center border border-neutral-200 rounded-xl bg-white p-1">
+                        <button onclick="adjustQty(-1)" class="w-10 h-10 flex items-center justify-center text-neutral-600 hover:bg-neutral-100 rounded-lg font-bold text-lg">-</button>
+                        <input id="detailQty" type="number" value="1" min="1" max="100" class="w-14 text-center font-bold text-neutral-900 focus:outline-none">
+                        <button onclick="adjustQty(1)" class="w-10 h-10 flex items-center justify-center text-neutral-600 hover:bg-neutral-100 rounded-lg font-bold text-lg">+</button>
+                    </div>
+                    <button onclick="addToCartDetail()" class="flex-1 bg-primary hover:bg-primary-dark text-white font-bold py-3.5 px-6 rounded-xl shadow-md shadow-primary/20 flex items-center justify-center gap-2 transition-all hover:-translate-y-0.5 active:scale-95">
+                        <i data-lucide="shopping-cart" class="w-5 h-5"></i>
+                        Add to Cart
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="footer-container"></div>
+
+    <script>
+        function adjustQty(delta) {
+            const input = document.getElementById('detailQty');
+            let val = parseInt(input.value) || 1;
+            val = Math.max(1, Math.min(100, val + delta));
+            input.value = val;
+        }
+
+        function addToCartDetail() {
+            const qty = parseInt(document.getElementById('detailQty').value) || 1;
+            if (window.Cart) {
+                window.Cart.addItem({
+                    id: 'sample-tomato',
+                    name: 'Fresh Farm Tomatoes',
+                    price: 26,
+                    unit: 'kg',
+                    farmerName: 'Ramesh Patil',
+                    imageUrl: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=300&auto=format&fit=crop&q=80',
+                    quantity: qty
+                });
+                alert('Added ' + qty + ' kg of Fresh Farm Tomatoes to your cart!');
+                window.location.href = 'buyer/cart.html';
+            }
+        }
+
+        window.addEventListener('load', () => { if(window.lucide) lucide.createIcons(); });
+    </script>
+</body>
+</html>

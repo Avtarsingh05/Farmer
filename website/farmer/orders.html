@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Farmer Orders | KisanMitra</title>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            primary: {
+              DEFAULT: '#2D5016',
+              50:  '#F2F7EC',
+              100: '#E0EDD0',
+              200: '#BEDBA2',
+              300: '#90C168',
+              400: '#68A83B',
+              500: '#4A7C23',
+              600: '#2D5016',
+              700: '#1A3009',
+              800: '#0E1C05',
+              900: '#060D02',
+            },
+            accent: {
+              DEFAULT: '#C17F24',
+              50:  '#FDF8EE',
+              100: '#F9EDD1',
+              200: '#F3D89E',
+              300: '#EAC060',
+              400: '#DEA737',
+              500: '#C17F24',
+              600: '#9A6119',
+              700: '#744912',
+              800: '#4E300B',
+              900: '#281805',
+            },
+            neutral: {
+              50:  '#F9F7F2',
+              100: '#F0EDE6',
+              200: '#E2DDD5',
+              300: '#C8C2B8',
+              400: '#A09890',
+              500: '#7A7268',
+              600: '#5A5450',
+              700: '#403C38',
+              800: '#2A2724',
+              900: '#1A1A18',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="../styles/main.css">
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="../firebase-config.js"></script>
+  <script src="../js/app.js"></script>
+  <script src="../js/cloudinary.js"></script>
+  <script src="../js/produce-images.js"></script>
+  <script src="../js/panel.js"></script>
+</head>
+<body class="bg-neutral-50 text-neutral-900 font-sans antialiased min-h-screen flex flex-col">
+  <main id="main-content" class="flex-1 lg:ml-72 transition-all duration-300 min-h-screen flex flex-col">
+    <div class="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
+
+      <div class="space-y-6">
+        <div>
+          <h1 class="text-3xl font-extrabold text-neutral-900 tracking-tight">Orders</h1>
+          <p class="text-sm text-neutral-500 mt-1">Review, accept, and dispatch orders from buyers.</p>
+        </div>
+
+        <!-- Filter tabs -->
+        <div class="bg-white rounded-3xl p-3 border border-neutral-100 shadow-sm flex items-center gap-2 overflow-x-auto">
+          <button onclick="filterOrders('all')" class="ord-tab px-4 py-2 rounded-full text-xs font-bold transition-colors bg-primary text-white" data-filter="all">All</button>
+          <button onclick="filterOrders('pending')" class="ord-tab px-4 py-2 rounded-full text-xs font-bold transition-colors text-neutral-600 hover:bg-neutral-100" data-filter="pending">Pending</button>
+          <button onclick="filterOrders('accepted')" class="ord-tab px-4 py-2 rounded-full text-xs font-bold transition-colors text-neutral-600 hover:bg-neutral-100" data-filter="accepted">Accepted</button>
+          <button onclick="filterOrders('processing')" class="ord-tab px-4 py-2 rounded-full text-xs font-bold transition-colors text-neutral-600 hover:bg-neutral-100" data-filter="processing">Processing</button>
+          <button onclick="filterOrders('ready_for_dispatch')" class="ord-tab px-4 py-2 rounded-full text-xs font-bold transition-colors text-neutral-600 hover:bg-neutral-100" data-filter="ready_for_dispatch">Ready</button>
+          <button onclick="filterOrders('out_for_delivery')" class="ord-tab px-4 py-2 rounded-full text-xs font-bold transition-colors text-neutral-600 hover:bg-neutral-100" data-filter="out_for_delivery">Dispatched</button>
+          <button onclick="filterOrders('delivered')" class="ord-tab px-4 py-2 rounded-full text-xs font-bold transition-colors text-neutral-600 hover:bg-neutral-100" data-filter="delivered">Delivered</button>
+          <button onclick="filterOrders('cancelled')" class="ord-tab px-4 py-2 rounded-full text-xs font-bold transition-colors text-neutral-600 hover:bg-neutral-100" data-filter="cancelled">Cancelled</button>
+        </div>
+
+        <div id="orders-list" class="space-y-4">
+          <div class="bg-white rounded-3xl p-12 text-center text-neutral-400 border border-neutral-100">Loading orders...</div>
+        </div>
+      </div>
+
+      <script>
+        let allOrders = [];
+        let curFilter = 'all';
+
+        document.addEventListener('DOMContentLoaded', () => {
+          window.initPanel({ role: 'farmer', currentPage: 'orders', title: 'Orders Received' });
+
+          const params = new URLSearchParams(window.location.search);
+          if (params.get('status')) {
+            curFilter = params.get('status');
+          }
+
+          document.addEventListener('user-loaded', async (e) => {
+            const user = e.detail;
+            try {
+              const snap = await window.FM.db.collection('orders').where('farmerId', '==', user.uid).get();
+              allOrders = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+              allOrders.sort((a,b) => {
+                const ta = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
+                const tb = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
+                return tb - ta;
+              });
+              updateTabsUI();
+              renderOrders();
+            } catch(err) {
+              console.error(err);
+            }
+          });
+        });
+
+        function filterOrders(status) {
+          curFilter = status;
+          updateTabsUI();
+          renderOrders();
+        }
+
+        function updateTabsUI() {
+          document.querySelectorAll('.ord-tab').forEach(b => {
+            if (b.dataset.filter === curFilter) {
+              b.className = 'ord-tab px-4 py-2 rounded-full text-xs font-bold transition-colors bg-primary text-white';
+            } else {
+              b.className = 'ord-tab px-4 py-2 rounded-full text-xs font-bold transition-colors text-neutral-600 hover:bg-neutral-100';
+            }
+          });
+        }
+
+        function renderOrders() {
+          const list = document.getElementById('orders-list');
+          const filtered = allOrders.filter(o => curFilter === 'all' || (o.status || 'pending') === curFilter);
+
+          if (filtered.length === 0) {
+            list.innerHTML = '<div class="bg-white rounded-3xl p-12 text-center text-neutral-400 border border-neutral-100">No orders found in this status category.</div>';
+            return;
+          }
+
+          list.innerHTML = filtered.map(o => {
+            const dt = o.createdAt?.toDate ? o.createdAt.toDate() : new Date(o.createdAt);
+            const dateStr = dt.toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' });
+            const itemsSummary = (o.items || []).map(i => `${i.name} (${i.quantity} ${i.unit||'kg'})`).join(', ');
+
+            return `
+              <div class="bg-white rounded-3xl p-6 border border-neutral-100 shadow-sm hover:shadow-md transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+                <div class="space-y-2">
+                  <div class="flex items-center gap-3">
+                    <span class="font-mono font-bold text-neutral-700 bg-neutral-100 px-3 py-1 rounded-lg text-xs">#${o.id.slice(0,8)}</span>
+                    ${window.getOrderStatusBadge(o.status || 'pending')}
+                    <span class="text-xs text-neutral-400">${dateStr}</span>
+                  </div>
+                  <h3 class="text-lg font-bold text-neutral-900">${o.buyerName || 'Buyer'}</h3>
+                  <p class="text-xs text-neutral-500 line-clamp-1 max-w-xl">${itemsSummary || 'Produce items'}</p>
+                </div>
+                <div class="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-3 pt-4 sm:pt-0 border-t sm:border-t-0 border-neutral-100">
+                  <div class="text-right">
+                    <p class="text-xs text-neutral-400 font-semibold uppercase">Total Value</p>
+                    <p class="text-2xl font-black text-primary">${window.formatCurrency(o.total)}</p>
+                  </div>
+                  <a href="order-detail.html?id=${o.id}" class="btn-primary rounded-full px-5 py-2 text-xs font-bold shadow-md hover:-translate-y-0.5 transition-all inline-flex items-center gap-1">
+                    Manage Order <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                  </a>
+                </div>
+              </div>
+            `;
+          }).join('');
+          if (window.lucide) lucide.createIcons();
+        }
+      </script>
+
+    </div>
+  </main>
+</body>
+</html>

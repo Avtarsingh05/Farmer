@@ -5,6 +5,7 @@ import { getFarmerInventory, updateInventoryThreshold, updateAvailableQuantity }
 import { getFarmerProducts } from '@/services/productService';
 import { InventoryItem, Product } from '@/types';
 import { cn } from '@/utils/cn';
+import { getOptimizedImageUrl } from '@/services/cloudinaryService';
 
 export default function FarmerInventoryPage() {
   const { user } = useAuth();
@@ -178,7 +179,7 @@ export default function FarmerInventoryPage() {
                         <div className="flex items-center gap-4">
                           <div className="w-12 h-12 rounded-xl bg-neutral-100 overflow-hidden shrink-0 border border-neutral-200 shadow-sm">
                             <img 
-                              src={item.product?.images?.[0]?.secureUrl || 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=200&auto=format&fit=crop&q=80'} 
+                              src={getOptimizedImageUrl(item.product?.images?.[0], 200)} 
                               alt="product"
                               className="w-full h-full object-cover"
                             />

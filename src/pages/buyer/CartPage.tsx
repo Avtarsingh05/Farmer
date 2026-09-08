@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth, useCart } from '@/hooks';
+import { useToast } from '@/components/ui/Toast';
 import type { CartItem } from '@/types';
 import {
   ShoppingCart, Trash2, Loader2, Minus, Plus, AlertCircle,
   CheckCircle2, ShieldCheck, ArrowRight, Banknote, Smartphone,
-  Truck, Store, Sparkles, MapPin
+  Truck, Store, Sparkles, MapPin, CreditCard
 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -30,13 +31,24 @@ const deliveryAddressSchema = z.object({
 
 type DeliveryFormData = z.infer<typeof deliveryAddressSchema>;
 
+const loadRazorpayScript = () => {
+  return new Promise((resolve) => {
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+};
+
 export default function CartPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const { items, itemCount, total, removeItem, updateQty, clearCart } = useCart();
 
   const [deliveryType, setDeliveryType] = useState<'delivery' | 'pickup'>('delivery');
-  const [paymentMethod, setPaymentMethod] = useState<'cod' | 'upi'>('cod');
+  const [paymentMethod, setPaymentMethod] = useState<'cod' | 'upi' | 'razorpay'>('cod');
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [placedOrderId, setPlacedOrderId] = useState<string | null>(null);
@@ -79,6 +91,57 @@ export default function CartPage() {
     setValue('pincode', '400050');
   };
 
+  const executeOrderCreation = async (data: DeliveryFormData, paymentId?: string) => {
+    const buyerId = user?.uid || user?.id || 'buyer-' + Date.now();
+    const buyerName = data.name || user?.name || 'Verified Buyer';
+
+    const farmerIds = Object.keys(groupedItems);
+    let lastCreatedOrderId = '';
+
+    for (const farmerId of farmerIds) {
+      const farmerItems = groupedItems[farmerId];
+      const farmerName = farmerItems[0]?.farmerName || 'Verified Farmer';
+      
+      let paymentText = 'Cash on Delivery (COD)';
+      if (paymentMethod === 'razorpay') {
+        paymentText = `Paid via Razorpay (Txn: ${paymentId})`;
+      }
+
+      const newId = await createOrder({
+        buyerId,
+        buyerName,
+        farmerId,
+        farmerName,
+        items: farmerItems.map(item => ({
+          productId: item.productId,
+          productName: item.productName,
+          quantity: item.quantity,
+          unitPrice: item.unitPrice,
+          unit: item.unit,
+          subtotal: item.quantity * item.unitPrice
+        })),
+
+        
+        deliveryType,
+        deliveryAddress: deliveryType === 'delivery' ? {
+          name: data.name,
+          phone: data.phone,
+          line1: data.line1,
+          line2: data.line2 || undefined,
+          city: data.city,
+          state: data.state,
+          pincode: data.pincode,
+        } : undefined,
+        notes: `Payment: ${paymentText} — Direct farm-to-table delivery`,
+      });
+
+      lastCreatedOrderId = newId;
+    }
+
+    clearCart();
+    setPlacedOrderId(lastCreatedOrderId);
+  };
+
   const handlePlaceOrder = async (data: DeliveryFormData) => {
     if (items.length === 0) return;
 
@@ -86,52 +149,61 @@ export default function CartPage() {
       setIsPlacingOrder(true);
       setError(null);
 
-      const buyerId = user?.uid || user?.id || 'buyer-' + Date.now();
-      const buyerName = data.name || user?.name || 'Verified Buyer';
+      if (paymentMethod === 'razorpay') {
+        const isLoaded = await loadRazorpayScript();
+        if (!isLoaded) {
+          setError('Razorpay SDK failed to load. Are you offline?');
+          setIsPlacingOrder(false);
+          return;
+        }
 
-      const farmerIds = Object.keys(groupedItems);
-      let lastCreatedOrderId = '';
+        const options = {
+          key: import.meta.env.VITE_RAZORPAY_TEST_KEY || 'rzp_test_YourFallbackKey',
+          amount: Math.round(finalTotal * 100), // amount in paisa
+          currency: 'INR',
+          name: 'KisanMitra',
+          description: 'Farm fresh produce purchase',
+          handler: async function (response: any) {
+            try {
+              setIsPlacingOrder(true);
+              await executeOrderCreation(data, response.razorpay_payment_id);
+            } catch (err: any) {
+              setError(err.message || 'Error saving order after payment.');
+            } finally {
+              setIsPlacingOrder(false);
+            }
+          },
+          prefill: {
+            name: data.name || user?.name || '',
+            contact: data.phone || user?.phone || '',
+          },
+          theme: {
+            color: '#16a34a'
+          },
+          modal: {
+            ondismiss: function() {
+              setIsPlacingOrder(false);
+              setError('Payment cancelled by user.');
+              toast({ type: 'warning', message: 'Payment cancelled.' });
+            }
+          }
+        };
 
-      for (const farmerId of farmerIds) {
-        const farmerItems = groupedItems[farmerId];
-        const farmerName = farmerItems[0]?.farmerName || 'Verified Farmer';
-
-        const newId = await createOrder({
-          buyerId,
-          buyerName,
-          farmerId,
-          farmerName,
-          items: farmerItems.map((item) => ({
-            productId: item.productId,
-            productName: item.productName,
-            quantity: item.quantity,
-            unitPrice: item.unitPrice,
-            unit: item.unit,
-            subtotal: item.unitPrice * item.quantity,
-          })),
-          deliveryType,
-          deliveryAddress: deliveryType === 'delivery' ? {
-            name: data.name,
-            phone: data.phone,
-            line1: data.line1,
-            line2: data.line2 || undefined,
-            city: data.city,
-            state: data.state,
-            pincode: data.pincode,
-          } : undefined,
-          notes: `Payment: ${paymentMethod === 'upi' ? 'UPI (Verified)' : 'Cash on Delivery (COD)'} · Direct farm-to-table delivery`,
+        const rzp = new (window as any).Razorpay(options);
+        rzp.on('payment.failed', function (response: any) {
+          setError(`Payment Failed: ${response.error.description}`);
+          toast({ type: 'error', message: `Payment Failed: ${response.error.description}` });
+          setIsPlacingOrder(false);
         });
-
-        lastCreatedOrderId = newId;
+        rzp.open();
+      } else {
+        await executeOrderCreation(data);
+        setIsPlacingOrder(false);
       }
-
-      clearCart();
-      setPlacedOrderId(lastCreatedOrderId);
     } catch (err: unknown) {
       console.error('Failed to place order:', err);
       const msg = err instanceof Error ? err.message : String(err);
-      setError(msg || 'Failed to place order. Please try again.');
-    } finally {
+      setError(msg || 'An error occurred while placing the order.');
       setIsPlacingOrder(false);
     }
   };
@@ -153,7 +225,7 @@ export default function CartPage() {
           <div className="flex justify-between items-center">
             <span className="text-neutral-500 font-medium">Payment</span>
             <span className="font-bold bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full text-sm">
-              {paymentMethod === 'upi' ? 'Paid via UPI' : 'Pay on Delivery'}
+              {paymentMethod === 'razorpay' ? 'Paid Online' : 'Pay on Delivery'}
             </span>
           </div>
           <div className="flex justify-between items-center">
@@ -410,16 +482,16 @@ export default function CartPage() {
                   </button>
                   <button
                     type="button"
-                    onClick={() => setPaymentMethod('upi')}
+                    onClick={() => setPaymentMethod('razorpay')}
                     className={cn(
                       "py-3 px-4 rounded-2xl text-sm font-bold flex flex-col items-center justify-center gap-2 transition-all border-2",
-                      paymentMethod === 'upi'
+                      paymentMethod === 'razorpay'
                         ? "border-primary bg-primary/5 text-primary shadow-sm"
                         : "border-neutral-100 text-neutral-500 hover:border-neutral-200 bg-white"
                     )}
                   >
-                    <Smartphone className={cn("w-6 h-6", paymentMethod === 'upi' ? "text-primary" : "text-neutral-400")} />
-                    <span>UPI / QR</span>
+                    <CreditCard className={cn("w-6 h-6", paymentMethod === 'razorpay' ? "text-primary" : "text-neutral-400")} />
+                    <span>Pay Online (Razorpay)</span>
                   </button>
                 </div>
               </div>

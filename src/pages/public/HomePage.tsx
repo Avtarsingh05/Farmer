@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { getTestimonials } from '@/services/landingService';
 import { Link } from 'react-router-dom';
 import {
-  ArrowRight, CheckCircle, Leaf, Shield, TrendingUp, Users,
+  ArrowRight, CheckCircle, Shield, TrendingUp, Users,
   Star, Package, MapPin, ChevronDown, ShoppingBag, Sprout,
   BarChart3, Truck, BadgeCheck, IndianRupee, TrendingDown,
 } from 'lucide-react';
@@ -22,19 +22,6 @@ function useInView(threshold = 0.15) {
   }, [threshold]);
   return { ref, inView };
 }
-
-const TICKER_ITEMS = [
-  { name: 'Tomato',        mandi: 'Lasalgaon, Nashik',   price: '₹26/kg',   trend: 'down' },
-  { name: 'Onion',         mandi: 'Lasalgaon, Nashik',   price: '₹32/kg',   trend: 'up'   },
-  { name: 'Basmati Rice',  mandi: 'Karnal Grain Market', price: '₹88/kg',   trend: 'up'   },
-  { name: 'Alphonso Mango',mandi: 'Vashi APMC',          price: '₹680/dz',  trend: 'down' },
-  { name: 'Wheat',         mandi: 'Sehore Mandi, MP',    price: '₹34/kg',   trend: 'up'   },
-  { name: 'Potato',        mandi: 'Agra Mandi, UP',      price: '₹22/kg',   trend: 'down' },
-  { name: 'Chana Dal',     mandi: 'Gulbarga APMC, KA',   price: '₹76/kg',   trend: 'up'   },
-  { name: 'Turmeric',      mandi: 'Erode/Salem APMC',    price: '₹140/kg',  trend: 'down' },
-  { name: 'Cauliflower',   mandi: 'Pune APMC',           price: '₹18/kg',   trend: 'up'   },
-  { name: 'Green Peas',    mandi: 'Nagpur APMC',         price: '₹48/kg',   trend: 'down' },
-];
 
 const MARKET_PULSE = [
   { name: 'Tomato',    district: 'Nashik, MH',    farmerPrice: 26,  mandiPrice: 32,  unit: 'kg', grade: 'A' },
@@ -73,36 +60,13 @@ const HomePage = () => {
       if (data && data.length > 0) setTestimonials(data);
     }).catch(console.error);
   }, []);
-
   const howSection          = useInView(0.12);
   const pulseSection        = useInView(0.08);
   const farmerSection       = useInView(0.08);
   const buyerSection        = useInView(0.08);
   const testimonialsSection = useInView(0.08);
   const ctaSection          = useInView(0.08);
-  const countersRef         = useInView(0.25);
 
-  const [counters, setCounters] = useState({ farmers: 0, buyers: 0, orders: 0, mandis: 0 });
-  useEffect(() => {
-    if (!countersRef.inView) return;
-    const targets = { farmers: 500, buyers: 2400, orders: 14800, mandis: 28 };
-    const steps = 60; const duration = 1800;
-    let step = 0;
-    const timer = setInterval(() => {
-      step++;
-      const ease = 1 - Math.pow(1 - Math.min(step / steps, 1), 3);
-      setCounters({
-        farmers: Math.round(targets.farmers * ease),
-        buyers:  Math.round(targets.buyers  * ease),
-        orders:  Math.round(targets.orders  * ease),
-        mandis:  Math.round(targets.mandis  * ease),
-      });
-      if (step >= steps) clearInterval(timer);
-    }, duration / steps);
-    return () => clearInterval(timer);
-  }, [countersRef.inView]);
-
-  const tickerItems = [...TICKER_ITEMS, ...TICKER_ITEMS];
 
   return (
     <div className="flex flex-col min-h-screen bg-neutral-50 overflow-x-hidden">
@@ -158,6 +122,7 @@ const HomePage = () => {
                 ))}
               </div>
             </div>
+            {/* Hero visual */}
             <div className="relative hidden lg:flex items-center justify-center h-[520px] animate-fade-in delay-300">
               <div className="relative w-72 h-72 rounded-3xl overflow-hidden shadow-2xl border-4 border-white animate-float-slow">
                 <img src="https://images.unsplash.com/photo-1595974482597-4b8da8879bc5?w=600&auto=format&fit=crop&q=80" alt="Farmer" className="w-full h-full object-cover" />
@@ -165,19 +130,19 @@ const HomePage = () => {
               <div className="absolute top-8 right-4 bg-white rounded-2xl shadow-xl px-4 py-3 border border-neutral-100 animate-float" style={{ animationDelay: '0s' }}>
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center"><TrendingUp className="w-4 h-4 text-green-600" /></div>
-                  <div><div className="text-xs text-neutral-500">Onion · Lasalgaon</div><div className="text-sm font-bold text-neutral-900">₹32/kg</div></div>
+                  <div><div className="text-xs text-neutral-500">Onion · Lasalgaon</div><div className="text-sm font-bold text-neutral-900">&#8377;32/kg</div></div>
                 </div>
               </div>
               <div className="absolute bottom-16 left-2 bg-white rounded-2xl shadow-xl px-4 py-3 border border-neutral-100 animate-float" style={{ animationDelay: '2s' }}>
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center"><IndianRupee className="w-4 h-4 text-amber-600" /></div>
-                  <div><div className="text-xs text-neutral-500">Farmer earns more</div><div className="text-sm font-bold text-green-700">+₹8/kg avg</div></div>
+                  <div><div className="text-xs text-neutral-500">Farmer earns more</div><div className="text-sm font-bold text-green-700">+&#8377;8/kg avg</div></div>
                 </div>
               </div>
               <div className="absolute bottom-8 right-0 bg-primary text-white rounded-2xl shadow-xl px-4 py-3 animate-float" style={{ animationDelay: '1s' }}>
                 <div className="flex items-center gap-2">
                   <BadgeCheck className="w-5 h-5 text-white/80" />
-                  <div><div className="text-xs text-white/70">Order placed</div><div className="text-sm font-bold">Just now</div></div>
+                  <div><div className="text-xs text-white/70">Order placed</div><div className="text-sm font-bold">Just now ✓</div></div>
                 </div>
               </div>
               <div className="absolute top-1/2 -left-4 -translate-y-1/2 bg-white rounded-2xl shadow-xl px-3 py-2 border border-neutral-100 animate-float" style={{ animationDelay: '3s' }}>
@@ -195,74 +160,23 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* LIVE TICKER */}
-      <section className="py-3 overflow-hidden" style={{ background: 'var(--color-primary)' }}>
-        <div className="flex items-center gap-3">
-          <div className="flex-shrink-0 flex items-center gap-2 bg-white/20 text-white text-xs font-bold px-3 py-1.5 rounded-full ml-4">
-            <span className="w-1.5 h-1.5 rounded-full bg-green-300 animate-pulse-dot" />LIVE MANDI
-          </div>
-          <div className="marquee-track overflow-hidden flex-1">
-            <div className="flex animate-marquee whitespace-nowrap" style={{ width: 'max-content' }}>
-              {tickerItems.map((item, i) => (
-                <span key={i} className="inline-flex items-center gap-2 mx-6 text-white text-sm">
-                  <span className="font-semibold">{item.name}</span>
-                  <span className="text-white/60 text-xs">{item.mandi}</span>
-                  <span className="font-bold bg-white/15 px-2 py-0.5 rounded-full">{item.price}</span>
-                  {item.trend === 'up' ? <TrendingUp className="w-3.5 h-3.5 text-green-300" /> : <TrendingDown className="w-3.5 h-3.5 text-red-300" />}
-                  <span className="text-white/20 ml-2">•</span>
-                </span>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* STATS */}
-      <section ref={countersRef.ref} className="py-16 px-4 sm:px-6 lg:px-8 bg-white border-b border-neutral-100">
-        <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8">
-          {[
-            { value: counters.farmers, suffix: '+', label: 'Verified Farmers',  icon: Sprout,  color: 'text-primary'    },
-            { value: counters.buyers,  suffix: '+', label: 'Active Buyers',     icon: Users,   color: 'text-blue-600'  },
-            { value: counters.orders,  suffix: '+', label: 'Orders Delivered',  icon: Package, color: 'text-amber-600' },
-            { value: counters.mandis,  suffix: '',  label: 'States Covered',    icon: MapPin,  color: 'text-purple-600' },
-          ].map(({ value, suffix, label, icon: Icon, color }) => (
-            <div key={label} className="text-center space-y-2">
-              <div className="w-12 h-12 mx-auto rounded-2xl bg-neutral-50 flex items-center justify-center">
-                <Icon className={`w-6 h-6 ${color}`} />
-              </div>
-              <div className="text-3xl md:text-4xl font-extrabold text-neutral-900">{value.toLocaleString('en-IN')}{suffix}</div>
-              <div className="text-sm text-neutral-500 font-medium">{label}</div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* VALUE HIGHLIGHT BANNER */}
+      {/* SCROLL EXPAND */}
       <section className="relative w-full bg-neutral-950 py-24 sm:py-32 overflow-hidden">
-        {/* Background photo with subtle dark gradient */}
         <div className="absolute inset-0">
-          <img
-            src="https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=1800&auto=format&fit=crop&q=80"
-            alt="Farmlands at golden hour"
-            className="w-full h-full object-cover opacity-25"
-          />
+          <img src="https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=1800&auto=format&fit=crop&q=80" alt="Farmlands at golden hour" className="w-full h-full object-cover opacity-25" />
           <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/70 to-neutral-950/90" />
         </div>
-
         <div className="relative max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8 space-y-8 z-10">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs sm:text-sm font-semibold tracking-wide">
             <Shield className="w-4 h-4" /> Direct Farm Network
           </div>
-
           <h2 className="text-3xl sm:text-5xl md:text-6xl font-extrabold text-white tracking-tight leading-tight">
             Transparent Pricing.<br />
             <span className="text-emerald-400">Zero Middlemen.</span>
           </h2>
-
           <p className="text-base sm:text-lg text-neutral-300 max-w-2xl mx-auto leading-relaxed">
             By removing layered intermediaries, KisanMitra returns maximum earnings to farmer families while delivering fresh, traceable produce at true market rates.
           </p>
-
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
             <Link
               to="/market"
@@ -277,19 +191,18 @@ const HomePage = () => {
               Sell Your Harvest
             </Link>
           </div>
-
-          <div className="pt-8 grid grid-cols-3 gap-6 max-w-xl mx-auto border-t border-white/10 text-white">
+          <div className="pt-12 mt-12 grid grid-cols-3 gap-6 max-w-2xl mx-auto border-t border-white/10 text-white">
             <div>
-              <div className="text-2xl sm:text-3xl font-bold">100%</div>
-              <div className="text-xs sm:text-sm text-neutral-400 mt-1">Direct Farm Gate</div>
+              <div className="text-2xl sm:text-3xl font-extrabold">100%</div>
+              <div className="text-xs sm:text-sm text-neutral-400 mt-1 font-medium">Direct Farm Gate</div>
             </div>
             <div>
-              <div className="text-2xl sm:text-3xl font-bold text-emerald-400">₹0</div>
-              <div className="text-xs sm:text-sm text-neutral-400 mt-1">Broker Commissions</div>
+              <div className="text-2xl sm:text-3xl font-extrabold text-emerald-400">₹0</div>
+              <div className="text-xs sm:text-sm text-neutral-400 mt-1 font-medium">Broker Commissions</div>
             </div>
             <div>
-              <div className="text-2xl sm:text-3xl font-bold">Verified</div>
-              <div className="text-xs sm:text-sm text-neutral-400 mt-1">Farms & Quality</div>
+              <div className="text-2xl sm:text-3xl font-extrabold">Verified</div>
+              <div className="text-xs sm:text-sm text-neutral-400 mt-1 font-medium">Farms & Quality</div>
             </div>
           </div>
         </div>
@@ -309,9 +222,9 @@ const HomePage = () => {
             </div>
             <div className="grid md:grid-cols-3 gap-8">
               {[
-                { step: 1, icon: Sprout,     title: 'Farmers List Produce', desc: 'Verified farmers upload harvest with real APMC benchmark pricing.',   detail: 'Photo upload · APMC price · Quality grade', delay: 'delay-100' },
-                { step: 2, icon: ShoppingBag,title: 'Buyers Place Orders',  desc: 'Browse, compare prices, and order directly without any agents.',        detail: 'Browse by district · Filter · Instant checkout', delay: 'delay-300' },
-                { step: 3, icon: Truck,      title: 'Produce Delivered',    desc: 'Farm-to-door with full order tracking and transparent delivery status.',detail: 'Live tracking · COD + UPI · Direct dispatch', delay: 'delay-500' },
+                { step: 1, icon: Sprout,     title: 'Farmers List Produce',  desc: 'Verified farmers upload harvest with real APMC benchmark pricing.',  detail: 'Photo upload · APMC-anchored price · Quality grade', delay: 'delay-100' },
+                { step: 2, icon: ShoppingBag,title: 'Buyers Place Orders',   desc: 'Browse, compare prices, and order directly without any agents.',       detail: 'Browse by district · Filter by quality · Instant checkout', delay: 'delay-300' },
+                { step: 3, icon: Truck,      title: 'Produce Delivered',     desc: 'Farm-to-door with full order tracking and transparent delivery status.',detail: 'Live tracking · COD + UPI · Direct dispatch', delay: 'delay-500' },
               ].map(({ step, icon: Icon, title, desc, detail, delay }) => (
                 <div key={step} className={`relative ${howSection.inView ? `animate-fade-up ${delay}` : 'opacity-0'}`}>
                   <div className="group bg-white rounded-3xl border border-neutral-100 p-8 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
@@ -364,16 +277,16 @@ const HomePage = () => {
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
                       <span className="text-xs text-neutral-500">Farm Gate Price</span>
-                      <span className="text-xl font-extrabold text-primary">₹{item.farmerPrice}/{item.unit}</span>
+                      <span className="text-xl font-extrabold text-primary">&#8377;{item.farmerPrice}/{item.unit}</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-xs text-neutral-500">Mandi Benchmark</span>
-                      <span className="text-sm font-semibold text-neutral-400 line-through">₹{item.mandiPrice}/{item.unit}</span>
+                      <span className="text-sm font-semibold text-neutral-400 line-through">&#8377;{item.mandiPrice}/{item.unit}</span>
                     </div>
                   </div>
                   <div className="mt-4 pt-4 border-t border-neutral-50 flex items-center justify-between">
                     <div className="flex items-center gap-1.5 bg-green-50 text-green-700 text-xs font-bold px-2.5 py-1 rounded-full">
-                      <TrendingDown className="w-3 h-3" /> Save ₹{saving}/{item.unit} ({savingPct}% less)
+                      <TrendingDown className="w-3 h-3" /> Save &#8377;{saving}/{item.unit} ({savingPct}% less)
                     </div>
                     <Link to="/market" className="text-xs text-primary font-semibold hover:underline">Buy now</Link>
                   </div>
@@ -393,17 +306,17 @@ const HomePage = () => {
               <div className="absolute inset-0 bg-gradient-to-t from-neutral-900/60 via-transparent to-transparent" />
               <div className="absolute bottom-6 left-6 right-6 bg-white/95 backdrop-blur-sm rounded-2xl p-4 shadow-lg">
                 <div className="grid grid-cols-3 gap-4 text-center">
-                  {[{ val: '₹8+', label: 'more per kg avg.' }, { val: '₹0', label: 'commission fee' }, { val: '24h', label: 'order dispatch' }].map(({ val, label }) => (
-                    <div key={label}><div className="text-xl font-extrabold text-primary">{val}</div><div className="text-[11px] text-neutral-500 leading-tight">{label}</div></div>
+                  {[{ val: '&#8377;8+', label: 'more per kg avg.' }, { val: '&#8377;0', label: 'commission fee' }, { val: '24h', label: 'order dispatch' }].map(({ val, label }) => (
+                    <div key={label}><div className="text-xl font-extrabold text-primary" dangerouslySetInnerHTML={{__html: val}} /><div className="text-[11px] text-neutral-500 leading-tight">{label}</div></div>
                   ))}
                 </div>
               </div>
             </div>
           </div>
           <div className={`space-y-6 ${farmerSection.inView ? 'animate-fade-up delay-200' : 'opacity-0'}`}>
-            <div className="inline-flex items-center gap-2 text-primary font-bold text-sm tracking-widest uppercase"><Leaf className="w-4 h-4" /> For Farmers</div>
+            <div className="inline-flex items-center gap-2 text-primary font-bold text-sm tracking-widest uppercase"><Sprout className="w-4 h-4" /> For Farmers</div>
             <h2 className="text-4xl font-extrabold text-neutral-900 leading-tight">Set your own price.<br /><span className="text-primary">Keep what you earn.</span></h2>
-            <p className="text-neutral-600 text-lg">Stop losing 30-40% of your income to commission agents. Sell directly at a fair price you control.</p>
+            <p className="text-neutral-600 text-lg">Stop losing 30–40% of your income to commission agents. Sell directly at a fair price you control.</p>
             <ul className="space-y-4">
               {[
                 { title: 'Own your pricing',          desc: 'Set farm-gate prices anchored to real APMC mandi benchmarks.' },
@@ -437,9 +350,9 @@ const HomePage = () => {
             <ul className="space-y-4">
               {[
                 { title: 'Verified farm origins',   desc: 'Full traceability — farmer, district, harvest date and quality grade.' },
-                { title: 'Save 15-25% vs. retail',  desc: 'Skip the middlemen markup. Direct farm prices are consistently lower.' },
-                { title: 'Flexible delivery',        desc: 'Choose farm pickup or home delivery with real order tracking.' },
-                { title: 'COD + UPI',                desc: 'Pay on delivery or scan-and-pay. Zero payment friction.' },
+                { title: 'Save 15–25% vs. retail', desc: 'Skip the middlemen markup. Direct farm prices are consistently lower.' },
+                { title: 'Flexible delivery',       desc: 'Choose farm pickup or home delivery with real order tracking.' },
+                { title: 'COD + UPI',               desc: 'Pay on delivery or scan-and-pay. Zero payment friction.' },
               ].map(({ title, desc }) => (
                 <li key={title} className="flex items-start gap-3">
                   <CheckCircle className="w-5 h-5 text-emerald-400 mt-0.5 shrink-0" />
@@ -458,7 +371,7 @@ const HomePage = () => {
               <div className="absolute bottom-6 left-6 right-6 bg-neutral-900/90 backdrop-blur-sm rounded-2xl p-4 border border-white/10">
                 <div className="flex items-center justify-between">
                   <div><div className="text-white font-semibold">Alphonso Mangoes</div><div className="text-neutral-400 text-sm">Devgad, Ratnagiri · Grade A</div></div>
-                  <div className="text-right"><div className="text-emerald-400 font-extrabold text-lg">₹680<span className="text-sm font-normal">/dz</span></div><div className="text-neutral-500 text-xs line-through">₹820 APMC rate</div></div>
+                  <div className="text-right"><div className="text-emerald-400 font-extrabold text-lg">&#8377;680<span className="text-sm font-normal">/dz</span></div><div className="text-neutral-500 text-xs line-through">&#8377;820 APMC rate</div></div>
                 </div>
                 <div className="mt-3 flex gap-2">
                   <div className="flex-1 bg-emerald-600 text-white text-xs font-bold px-3 py-1.5 rounded-lg text-center">Add to Cart</div>

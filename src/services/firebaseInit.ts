@@ -256,7 +256,7 @@ export async function probeFirestoreAvailability(): Promise<boolean> {
 
   try {
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 1200);
+    const timer = setTimeout(() => controller.abort(), 5000);
     const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents?key=${apiKey}`;
     const res = await fetch(url, { signal: controller.signal });
     clearTimeout(timer);
@@ -283,7 +283,7 @@ export async function autoInitIfEmpty(): Promise<void> {
     const isAvailable = await probeFirestoreAvailability();
     if (!isAvailable || isDemoMode()) return;
 
-    const catSnap = await withFirestoreTimeout(getDocs(collection(db, COLLECTIONS.CATEGORIES)), 1000);
+    const catSnap = await withFirestoreTimeout(getDocs(collection(db, COLLECTIONS.CATEGORIES)), 5000);
     if (catSnap.empty) {
       console.info('Firestore categories container is empty. Auto-initializing collections...');
       await seedFirestoreContainers();

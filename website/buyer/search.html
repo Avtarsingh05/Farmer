@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Search Fresh Produce | KisanMitra</title>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            primary: {
+              DEFAULT: '#2D5016',
+              50:  '#F2F7EC',
+              100: '#E0EDD0',
+              200: '#BEDBA2',
+              300: '#90C168',
+              400: '#68A83B',
+              500: '#4A7C23',
+              600: '#2D5016',
+              700: '#1A3009',
+              800: '#0E1C05',
+              900: '#060D02',
+            },
+            accent: {
+              DEFAULT: '#C17F24',
+              50:  '#FDF8EE',
+              100: '#F9EDD1',
+              200: '#F3D89E',
+              300: '#EAC060',
+              400: '#DEA737',
+              500: '#C17F24',
+              600: '#9A6119',
+              700: '#744912',
+              800: '#4E300B',
+              900: '#281805',
+            },
+            neutral: {
+              50:  '#F9F7F2',
+              100: '#F0EDE6',
+              200: '#E2DDD5',
+              300: '#C8C2B8',
+              400: '#A09890',
+              500: '#7A7268',
+              600: '#5A5450',
+              700: '#403C38',
+              800: '#2A2724',
+              900: '#1A1A18',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="../styles/main.css">
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="../firebase-config.js"></script>
+  <script src="../js/app.js"></script>
+  <script src="../js/cloudinary.js"></script>
+  <script src="../js/produce-images.js"></script>
+  <script src="../js/panel.js"></script>
+</head>
+<body class="bg-neutral-50 text-neutral-900 font-sans antialiased min-h-screen flex flex-col">
+  <main id="main-content" class="flex-1 lg:ml-72 transition-all duration-300 min-h-screen flex flex-col">
+    <div class="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
+
+      <div class="space-y-6">
+        <div>
+          <h1 class="text-3xl font-extrabold text-neutral-900 tracking-tight">Marketplace</h1>
+          <p class="text-sm text-neutral-500 mt-1">Discover farm-fresh produce directly from local verified farmers.</p>
+        </div>
+
+        <!-- Search Bar & Filters -->
+        <div class="bg-white rounded-3xl p-4 border border-neutral-100 shadow-sm space-y-4">
+          <div class="relative">
+            <i data-lucide="search" class="w-5 h-5 absolute left-4 top-3.5 text-neutral-400"></i>
+            <input type="text" id="search-input" placeholder="Search tomatoes, onions, basmati rice, mangoes..." 
+                   class="w-full pl-12 pr-4 py-3 bg-neutral-50 border border-neutral-200 rounded-2xl focus:outline-none focus:border-primary text-sm font-medium">
+          </div>
+          <!-- Category Chips -->
+          <div class="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide" id="category-chips">
+            <button onclick="filterCategory('all')" class="cat-chip px-4 py-1.5 rounded-full text-xs font-bold transition-all bg-primary text-white shadow-sm" data-cat="all">All Crops</button>
+            <button onclick="filterCategory('Vegetables')" class="cat-chip px-4 py-1.5 rounded-full text-xs font-bold transition-all text-neutral-600 hover:bg-neutral-100" data-cat="Vegetables">Vegetables</button>
+            <button onclick="filterCategory('Fruits')" class="cat-chip px-4 py-1.5 rounded-full text-xs font-bold transition-all text-neutral-600 hover:bg-neutral-100" data-cat="Fruits">Fruits</button>
+            <button onclick="filterCategory('Grains')" class="cat-chip px-4 py-1.5 rounded-full text-xs font-bold transition-all text-neutral-600 hover:bg-neutral-100" data-cat="Grains">Grains</button>
+            <button onclick="filterCategory('Pulses')" class="cat-chip px-4 py-1.5 rounded-full text-xs font-bold transition-all text-neutral-600 hover:bg-neutral-100" data-cat="Pulses">Pulses</button>
+            <button onclick="filterCategory('Spices')" class="cat-chip px-4 py-1.5 rounded-full text-xs font-bold transition-all text-neutral-600 hover:bg-neutral-100" data-cat="Spices">Spices</button>
+            <button onclick="filterCategory('Dairy')" class="cat-chip px-4 py-1.5 rounded-full text-xs font-bold transition-all text-neutral-600 hover:bg-neutral-100" data-cat="Dairy">Dairy</button>
+          </div>
+        </div>
+
+        <!-- Produce Grid -->
+        <div id="produce-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <p class="text-center text-neutral-400 py-12 col-span-full">Loading fresh marketplace harvests...</p>
+        </div>
+      </div>
+
+      <script>
+        let marketplaceProducts = [];
+        let curCat = 'all';
+
+        document.addEventListener('DOMContentLoaded', () => {
+          window.initPanel({ role: 'buyer', currentPage: 'search', title: 'Search Produce' });
+
+          loadProduce();
+          document.getElementById('search-input').addEventListener('input', renderGrid);
+        });
+
+        async function loadProduce() {
+          try {
+            const snap = await window.FM.db.collection('products').where('status', '==', 'active').get();
+            marketplaceProducts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            renderGrid();
+          } catch(err) {
+            console.error(err);
+          }
+        }
+
+        function filterCategory(cat) {
+          curCat = cat;
+          document.querySelectorAll('.cat-chip').forEach(b => {
+            if (b.dataset.cat === cat) {
+              b.className = 'cat-chip px-4 py-1.5 rounded-full text-xs font-bold transition-all bg-primary text-white shadow-sm';
+            } else {
+              b.className = 'cat-chip px-4 py-1.5 rounded-full text-xs font-bold transition-all text-neutral-600 hover:bg-neutral-100';
+            }
+          });
+          renderGrid();
+        }
+
+        function renderGrid() {
+          const query = (document.getElementById('search-input').value || '').toLowerCase();
+          const filtered = marketplaceProducts.filter(p => {
+            const matchesCat = curCat === 'all' || p.category === curCat;
+            const matchesSearch = (p.name || '').toLowerCase().includes(query) || (p.farmerName || '').toLowerCase().includes(query);
+            return matchesCat && matchesSearch;
+          });
+
+          const grid = document.getElementById('produce-grid');
+          if (filtered.length === 0) {
+            grid.innerHTML = '<div class="col-span-full py-16 text-center text-neutral-400 bg-white rounded-3xl border border-neutral-100">No produce found matching your query.</div>';
+            return;
+          }
+
+          grid.innerHTML = filtered.map(p => {
+            const img = p.images?.[0]?.secureUrl || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300';
+            const price = p.askingPrice || p.price || 0;
+            return `
+              <div class="bg-white rounded-3xl border border-neutral-100 overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group">
+                <div class="relative overflow-hidden aspect-[4/3]">
+                  <img src="${img}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                  <div class="absolute top-3 left-3 flex gap-2">
+                    <span class="px-2.5 py-1 text-[10px] font-extrabold rounded-full bg-black/60 backdrop-blur-md text-white uppercase tracking-wider">${p.qualityGrade || 'Grade A'}</span>
+                  </div>
+                  <button onclick="toggleFavorite('${p.id}', '${p.name}')" class="absolute top-3 right-3 p-2 rounded-full bg-white/80 hover:bg-white text-neutral-600 hover:text-red-500 shadow-md backdrop-blur-md transition-colors" title="Save Favorite">
+                    <i data-lucide="heart" class="w-4 h-4"></i>
+                  </button>
+                </div>
+                <div class="p-5 flex flex-col justify-between flex-1">
+                  <div>
+                    <p class="text-[10px] font-bold text-neutral-400 uppercase tracking-wider mb-1">${p.category || 'Produce'}</p>
+                    <h3 class="font-extrabold text-neutral-900 text-base leading-snug line-clamp-1 mb-1">${p.name}</h3>
+                    <p class="text-xs text-neutral-500 flex items-center gap-1 mb-3">
+                      <i data-lucide="sprout" class="w-3.5 h-3.5 text-primary"></i> ${p.farmerName || 'Verified Farm'}
+                    </p>
+                  </div>
+                  <div class="pt-3 border-t border-neutral-100 flex items-center justify-between">
+                    <div>
+                      <p class="text-lg font-black text-primary">${window.formatCurrency(price)} <span class="text-xs font-normal text-neutral-400">/${p.unit || 'kg'}</span></p>
+                      <p class="text-[10px] font-bold text-neutral-400">${p.stock || 0} ${p.unit || 'kg'} in stock</p>
+                    </div>
+                    <button onclick="addToCart('${p.id}')" class="btn-primary rounded-full px-4 py-2 text-xs font-bold shadow-md hover:scale-105 active:scale-95 transition-all inline-flex items-center gap-1">
+                      <i data-lucide="shopping-cart" class="w-3.5 h-3.5"></i> Add
+                    </button>
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join('');
+          if (window.lucide) lucide.createIcons();
+        }
+
+        function addToCart(id) {
+          const p = marketplaceProducts.find(x => x.id === id);
+          if (!p) return;
+
+          let cart = { items: [] };
+          try {
+            cart = JSON.parse(localStorage.getItem('kisanmitra_cart') || '{"items":[]}');
+          } catch(e) {}
+
+          const existing = cart.items.find(i => i.productId === id);
+          if (existing) {
+            existing.quantity += 1;
+          } else {
+            cart.items.push({
+              productId: p.id,
+              name: p.name,
+              farmerId: p.farmerId,
+              farmerName: p.farmerName || 'Verified Farm',
+              price: p.askingPrice || p.price || 0,
+              unitPrice: p.askingPrice || p.price || 0,
+              unit: p.unit || 'kg',
+              quantity: 1,
+              image: p.images?.[0]?.secureUrl || ''
+            });
+          }
+
+          localStorage.setItem('kisanmitra_cart', JSON.stringify(cart));
+          window.dispatchEvent(new Event('storage'));
+          window.toast({ type: 'success', message: `Added ${p.name} to cart!` });
+        }
+
+        function toggleFavorite(id, name) {
+          window.toast({ type: 'success', message: `Added ${name} to your favorites!` });
+        }
+      </script>
+
+    </div>
+  </main>
+</body>
+</html>

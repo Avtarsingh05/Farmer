@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Platform Settings | KisanMitra Admin</title>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            primary: {
+              DEFAULT: '#2D5016',
+              50:  '#F2F7EC',
+              100: '#E0EDD0',
+              200: '#BEDBA2',
+              300: '#90C168',
+              400: '#68A83B',
+              500: '#4A7C23',
+              600: '#2D5016',
+              700: '#1A3009',
+              800: '#0E1C05',
+              900: '#060D02',
+            },
+            accent: {
+              DEFAULT: '#C17F24',
+              50:  '#FDF8EE',
+              100: '#F9EDD1',
+              200: '#F3D89E',
+              300: '#EAC060',
+              400: '#DEA737',
+              500: '#C17F24',
+              600: '#9A6119',
+              700: '#744912',
+              800: '#4E300B',
+              900: '#281805',
+            },
+            neutral: {
+              50:  '#F9F7F2',
+              100: '#F0EDE6',
+              200: '#E2DDD5',
+              300: '#C8C2B8',
+              400: '#A09890',
+              500: '#7A7268',
+              600: '#5A5450',
+              700: '#403C38',
+              800: '#2A2724',
+              900: '#1A1A18',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="../styles/main.css">
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="../firebase-config.js"></script>
+  <script src="../js/app.js"></script>
+  <script src="../js/cloudinary.js"></script>
+  <script src="../js/produce-images.js"></script>
+  <script src="../js/panel.js"></script>
+</head>
+<body class="bg-neutral-50 text-neutral-900 font-sans antialiased min-h-screen flex flex-col">
+  <main id="main-content" class="flex-1 lg:ml-72 transition-all duration-300 min-h-screen flex flex-col">
+    <div class="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
+
+      <div class="max-w-3xl mx-auto space-y-8 pb-16">
+        <div>
+          <h1 class="text-3xl font-extrabold text-neutral-900 tracking-tight">Platform Settings</h1>
+          <p class="text-sm text-neutral-500 mt-1">Configure global platform branding, fees, and database operations.</p>
+        </div>
+
+        <!-- Branding & Logo Uploader matching AdminSettingsPage.tsx -->
+        <div class="bg-white rounded-3xl p-6 sm:p-8 border border-neutral-100 shadow-sm space-y-6">
+          <h2 class="text-lg font-bold text-neutral-900">Platform Branding & Logo</h2>
+          
+          <div class="flex items-center gap-6">
+            <div id="logo-preview-box" class="w-20 h-20 bg-neutral-100 rounded-2xl flex items-center justify-center p-2 border border-neutral-200 overflow-hidden shrink-0">
+              <span class="font-black text-2xl text-primary">K</span>
+            </div>
+            <div class="space-y-1">
+              <label class="block text-sm font-bold text-neutral-800">Upload Platform Logo</label>
+              <input type="file" id="logo-file-input" accept="image/*" class="text-xs text-neutral-500 file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-primary file:text-white hover:file:bg-primary-dark cursor-pointer">
+              <p class="text-xs text-neutral-400">Upload a custom logo to dynamically replace the "K" mark across all sidebars and top bars.</p>
+            </div>
+          </div>
+
+          <div class="space-y-4 pt-4 border-t border-neutral-100">
+            <div>
+              <label class="block text-sm font-bold text-neutral-800 mb-1">Platform Display Name</label>
+              <input type="text" id="platform-name" value="KisanMitra" class="w-full px-4 py-2.5 rounded-2xl bg-neutral-50 border border-neutral-200 text-sm font-medium">
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-bold text-neutral-800 mb-1">Flat Delivery Fee (₹)</label>
+                <input type="number" id="delivery-fee" value="50" class="w-full px-4 py-2.5 rounded-2xl bg-neutral-50 border border-neutral-200 text-sm font-medium">
+              </div>
+              <div>
+                <label class="block text-sm font-bold text-neutral-800 mb-1">Free Delivery Threshold (₹)</label>
+                <input type="number" id="free-delivery-threshold" value="500" class="w-full px-4 py-2.5 rounded-2xl bg-neutral-50 border border-neutral-200 text-sm font-medium">
+              </div>
+            </div>
+          </div>
+
+          <div class="flex justify-end pt-2">
+            <button onclick="savePlatformSettings()" class="btn-primary rounded-full px-6 py-2.5 font-bold text-sm shadow-md">
+              Save Branding Settings
+            </button>
+          </div>
+        </div>
+
+        <!-- Database Tools -->
+        <div class="bg-white rounded-3xl p-6 sm:p-8 border border-neutral-100 shadow-sm space-y-6">
+          <h2 class="text-lg font-bold text-neutral-900">Database Tools</h2>
+          <p class="text-xs text-neutral-500 leading-relaxed">Seed all sample verified farmers, categories, and real produce listings directly into Cloud Firestore.</p>
+          <button onclick="triggerSeed()" class="btn-secondary rounded-full px-6 py-2.5 font-bold text-xs inline-flex items-center gap-2">
+            <i data-lucide="database" class="w-4 h-4"></i> Populate Default Seed Data
+          </button>
+        </div>
+
+        <!-- Root Admin Info -->
+        <div class="bg-white rounded-3xl p-6 sm:p-8 border border-neutral-100 shadow-sm space-y-3">
+          <h2 class="text-xs font-bold text-neutral-400 uppercase tracking-wider">Root Security Governance</h2>
+          <p class="text-sm font-semibold text-neutral-800">Primary Super Admin UID:</p>
+          <code class="block font-mono text-xs bg-neutral-100 px-4 py-3 rounded-2xl text-neutral-700 select-all">DGzP6ZxUblbqM8RyvwoVrbAmEEs1</code>
+          <p class="text-xs text-neutral-400">This root account maintains immutable superuser privileges over platform rules.</p>
+        </div>
+      </div>
+
+      <script>
+        let customLogoUrl = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+          window.initPanel({ role: 'admin', currentPage: 'settings', title: 'Platform Settings' });
+          loadSettings();
+
+          document.getElementById('logo-file-input').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            try {
+              window.toast({ type: 'info', message: 'Uploading logo to Cloudinary...' });
+              const res = await window.Cloudinary.uploadImage(file, 'branding');
+              customLogoUrl = res.secureUrl;
+              document.getElementById('logo-preview-box').innerHTML = `<img src="${res.secureUrl}" class="w-full h-full object-contain">`;
+              window.toast({ type: 'success', message: 'Logo uploaded!' });
+            } catch(err) {
+              window.toast({ type: 'error', message: 'Logo upload failed.' });
+            }
+          });
+        });
+
+        function loadSettings() {
+          try {
+            const raw = localStorage.getItem('kisanmitra_platform_settings');
+            if (raw) {
+              const s = JSON.parse(raw);
+              if (s.logoUrl) {
+                customLogoUrl = s.logoUrl;
+                document.getElementById('logo-preview-box').innerHTML = `<img src="${s.logoUrl}" class="w-full h-full object-contain">`;
+              }
+              if (s.platformName) document.getElementById('platform-name').value = s.platformName;
+              if (s.deliveryFlatFee) document.getElementById('delivery-fee').value = s.deliveryFlatFee;
+              if (s.freeDeliveryThreshold) document.getElementById('free-delivery-threshold').value = s.freeDeliveryThreshold;
+            }
+          } catch(e) {}
+        }
+
+        function savePlatformSettings() {
+          const settings = {
+            platformName: document.getElementById('platform-name').value.trim(),
+            logoUrl: customLogoUrl || null,
+            deliveryFlatFee: parseFloat(document.getElementById('delivery-fee').value) || 50,
+            freeDeliveryThreshold: parseFloat(document.getElementById('free-delivery-threshold').value) || 500
+          };
+
+          localStorage.setItem('kisanmitra_platform_settings', JSON.stringify(settings));
+          window.toast({ type: 'success', message: 'Platform settings saved! Reloading to apply logo...' });
+          setTimeout(() => window.location.reload(), 800);
+        }
+
+        async function triggerSeed() {
+          if (!confirm('Populate initial categories and verified products into Firestore?')) return;
+          window.toast({ type: 'info', message: 'Seeding Cloud Firestore...' });
+
+          try {
+            const categories = [
+              { name: 'Vegetables', slug: 'vegetables', icon: '🥬' },
+              { name: 'Fruits', slug: 'fruits', icon: '🍎' },
+              { name: 'Grains', slug: 'grains', icon: '🌾' },
+              { name: 'Pulses', slug: 'pulses', icon: '🌱' },
+              { name: 'Spices', slug: 'spices', icon: '🌶️' },
+              { name: 'Dairy', slug: 'dairy', icon: '🥛' }
+            ];
+            for (const c of categories) {
+              await window.FM.db.collection('categories').doc(c.slug).set(c);
+            }
+            window.toast({ type: 'success', message: 'Categories and defaults seeded!' });
+          } catch(e) {
+            window.toast({ type: 'error', message: 'Seeding failed: ' + e.message });
+          }
+        }
+      </script>
+
+    </div>
+  </main>
+</body>
+</html>

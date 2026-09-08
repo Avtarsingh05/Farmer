@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Farmer Dashboard | KisanMitra</title>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            primary: {
+              DEFAULT: '#2D5016',
+              50:  '#F2F7EC',
+              100: '#E0EDD0',
+              200: '#BEDBA2',
+              300: '#90C168',
+              400: '#68A83B',
+              500: '#4A7C23',
+              600: '#2D5016',
+              700: '#1A3009',
+              800: '#0E1C05',
+              900: '#060D02',
+            },
+            accent: {
+              DEFAULT: '#C17F24',
+              50:  '#FDF8EE',
+              100: '#F9EDD1',
+              200: '#F3D89E',
+              300: '#EAC060',
+              400: '#DEA737',
+              500: '#C17F24',
+              600: '#9A6119',
+              700: '#744912',
+              800: '#4E300B',
+              900: '#281805',
+            },
+            neutral: {
+              50:  '#F9F7F2',
+              100: '#F0EDE6',
+              200: '#E2DDD5',
+              300: '#C8C2B8',
+              400: '#A09890',
+              500: '#7A7268',
+              600: '#5A5450',
+              700: '#403C38',
+              800: '#2A2724',
+              900: '#1A1A18',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="../styles/main.css">
+  <!-- Firebase Compat CDN -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="../firebase-config.js"></script>
+  <script src="../js/app.js"></script>
+  <script src="../js/cloudinary.js"></script>
+  <script src="../js/produce-images.js"></script>
+  <script src="../js/panel.js"></script>
+</head>
+<body class="bg-neutral-50 text-neutral-900 font-sans antialiased min-h-screen flex flex-col">
+  <main id="main-content" class="flex-1 lg:ml-72 transition-all duration-300 min-h-screen flex flex-col">
+    <div class="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
+
+      <div class="space-y-8 pb-10">
+        <!-- Header / Greeting matching React FarmerDashboard -->
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div>
+            <p id="current-date" class="text-sm font-medium text-neutral-500 mb-1">Today</p>
+            <h1 class="text-3xl md:text-4xl font-extrabold text-neutral-900 tracking-tight">
+              Good day, <span id="farmer-name-greeting" class="text-primary">Farmer</span>
+            </h1>
+            <p class="text-neutral-600 mt-2 max-w-2xl">Here is what's happening with your farm today. Manage listings, orders, and inventory.</p>
+          </div>
+          <div class="flex flex-wrap gap-3">
+            <a href="product-form.html" class="btn-primary rounded-full px-6 py-2.5 font-bold shadow-[0_8px_30px_rgb(45,80,22,0.2)] hover:-translate-y-0.5 transition-all inline-flex items-center gap-2">
+              <i data-lucide="plus" class="w-5 h-5"></i> New Product
+            </a>
+            <a href="orders.html" class="btn-secondary rounded-full px-6 py-2.5 font-bold hover:-translate-y-0.5 transition-all inline-flex items-center gap-2">
+              <i data-lucide="shopping-bag" class="w-5 h-5"></i> View Orders
+            </a>
+          </div>
+        </div>
+
+        <!-- Verification Banner (Shown if unverified) -->
+        <div id="verify-banner" class="hidden bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/60 p-5 rounded-3xl flex items-start gap-4 shadow-sm">
+          <div class="p-2.5 bg-amber-100 rounded-2xl text-amber-700 shrink-0">
+            <i data-lucide="alert-triangle" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <h3 class="text-lg font-bold text-amber-900">Action Required: Verify Account</h3>
+            <p class="text-amber-700 mt-1 text-sm">Complete your farm profile to get verified and start selling to our network of buyers.</p>
+            <a href="profile.html" class="text-amber-800 font-bold underline mt-2 inline-flex items-center gap-1 hover:text-amber-900 text-sm">
+              Complete Profile <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- Metric Stat Cards matching React FarmerDashboard -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <!-- Active Listings -->
+          <a href="products.html" class="block group">
+            <div class="bg-white p-6 rounded-3xl border border-neutral-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] group-hover:shadow-md group-hover:-translate-y-1 transition-all duration-300 h-full relative overflow-hidden">
+              <div class="absolute -right-4 -top-4 w-24 h-24 bg-green-50 rounded-full blur-2xl group-hover:bg-green-100 transition-colors"></div>
+              <div class="relative z-10 flex flex-col justify-between h-full space-y-4">
+                <div class="w-12 h-12 rounded-2xl bg-green-100/80 text-green-700 flex items-center justify-center">
+                  <i data-lucide="package" class="w-6 h-6"></i>
+                </div>
+                <div>
+                  <p id="stat-active-listings" class="text-4xl font-extrabold text-neutral-900 mb-1">0</p>
+                  <p class="text-sm font-semibold text-neutral-500 uppercase tracking-wider">Active Listings</p>
+                </div>
+              </div>
+            </div>
+          </a>
+
+          <!-- Pending Orders -->
+          <a href="orders.html?status=pending" class="block group">
+            <div class="bg-white p-6 rounded-3xl border border-neutral-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] group-hover:shadow-md group-hover:-translate-y-1 transition-all duration-300 h-full relative overflow-hidden">
+              <div class="absolute -right-4 -top-4 w-24 h-24 bg-amber-50 rounded-full blur-2xl group-hover:bg-amber-100 transition-colors"></div>
+              <div class="relative z-10 flex flex-col justify-between h-full space-y-4">
+                <div class="w-12 h-12 rounded-2xl bg-amber-100/80 text-amber-700 flex items-center justify-center">
+                  <i data-lucide="shopping-bag" class="w-6 h-6"></i>
+                </div>
+                <div>
+                  <p id="stat-pending-orders" class="text-4xl font-extrabold text-neutral-900 mb-1">0</p>
+                  <p class="text-sm font-semibold text-neutral-500 uppercase tracking-wider">Pending Orders</p>
+                </div>
+              </div>
+            </div>
+          </a>
+
+          <!-- This Month Orders -->
+          <a href="orders.html" class="block group">
+            <div class="bg-white p-6 rounded-3xl border border-neutral-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] group-hover:shadow-md group-hover:-translate-y-1 transition-all duration-300 h-full relative overflow-hidden">
+              <div class="absolute -right-4 -top-4 w-24 h-24 bg-blue-50 rounded-full blur-2xl group-hover:bg-blue-100 transition-colors"></div>
+              <div class="relative z-10 flex flex-col justify-between h-full space-y-4">
+                <div class="w-12 h-12 rounded-2xl bg-blue-100/80 text-blue-700 flex items-center justify-center">
+                  <i data-lucide="trending-up" class="w-6 h-6"></i>
+                </div>
+                <div>
+                  <p id="stat-month-orders" class="text-4xl font-extrabold text-neutral-900 mb-1">0</p>
+                  <p class="text-sm font-semibold text-neutral-500 uppercase tracking-wider">Month Orders</p>
+                </div>
+              </div>
+            </div>
+          </a>
+
+          <!-- This Month Earnings -->
+          <a href="earnings.html" class="block group">
+            <div class="bg-white p-6 rounded-3xl border border-neutral-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] group-hover:shadow-md group-hover:-translate-y-1 transition-all duration-300 h-full relative overflow-hidden">
+              <div class="absolute -right-4 -top-4 w-24 h-24 bg-emerald-50 rounded-full blur-2xl group-hover:bg-emerald-100 transition-colors"></div>
+              <div class="relative z-10 flex flex-col justify-between h-full space-y-4">
+                <div class="w-12 h-12 rounded-2xl bg-emerald-100/80 text-emerald-700 flex items-center justify-center">
+                  <i data-lucide="indian-rupee" class="w-6 h-6"></i>
+                </div>
+                <div>
+                  <p id="stat-month-earnings" class="text-4xl font-extrabold text-neutral-900 mb-1">₹0</p>
+                  <p class="text-sm font-semibold text-neutral-500 uppercase tracking-wider">Month Earnings</p>
+                </div>
+              </div>
+            </div>
+          </a>
+        </div>
+
+        <!-- Low Stock Alerts & Recent Orders Layout -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <!-- Recent Orders (2 Cols) -->
+          <div class="lg:col-span-2 bg-white rounded-3xl p-6 border border-neutral-100 shadow-sm">
+            <div class="flex items-center justify-between mb-6">
+              <div>
+                <h2 class="text-xl font-bold text-neutral-900">Recent Orders</h2>
+                <p class="text-sm text-neutral-500 mt-0.5">Latest harvest requests from buyers</p>
+              </div>
+              <a href="orders.html" class="text-primary text-sm font-bold hover:underline flex items-center gap-1">
+                View All <i data-lucide="arrow-right" class="w-4 h-4"></i>
+              </a>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left">
+                <thead>
+                  <tr class="border-b border-neutral-100 text-xs font-semibold text-neutral-400 uppercase tracking-wider">
+                    <th class="pb-3 pr-4">Order ID</th>
+                    <th class="pb-3 px-4">Buyer</th>
+                    <th class="pb-3 px-4">Total</th>
+                    <th class="pb-3 px-4">Status</th>
+                    <th class="pb-3 pl-4 text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="recent-orders-tbody" class="divide-y divide-neutral-50 text-sm">
+                  <tr><td colspan="5" class="py-8 text-center text-neutral-400">Loading orders...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Low Inventory Alerts (1 Col) -->
+          <div class="bg-white rounded-3xl p-6 border border-neutral-100 shadow-sm flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center gap-2">
+                  <div class="p-2 bg-amber-50 text-amber-700 rounded-xl">
+                    <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+                  </div>
+                  <h2 class="text-xl font-bold text-neutral-900">Stock Alerts</h2>
+                </div>
+                <a href="inventory.html" class="text-primary text-sm font-bold hover:underline">Manage</a>
+              </div>
+              <div id="low-stock-list" class="space-y-3">
+                <p class="text-sm text-neutral-400 py-4 text-center">Loading inventory...</p>
+              </div>
+            </div>
+            <div class="pt-6 mt-6 border-t border-neutral-100">
+              <a href="inventory.html" class="w-full btn-secondary rounded-2xl py-2.5 font-bold text-sm text-center block">
+                Open Inventory Manager
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          window.initPanel({ role: 'farmer', currentPage: 'dashboard', title: 'Farmer Dashboard' });
+
+          const now = new Date();
+          document.getElementById('current-date').textContent = now.toLocaleDateString('en-IN', {
+            weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+          });
+
+          document.addEventListener('user-loaded', async (e) => {
+            const user = e.detail;
+            document.getElementById('farmer-name-greeting').textContent = user.displayName || user.name || 'Farmer';
+
+            if (user.verificationStatus !== 'verified') {
+              document.getElementById('verify-banner').classList.remove('hidden');
+            }
+
+            try {
+              // Fetch farmer products
+              const prodSnap = await window.FM.db.collection('products').where('farmerId', '==', user.uid).get();
+              const products = prodSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+              document.getElementById('stat-active-listings').textContent = products.filter(p => p.status === 'active').length;
+
+              // Fetch farmer orders
+              const ordSnap = await window.FM.db.collection('orders').where('farmerId', '==', user.uid).get();
+              const orders = ordSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+              
+              const pending = orders.filter(o => o.status === 'pending');
+              document.getElementById('stat-pending-orders').textContent = pending.length;
+
+              const curMonth = now.getMonth();
+              const curYear = now.getFullYear();
+              const monthOrders = orders.filter(o => {
+                const dt = o.createdAt?.toDate ? o.createdAt.toDate() : new Date(o.createdAt);
+                return dt.getMonth() === curMonth && dt.getFullYear() === curYear;
+              });
+              document.getElementById('stat-month-orders').textContent = monthOrders.length;
+
+              const monthEarnings = monthOrders
+                .filter(o => o.status === 'delivered')
+                .reduce((sum, o) => sum + (o.total || 0), 0);
+              document.getElementById('stat-month-earnings').textContent = window.formatCurrency(monthEarnings);
+
+              // Render recent orders table
+              const tbody = document.getElementById('recent-orders-tbody');
+              if (orders.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="py-8 text-center text-neutral-400">No orders received yet.</td></tr>';
+              } else {
+                orders.sort((a,b) => {
+                  const ta = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
+                  const tb = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
+                  return tb - ta;
+                });
+                tbody.innerHTML = orders.slice(0, 5).map(o => `
+                  <tr class="hover:bg-neutral-50/50 transition-colors">
+                    <td class="py-3.5 pr-4 font-mono font-bold text-neutral-800 text-xs">#${o.id.slice(0,8)}</td>
+                    <td class="py-3.5 px-4 font-semibold text-neutral-800">${o.buyerName || 'Buyer'}</td>
+                    <td class="py-3.5 px-4 font-bold text-primary">${window.formatCurrency(o.total)}</td>
+                    <td class="py-3.5 px-4">${window.getOrderStatusBadge(o.status || 'pending')}</td>
+                    <td class="py-3.5 pl-4 text-right">
+                      <a href="order-detail.html?id=${o.id}" class="text-primary font-bold hover:underline text-xs inline-flex items-center gap-0.5">
+                        View <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+                      </a>
+                    </td>
+                  </tr>
+                `).join('');
+                if (window.lucide) lucide.createIcons();
+              }
+
+              // Low stock items
+              const lowStockEl = document.getElementById('low-stock-list');
+              const lowStock = products.filter(p => (p.stock || 0) <= 10);
+              if (lowStock.length === 0) {
+                lowStockEl.innerHTML = '<p class="text-sm text-emerald-700 font-medium py-4 text-center bg-emerald-50 rounded-2xl border border-emerald-100">All products have healthy inventory levels!</p>';
+              } else {
+                lowStockEl.innerHTML = lowStock.slice(0, 4).map(p => `
+                  <div class="flex items-center justify-between p-3 rounded-2xl bg-neutral-50 border border-neutral-100">
+                    <div class="flex items-center gap-3">
+                      <img src="${p.images?.[0]?.secureUrl || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=100'}" class="w-10 h-10 rounded-xl object-cover">
+                      <div>
+                        <p class="font-bold text-neutral-800 text-sm">${p.name}</p>
+                        <p class="text-xs text-neutral-400">${p.unit || 'kg'}</p>
+                      </div>
+                    </div>
+                    <span class="px-2.5 py-1 text-xs font-extrabold rounded-full bg-red-100 text-red-700">${p.stock || 0} left</span>
+                  </div>
+                `).join('');
+              }
+
+            } catch(err) {
+              console.error('Failed to load dashboard data:', err);
+            }
+          });
+        });
+      </script>
+
+    </div>
+  </main>
+</body>
+</html>

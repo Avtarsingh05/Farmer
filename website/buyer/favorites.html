@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Saved Favorites | KisanMitra</title>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            primary: {
+              DEFAULT: '#2D5016',
+              50:  '#F2F7EC',
+              100: '#E0EDD0',
+              200: '#BEDBA2',
+              300: '#90C168',
+              400: '#68A83B',
+              500: '#4A7C23',
+              600: '#2D5016',
+              700: '#1A3009',
+              800: '#0E1C05',
+              900: '#060D02',
+            },
+            accent: {
+              DEFAULT: '#C17F24',
+              50:  '#FDF8EE',
+              100: '#F9EDD1',
+              200: '#F3D89E',
+              300: '#EAC060',
+              400: '#DEA737',
+              500: '#C17F24',
+              600: '#9A6119',
+              700: '#744912',
+              800: '#4E300B',
+              900: '#281805',
+            },
+            neutral: {
+              50:  '#F9F7F2',
+              100: '#F0EDE6',
+              200: '#E2DDD5',
+              300: '#C8C2B8',
+              400: '#A09890',
+              500: '#7A7268',
+              600: '#5A5450',
+              700: '#403C38',
+              800: '#2A2724',
+              900: '#1A1A18',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="../styles/main.css">
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="../firebase-config.js"></script>
+  <script src="../js/app.js"></script>
+  <script src="../js/cloudinary.js"></script>
+  <script src="../js/produce-images.js"></script>
+  <script src="../js/panel.js"></script>
+</head>
+<body class="bg-neutral-50 text-neutral-900 font-sans antialiased min-h-screen flex flex-col">
+  <main id="main-content" class="flex-1 lg:ml-72 transition-all duration-300 min-h-screen flex flex-col">
+    <div class="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
+
+      <div class="space-y-6">
+        <div>
+          <h1 class="text-3xl font-extrabold text-neutral-900 tracking-tight">Saved Favorites</h1>
+          <p class="text-sm text-neutral-500 mt-1">Quick access to crops and farmers you love.</p>
+        </div>
+
+        <div id="favorites-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <p class="text-center text-neutral-400 py-12 col-span-full">Loading saved crops...</p>
+        </div>
+      </div>
+
+      <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          window.initPanel({ role: 'buyer', currentPage: 'favorites', title: 'My Favorites' });
+
+          document.addEventListener('user-loaded', async () => {
+            try {
+              // Load active products for favorites preview
+              const snap = await window.FM.db.collection('products').where('status', '==', 'active').limit(8).get();
+              const prods = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+              const grid = document.getElementById('favorites-grid');
+              if (prods.length === 0) {
+                grid.innerHTML = '<div class="col-span-full py-16 text-center text-neutral-400 bg-white rounded-3xl border border-neutral-100">No saved favorites yet.</div>';
+                return;
+              }
+
+              grid.innerHTML = prods.map(p => `
+                <div class="bg-white rounded-3xl border border-neutral-100 overflow-hidden shadow-sm hover:shadow-md transition-all p-4 flex flex-col justify-between">
+                  <img src="${p.images?.[0]?.secureUrl || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300'}" class="w-full aspect-video rounded-2xl object-cover mb-3">
+                  <h3 class="font-bold text-neutral-900 text-sm mb-1">${p.name}</h3>
+                  <p class="text-xs text-neutral-400 mb-3">${p.farmerName || 'Farm'}</p>
+                  <div class="flex items-center justify-between pt-2 border-t border-neutral-100">
+                    <span class="font-extrabold text-primary text-sm">${window.formatCurrency(p.askingPrice||p.price)}</span>
+                    <a href="search.html" class="btn-primary rounded-full px-4 py-1.5 text-xs font-bold">View In Market</a>
+                  </div>
+                </div>
+              `).join('');
+              if (window.lucide) lucide.createIcons();
+            } catch(e) {
+              console.error(e);
+            }
+          });
+        });
+      </script>
+
+    </div>
+  </main>
+</body>
+</html>
