@@ -1,11 +1,4 @@
-const firebaseConfig = {
-    apiKey: "AIzaSyCzsCU0mruOm1Qz38NXAMdtUopWbGTRcJ4",
-    authDomain: "farmer-bfd33.firebaseapp.com",
-    projectId: "farmer-bfd33",
-    storageBucket: "farmer-bfd33.firebasestorage.app",
-    messagingSenderId: "719969634082",
-    appId: "1:719969634082:web:59e206cfc18ecd7aaf877b"
-};
+
 
 // Ensure firebase app is initialized
 if (!window.firebase) {
