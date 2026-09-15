@@ -43,7 +43,6 @@
   body {
     @apply bg-neutral-50 text-neutral-900 font-sans antialiased;
     min-height: 100vh;
-    overflow-x: hidden;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -82,27 +81,27 @@
   }
 
   .card {
-    @apply bg-white border border-neutral-200 rounded-lg shadow-xs;
+    @apply bg-white border border-neutral-200 rounded-3xl shadow-sm p-6;
   }
 
   .badge-green {
-    @apply inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-success-light text-success-dark;
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-success-light text-success-dark;
   }
 
   .badge-amber {
-    @apply inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-warning-light text-warning-dark;
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-warning-light text-warning-dark;
   }
 
   .badge-red {
-    @apply inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-error-light text-error-dark;
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-error-light text-error-dark;
   }
 
   .badge-blue {
-    @apply inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-info-light text-info-dark;
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-info-light text-info-dark;
   }
 
   .badge-neutral {
-    @apply inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-neutral-100 text-neutral-700;
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-neutral-100 text-neutral-700;
   }
 
   .form-label {
@@ -110,7 +109,7 @@
   }
 
   .form-input {
-    @apply w-full px-3 py-2.5 text-sm border border-neutral-300 rounded
+    @apply w-full px-4 py-3 text-sm border border-neutral-300 rounded-full
            bg-white text-neutral-900 placeholder-neutral-400
            focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500
            disabled:bg-neutral-100 disabled:text-neutral-500 disabled:cursor-not-allowed
@@ -126,11 +125,10 @@
   }
 
   .btn {
-    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium
-           rounded transition-all duration-150 focus-visible:outline-2 focus-visible:outline-offset-2
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-bold rounded-full transition-all duration-150 focus-visible:outline-2 focus-visible:outline-offset-2
            disabled:opacity-50 disabled:cursor-not-allowed select-none whitespace-nowrap;
-    min-height: 40px;
-    min-width: 40px;
+    min-height: 48px;
+    min-width: 48px;
   }
 
   .btn-primary {
@@ -154,13 +152,13 @@
   }
 
   .btn-sm {
-    @apply px-3 py-1.5 text-xs;
-    min-height: 32px;
+    @apply px-4 py-2 text-xs font-bold rounded-full;
+    min-height: 36px;
   }
 
   .btn-lg {
-    @apply px-6 py-3 text-base;
-    min-height: 48px;
+    @apply px-8 py-4 text-base font-bold rounded-full;
+    min-height: 56px;
   }
 
   .skeleton {
@@ -168,7 +166,7 @@
   }
 
   .sidebar-link {
-    @apply flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded
+    @apply flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-2xl
            text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900
            transition-colors duration-100 cursor-pointer;
   }
@@ -313,4 +311,23 @@
 }
 .scrollbar-hide::-webkit-scrollbar {
   display: none; /* Chrome, Safari and Opera */
+}
+
+/* Mobile drawer slide-in */
+@keyframes slide-in-left {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(0); }
+}
+.animate-slide-in-left {
+  animation: slide-in-left 0.25s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+/* iOS safe-area bottom padding */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* bg-primary/8 utility (Tailwind doesn't auto-generate fractional opacity) */
+.bg-primary\/8 {
+  background-color: rgba(45, 80, 22, 0.08);
 }

@@ -754,6 +754,7 @@ const STORAGE_KEYS = {
   FAVORITES: 'kisanmitra_favs',
   INVENTORY: 'kisanmitra_inventory',
   NOTIFICATIONS: 'kisanmitra_notifs',
+  MOCK_USERS: 'kisanmitra_mock_users',
 };
 
 export function getStoredProducts(): Product[] {
@@ -808,6 +809,20 @@ export function saveStoredUser(user: AppUser | null) {
     } else {
       localStorage.removeItem(STORAGE_KEYS.USER);
     }
+  } catch {}
+}
+
+export function getStoredMockUsers(): AppUser[] {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEYS.MOCK_USERS);
+    if (raw) return JSON.parse(raw);
+  } catch {}
+  return [];
+}
+
+export function saveStoredMockUsers(users: AppUser[]) {
+  try {
+    localStorage.setItem(STORAGE_KEYS.MOCK_USERS, JSON.stringify(users));
   } catch {}
 }
 

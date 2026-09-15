@@ -5,3 +5,5 @@ export { default as FarmersPage } from './FarmersPage';
 export { default as FarmerProfilePage } from './FarmerProfilePage';
 export { default as AboutPage } from './AboutPage';
 export { default as HowItWorksPage } from './HowItWorksPage';
+export { default as TermsPage } from './TermsPage';
+export { default as PrivacyPage } from './PrivacyPage';

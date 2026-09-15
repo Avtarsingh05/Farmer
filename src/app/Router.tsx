@@ -16,6 +16,8 @@ const FarmersPage          = lazy(() => import('@/pages/public/FarmersPage'));
 const FarmerProfilePage    = lazy(() => import('@/pages/public/FarmerProfilePage'));
 const AboutPage            = lazy(() => import('@/pages/public/AboutPage'));
 const HowItWorksPage       = lazy(() => import('@/pages/public/HowItWorksPage'));
+const TermsPage            = lazy(() => import('@/pages/public/TermsPage'));
+const PrivacyPage          = lazy(() => import('@/pages/public/PrivacyPage'));
 const NotFoundPage         = lazy(() => import('@/pages/public/NotFoundPage'));
 
 // ─── Auth pages ───────────────────────────────────────────────────────────────
@@ -33,6 +35,7 @@ const FarmerInventoryPage  = lazy(() => import('@/pages/farmer/FarmerInventoryPa
 const FarmerEarningsPage   = lazy(() => import('@/pages/farmer/FarmerEarningsPage'));
 const FarmerProfilePage2   = lazy(() => import('@/pages/farmer/FarmerProfilePage'));
 const FarmerAnalyticsPage  = lazy(() => import('@/pages/farmer/FarmerAnalyticsPage'));
+const KisanInsightsPage    = lazy(() => import('@/pages/farmer/KisanInsightsPage'));
 
 // ─── Buyer pages ──────────────────────────────────────────────────────────────
 const BuyerDashboard       = lazy(() => import('@/pages/buyer/BuyerDashboard'));
@@ -76,8 +79,8 @@ const router = createBrowserRouter([
       { path: 'farmers/:id',   element: <Suspense fallback={<PageLoader />}><FarmerProfilePage /></Suspense> },
       { path: 'about',         element: <Suspense fallback={<PageLoader />}><AboutPage /></Suspense> },
       { path: 'how-it-works',  element: <Suspense fallback={<PageLoader />}><HowItWorksPage /></Suspense> },
-      { path: 'privacy',       element: <div className="container-content py-16"><h1 className="page-title">Privacy Policy</h1><p className="mt-4 text-neutral-600">Policy details will be added here.</p></div> },
-      { path: 'terms',         element: <div className="container-content py-16"><h1 className="page-title">Terms of Service</h1><p className="mt-4 text-neutral-600">Terms details will be added here.</p></div> },
+      { path: 'privacy',       element: <Suspense fallback={<PageLoader />}><PrivacyPage /></Suspense> },
+      { path: 'terms',         element: <Suspense fallback={<PageLoader />}><TermsPage /></Suspense> },
       { path: 'contact',       element: <div className="container-content py-16"><h1 className="page-title">Contact Us</h1><p className="mt-4 text-neutral-600">contact@kisanmitra.in</p></div> },
     ],
   },
@@ -111,6 +114,7 @@ const router = createBrowserRouter([
       { path: 'earnings',           element: <Suspense fallback={<PageLoader />}><FarmerEarningsPage /></Suspense> },
       { path: 'profile',            element: <Suspense fallback={<PageLoader />}><FarmerProfilePage2 /></Suspense> },
       { path: 'analytics',          element: <Suspense fallback={<PageLoader />}><FarmerAnalyticsPage /></Suspense> },
+      { path: 'insights',           element: <Suspense fallback={<PageLoader />}><KisanInsightsPage /></Suspense> },
       { path: 'settings',           element: <Suspense fallback={<PageLoader />}><FarmerProfilePage2 /></Suspense> },
     ],
   },

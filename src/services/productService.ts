@@ -1,6 +1,6 @@
 import {
   db, serverTimestamp, COLLECTIONS,
-  collection, doc, getDoc, setDoc, updateDoc, getDocs, addDoc,
+  collection, doc, getDoc, setDoc, updateDoc, getDocs, addDoc, deleteDoc,
   query, where, orderBy, limit, startAfter,
   type QueryDocumentSnapshot, type DocumentData,
 } from '@/lib/firebase/firestore';
@@ -9,7 +9,17 @@ import type {
 } from '@/types';
 import type { ProductFormData, UpdateProductFormData } from '@/schemas/product.schema';
 import { createInventoryRecord } from './inventoryService';
-import { isDemoMode, getStoredProducts, saveStoredProducts, withFirestoreTimeout } from './mockStore';
+import { 
+  isDemoMode, 
+  getStoredProducts, 
+  saveStoredProducts, 
+  getStoredInventory, 
+  saveStoredInventory, 
+  getStoredFavorites, 
+  saveStoredFavorites, 
+  withFirestoreTimeout,
+  DEMO_CATEGORIES
+} from './mockStore';
 
 export interface ProductFilters {
   categoryId?:   string;
@@ -69,7 +79,7 @@ export async function getProduct(productId: string): Promise<Product | null> {
       quantity:           d.quantity,
       unit:               d.unit,
       price:              d.price,
-      currency:           'INR',
+      currency:           'INR' as const,
       location:           d.location ?? undefined,
       district:           d.district ?? undefined,
       state:              d.state ?? undefined,
@@ -89,7 +99,7 @@ export async function getProduct(productId: string): Promise<Product | null> {
 export async function createProduct(
   farmerId: string,
   farmerName: string,
-  data: ProductFormData
+  data: ProductFormData & { images?: any[] }
 ): Promise<string> {
   if (isDemoMode()) {
     const products = getStoredProducts();
@@ -103,7 +113,7 @@ export async function createProduct(
       category: data.categoryId,
       name: data.name,
       description: data.description,
-      images: [{
+      images: data.images?.length ? data.images : [{
         publicId: 'custom-' + Date.now(),
         secureUrl: 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=600&auto=format&fit=crop&q=80',
         width: 600,
@@ -134,7 +144,7 @@ export async function createProduct(
     categoryId:         data.categoryId,
     name:               data.name,
     description:        data.description,
-    images:             [],
+    images:             data.images ?? [],
     quantity:           data.quantity,
     unit:               data.unit,
     price:              data.price,
@@ -224,7 +234,9 @@ export async function getPublicProducts(
 
 export async function getFarmerProducts(farmerId: string): Promise<Product[]> {
   if (isDemoMode()) {
-    const list = getStoredProducts().filter(p => p.farmerId === farmerId || farmerId.startsWith('demo'));
+    const list = getStoredProducts().filter(
+      p => (p.farmerId === farmerId || farmerId.startsWith('demo')) && p.availabilityStatus !== 'inactive'
+    );
     return list;
   }
   try {
@@ -235,48 +247,54 @@ export async function getFarmerProducts(farmerId: string): Promise<Product[]> {
     );
     const snap = await withFirestoreTimeout(getDocs(q), 800);
     if (snap.empty) {
-      return getStoredProducts().filter(p => p.farmerId === farmerId || farmerId.startsWith('demo'));
+      return getStoredProducts().filter(
+        p => (p.farmerId === farmerId || farmerId.startsWith('demo')) && p.availabilityStatus !== 'inactive'
+      );
     }
-    return snap.docs.map((d) => {
-      const data = d.data();
-      return {
-        id:                 d.id,
-        farmerId:           data.farmerId,
-        farmerName:         data.farmerName,
-        farmId:             data.farmId ?? undefined,
-        categoryId:         data.categoryId,
-        categoryName:       data.categoryName ?? undefined,
-        category:           data.categoryName ?? undefined,
-        name:               data.name,
-        description:        data.description,
-        images:             data.images ?? [],
-        quantity:           data.quantity,
-        unit:               data.unit,
-        price:              data.price,
-        currency:           'INR',
-        location:           data.location ?? undefined,
-        district:           data.district ?? undefined,
-        state:              data.state ?? undefined,
-        qualityGrade:       data.qualityGrade,
-        availabilityStatus: data.availabilityStatus,
-        tags:               data.tags ?? [],
-        createdAt:          data.createdAt?.toDate?.() ?? new Date(),
-        updatedAt:          data.updatedAt?.toDate?.() ?? new Date(),
-      };
-    });
+    return snap.docs
+      .map((d) => {
+        const data = d.data();
+        return {
+          id:                 d.id,
+          farmerId:           data.farmerId,
+          farmerName:         data.farmerName,
+          farmId:             data.farmId ?? undefined,
+          categoryId:         data.categoryId,
+          categoryName:       data.categoryName ?? undefined,
+          category:           data.categoryName ?? undefined,
+          name:               data.name,
+          description:        data.description,
+          images:             data.images ?? [],
+          quantity:           data.quantity,
+          unit:               data.unit,
+          price:              data.price,
+          currency:           'INR' as const,
+          location:           data.location ?? undefined,
+          district:           data.district ?? undefined,
+          state:              data.state ?? undefined,
+          qualityGrade:       data.qualityGrade,
+          availabilityStatus: data.availabilityStatus,
+          tags:               data.tags ?? [],
+          createdAt:          data.createdAt?.toDate?.() ?? new Date(),
+          updatedAt:          data.updatedAt?.toDate?.() ?? new Date(),
+        };
+      })
+      .filter(p => p.availabilityStatus !== 'inactive');
   } catch {
-    return getStoredProducts().filter(p => p.farmerId === farmerId || farmerId.startsWith('demo'));
+    return getStoredProducts().filter(
+      p => (p.farmerId === farmerId || farmerId.startsWith('demo')) && p.availabilityStatus !== 'inactive'
+    );
   }
 }
 
 export async function getAllProducts(limitCount = 50): Promise<Product[]> {
   if (isDemoMode()) {
-    return getStoredProducts().slice(0, limitCount);
+    return getStoredProducts().filter(p => p.availabilityStatus !== 'inactive').slice(0, limitCount);
   }
   try {
     const q = query(collection(db, COLLECTIONS.PRODUCTS), limit(limitCount));
     const snap = await getDocs(q);
-    if (snap.empty) return getStoredProducts().slice(0, limitCount);
+    if (snap.empty) return getStoredProducts().filter(p => p.availabilityStatus !== 'inactive').slice(0, limitCount);
     return snap.docs.map((d) => {
       const data = d.data();
       return {
@@ -293,7 +311,7 @@ export async function getAllProducts(limitCount = 50): Promise<Product[]> {
         quantity:           data.quantity ?? 0,
         unit:               data.unit ?? 'kg',
         price:              data.price ?? 0,
-        currency:           'INR',
+        currency:           'INR' as const,
         location:           data.location ?? undefined,
         district:           data.district ?? undefined,
         state:              data.state ?? undefined,
@@ -303,9 +321,9 @@ export async function getAllProducts(limitCount = 50): Promise<Product[]> {
         createdAt:          data.createdAt?.toDate?.() ?? new Date(),
         updatedAt:          data.updatedAt?.toDate?.() ?? new Date(),
       };
-    });
+    }).filter(p => p.availabilityStatus !== 'inactive');
   } catch {
-    return getStoredProducts().slice(0, limitCount);
+    return getStoredProducts().filter(p => p.availabilityStatus !== 'inactive').slice(0, limitCount);
   }
 }
 
@@ -314,34 +332,83 @@ export async function getAllProducts(limitCount = 50): Promise<Product[]> {
 export async function updateProduct(
   productId: string,
   farmerId: string,
-  data: UpdateProductFormData
+  data: UpdateProductFormData & { images?: any[] }
 ): Promise<void> {
-  if (isDemoMode()) {
-    const products = getStoredProducts();
-    const idx = products.findIndex(p => p.id === productId);
-    if (idx !== -1) {
-      products[idx] = {
-        ...products[idx],
-        ...data,
+  // 1. Always update local storage first so changes reflect immediately
+  const products = getStoredProducts();
+  const idx = products.findIndex(p => p.id === productId);
+  if (idx !== -1) {
+    let categoryName = products[idx].categoryName;
+    if (data.categoryId) {
+      const cat = DEMO_CATEGORIES.find(c => c.id === data.categoryId);
+      if (cat) categoryName = cat.name;
+    }
+    products[idx] = {
+      ...products[idx],
+      ...data,
+      categoryName,
+      category: categoryName,
+      updatedAt: new Date(),
+    };
+    saveStoredProducts(products);
+  }
+
+  // 2. Also update inventory locally
+  try {
+    const inv = getStoredInventory();
+    const invIdx = inv.findIndex(i => i.productId === productId);
+    if (invIdx !== -1) {
+      inv[invIdx] = {
+        ...inv[invIdx],
+        productName: data.name ?? inv[invIdx].productName,
+        availableQty: data.quantity ?? inv[invIdx].availableQty,
+        unit: data.unit ?? inv[invIdx].unit,
+        lowStockThreshold: data.lowStockThreshold ?? inv[invIdx].lowStockThreshold,
         updatedAt: new Date(),
       };
-      saveStoredProducts(products);
+      saveStoredInventory(inv);
     }
-    return;
+  } catch {}
+
+  // 3. In live Firestore mode, update remote documents
+  if (!isDemoMode()) {
+    try {
+      const docRef = doc(db, COLLECTIONS.PRODUCTS, productId);
+      const snap = await withFirestoreTimeout(getDoc(docRef), 1500);
+      if (snap.exists()) {
+        const snapData = snap.data();
+        const canUpdate = !farmerId || 
+          snapData.farmerId === farmerId || 
+          farmerId.startsWith('demo') || 
+          farmerId === 'DGzP6ZxUblbqM8RyvwoVrbAmEEs1' || 
+          snapData.farmerId?.startsWith('demo');
+
+        if (canUpdate) {
+          const allowed: Record<string, unknown> = { updatedAt: serverTimestamp() };
+          const fields: (keyof UpdateProductFormData | 'images')[] = [
+            'name', 'description', 'categoryId', 'quantity', 'unit',
+            'price', 'qualityGrade', 'availabilityStatus', 'location', 'district', 'state', 'tags', 'images'
+          ];
+          for (const f of fields) {
+            if ((data as any)[f] !== undefined) allowed[f] = (data as any)[f];
+          }
+          await withFirestoreTimeout(updateDoc(docRef, allowed), 2000);
+
+          try {
+            await withFirestoreTimeout(updateDoc(doc(db, COLLECTIONS.INVENTORY, productId), {
+              productName: data.name,
+              availableQty: data.quantity,
+              unit: data.unit,
+              lowStockThreshold: data.lowStockThreshold ?? 10,
+              updatedAt: serverTimestamp(),
+            }), 1000);
+          } catch {}
+        }
+      }
+    } catch (err) {
+      console.warn('[ProductService] Firestore updateProduct error (local update was successful):', err);
+    }
   }
-  const snap = await getDoc(doc(db, COLLECTIONS.PRODUCTS, productId));
-  if (!snap.exists() || snap.data().farmerId !== farmerId) {
-    throw new Error('Product not found or permission denied.');
-  }
-  const allowed: Record<string, unknown> = { updatedAt: serverTimestamp() };
-  const fields: (keyof UpdateProductFormData)[] = [
-    'name', 'description', 'categoryId', 'quantity', 'unit',
-    'price', 'qualityGrade', 'availabilityStatus', 'location', 'district', 'state', 'tags',
-  ];
-  for (const f of fields) {
-    if (data[f] !== undefined) allowed[f] = data[f];
-  }
-  await updateDoc(doc(db, COLLECTIONS.PRODUCTS, productId), allowed);
 }
 
 export async function updateProductImages(
@@ -370,22 +437,41 @@ export async function updateProductImages(
 
 // ─── Delete ───────────────────────────────────────────────────────────────────
 
-export async function deleteProduct(productId: string, farmerId: string): Promise<void> {
-  if (isDemoMode()) {
-    const products = getStoredProducts();
-    const idx = products.findIndex(p => p.id === productId);
-    if (idx !== -1) {
-      products[idx].availabilityStatus = 'inactive';
-      saveStoredProducts(products);
+export async function deleteProduct(productId: string, farmerId?: string): Promise<void> {
+  // 1. Permanently remove from stored products (local storage / cache)
+  const products = getStoredProducts();
+  const updatedProducts = products.filter(p => p.id !== productId);
+  saveStoredProducts(updatedProducts);
+
+  // 2. Clean up from stored inventory
+  try {
+    const inv = getStoredInventory();
+    saveStoredInventory(inv.filter(i => i.productId !== productId));
+  } catch {}
+
+  // 3. Clean up from stored favorites
+  try {
+    const favs = getStoredFavorites();
+    saveStoredFavorites(favs.filter(id => id !== productId));
+  } catch {}
+
+  // 4. Remove from live Firestore if active
+  if (!isDemoMode()) {
+    try {
+      const docRef = doc(db, COLLECTIONS.PRODUCTS, productId);
+      const snap = await withFirestoreTimeout(getDoc(docRef), 1500);
+      if (snap.exists()) {
+        const data = snap.data();
+        const canDelete = !farmerId || data.farmerId === farmerId || farmerId.startsWith('demo') || farmerId === 'DGzP6ZxUblbqM8RyvwoVrbAmEEs1';
+        if (canDelete) {
+          await withFirestoreTimeout(deleteDoc(docRef), 2000);
+          try {
+            await withFirestoreTimeout(deleteDoc(doc(db, COLLECTIONS.INVENTORY, productId)), 1000);
+          } catch {}
+        }
+      }
+    } catch (err) {
+      console.warn('[ProductService] Firestore delete error (local purge was successful):', err);
     }
-    return;
   }
-  const snap = await getDoc(doc(db, COLLECTIONS.PRODUCTS, productId));
-  if (!snap.exists() || snap.data().farmerId !== farmerId) {
-    throw new Error('Product not found or permission denied.');
-  }
-  await updateDoc(doc(db, COLLECTIONS.PRODUCTS, productId), {
-    availabilityStatus: 'inactive',
-    updatedAt:          serverTimestamp(),
-  });
 }

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks';
+import { useLanguage } from '@/i18n';
 import { getAllUsers } from '@/services/userService';
 import { getAllFarmers } from '@/services/farmerService';
 import { getAllProducts } from '@/services/productService';
@@ -17,6 +18,7 @@ import {
 } from '@/services/firebaseInit';
 
 export default function AdminDashboard() {
+  const { t } = useLanguage();
   const { toast } = useToast();
   const [stats, setStats] = useState({
     users: 0,
@@ -159,7 +161,7 @@ export default function AdminDashboard() {
             <div className="w-12 h-12 bg-neutral-900 text-white rounded-xl flex items-center justify-center mb-4 shadow-sm group-hover:scale-110 transition-transform">
               <Users className="w-6 h-6" />
             </div>
-            <p className="text-sm font-semibold text-neutral-500 uppercase tracking-wider mb-1">Total Users</p>
+            <p className="text-sm font-semibold text-neutral-500 uppercase tracking-wider mb-1">{t.admin.totalUsers}</p>
             <p className="text-4xl font-extrabold text-neutral-900">{stats.users}</p>
           </div>
         </Link>

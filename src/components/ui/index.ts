@@ -10,3 +10,5 @@ export * from './Skeleton';
 export * from './Avatar';
 export * from './Pagination';
 export * from './GooeyNav';
+export * from './ScrollExpand';
+export * from './LanguageSelector';

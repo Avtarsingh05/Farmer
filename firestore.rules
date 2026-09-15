@@ -200,9 +200,51 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
-    // ─── Market Prices ───────────────────────────────────────────────────────
+    // ─── Crops & Agricultural Taxonomy ───────────────────────────────────────
+    match /crops/{cropId} {
+      allow read:  if true;   // Public taxonomy
+      allow write: if isAdmin();
+    }
+
+    // ─── Market Prices & Historical Observations ──────────────────────────────
     match /marketPrices/{priceId} {
-      allow read:  if true;   // Public reference data
+      allow read:  if true;   // Public reference market data
+      allow write: if isAdmin();
+    }
+
+    // ─── Regional Price Comparisons ───────────────────────────────────────────
+    match /regionalPrices/{regionalPriceId} {
+      allow read:  if true;   // Public district benchmark data
+      allow write: if isAdmin();
+    }
+
+    // ─── Platform Demand Activity ─────────────────────────────────────────────
+    match /demandHistory/{demandId} {
+      allow read:  if true;   // Public aggregated platform demand
+      allow write: if isAdmin();
+    }
+
+    // ─── Analytics Snapshots & Insights ───────────────────────────────────────
+    match /analyticsSnapshots/{snapshotId} {
+      allow read:  if true;   // Public aggregate snapshots
+      allow write: if isAdmin();
+    }
+
+    match /marketInsights/{insightId} {
+      allow read:  if true;   // Public market insights
+      allow write: if isAdmin();
+    }
+
+    // ─── Farmer Private Sales & Performance Analytics ─────────────────────────
+    match /salesAnalytics/{salesId} {
+      // Strictly private to owning farmer or admin
+      allow read:  if (isAuthenticated() && resource.data.farmerId == request.auth.uid) || isAdmin();
+      allow write: if isAdmin();
+    }
+
+    match /farmerAnalytics/{farmerId} {
+      // Strictly private to owning farmer or admin
+      allow read:  if isCurrentUser(farmerId) || isAdmin();
       allow write: if isAdmin();
     }
 

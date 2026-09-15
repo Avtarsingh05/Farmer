@@ -66,7 +66,7 @@ export default function FavoritesPage() {
           <Link to="/buyer/search" className="btn-primary">Browse Market</Link>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-6">
           {favorites.map(product => (
             <div key={product.id} className="card overflow-hidden flex flex-col relative group">
               <button 

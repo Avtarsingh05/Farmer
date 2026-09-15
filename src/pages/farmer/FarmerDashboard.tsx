@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Package, ShoppingCart, TrendingUp, AlertTriangle, IndianRupee, ArrowRight, ChevronRight } from 'lucide-react';
+import { Package, ShoppingCart, TrendingUp, AlertTriangle, IndianRupee, ArrowRight, ChevronRight, Sprout, Sparkles } from 'lucide-react';
 import { useAuth } from '@/hooks';
 import { getFarmerProfile } from '@/services/farmerService';
 import { getFarmerProducts } from '@/services/productService';
@@ -8,9 +8,11 @@ import { getFarmerOrders } from '@/services/orderService';
 import { getFarmerInventory } from '@/services/inventoryService';
 import { FarmerProfile, Product, Order, InventoryItem } from '@/types';
 import { cn } from '@/utils/cn';
+import { useLanguage } from '@/i18n';
 
 export default function FarmerDashboard() {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [profile, setProfile] = useState<FarmerProfile | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
@@ -47,9 +49,9 @@ export default function FarmerDashboard() {
 
   const getGreeting = () => {
     const hour = new Date().getHours();
-    if (hour < 12) return 'Good Morning';
-    if (hour < 18) return 'Good Afternoon';
-    return 'Good Evening';
+    if (hour < 12) return t.farmer.goodMorning;
+    if (hour < 18) return t.farmer.goodAfternoon;
+    return t.farmer.goodEvening;
   };
 
   const currentDate = new Date().toLocaleDateString(undefined, {
@@ -60,7 +62,7 @@ export default function FarmerDashboard() {
     return (
       <div className="space-y-8 p-4">
         <div className="h-12 bg-neutral-200/50 rounded-2xl w-1/3 animate-pulse"></div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5 lg:gap-6">
           {[1, 2, 3, 4].map(i => <div key={i} className="h-32 bg-neutral-200/50 rounded-3xl animate-pulse"></div>)}
         </div>
       </div>
@@ -99,7 +101,7 @@ export default function FarmerDashboard() {
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 animate-fade-up">
         <div>
           <p className="text-sm font-medium text-neutral-500 mb-1">{currentDate}</p>
-          <h1 className="text-3xl md:text-4xl font-extrabold text-neutral-900 tracking-tight">
+          <h1 className="text-xl sm:text-3xl md:text-4xl font-extrabold text-neutral-900 tracking-tight">
             {getGreeting()}, <span className="text-primary">{profile?.displayName || user?.name || 'Farmer'}</span>
           </h1>
           <p className="text-neutral-600 mt-2 max-w-2xl">Here is what's happening with your farm today. You have {pendingOrders.length} orders to fulfill.</p>
@@ -120,8 +122,8 @@ export default function FarmerDashboard() {
             <AlertTriangle className="w-6 h-6" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-amber-900">Action Required: Verify Account</h3>
-            <p className="text-amber-700 mt-1">Complete your profile to get verified and start selling to our network of premium buyers.</p>
+            <h3 className="text-lg font-bold text-amber-900">{t.farmer.verificationPending}</h3>
+            <p className="text-amber-700 mt-1">{t.farmer.completeProfileToVerify}</p>
             <Link to="/farmer/profile" className="text-amber-800 font-semibold underline mt-3 inline-flex items-center gap-1 hover:text-amber-900 transition-colors">
               Complete Profile <ArrowRight className="w-4 h-4" />
             </Link>
@@ -138,7 +140,7 @@ export default function FarmerDashboard() {
                 <Package className="w-6 h-6" />
               </div>
               <div>
-                <p className="text-4xl font-extrabold text-neutral-900 mb-1">{activeListings}</p>
+                <p className="text-2xl sm:text-4xl font-extrabold text-neutral-900 mb-1">{activeListings}</p>
                 <p className="text-sm font-semibold text-neutral-500 uppercase tracking-wider">Active Listings</p>
               </div>
             </div>
@@ -153,7 +155,7 @@ export default function FarmerDashboard() {
                 <ShoppingCart className="w-6 h-6" />
               </div>
               <div>
-                <p className="text-4xl font-extrabold text-neutral-900 mb-1">{pendingOrders.length}</p>
+                <p className="text-2xl sm:text-4xl font-extrabold text-neutral-900 mb-1">{pendingOrders.length}</p>
                 <p className="text-sm font-semibold text-neutral-500 uppercase tracking-wider">Pending Orders</p>
               </div>
             </div>
@@ -168,7 +170,7 @@ export default function FarmerDashboard() {
                 <TrendingUp className="w-6 h-6" />
               </div>
               <div>
-                <p className="text-4xl font-extrabold text-neutral-900 mb-1">{thisMonthOrders.length}</p>
+                <p className="text-2xl sm:text-4xl font-extrabold text-neutral-900 mb-1">{thisMonthOrders.length}</p>
                 <p className="text-sm font-semibold text-neutral-500 uppercase tracking-wider">Orders This Month</p>
               </div>
             </div>
@@ -179,11 +181,11 @@ export default function FarmerDashboard() {
           <div className="bg-gradient-to-br from-primary to-emerald-800 p-6 rounded-3xl shadow-[0_8px_30px_rgb(45,80,22,0.2)] group-hover:shadow-[0_8px_30px_rgb(45,80,22,0.3)] group-hover:-translate-y-1 transition-all duration-300 h-full relative overflow-hidden">
             <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
             <div className="relative z-10 flex flex-col justify-between h-full space-y-4">
-              <div className="w-12 h-12 rounded-2xl bg-white/20 text-white flex items-center justify-center backdrop-blur-sm">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-700 text-white flex items-center justify-center shadow-xs">
                 <IndianRupee className="w-6 h-6" />
               </div>
               <div>
-                <p className="text-4xl font-extrabold text-white mb-1">₹{thisMonthEarnings.toLocaleString()}</p>
+                <p className="text-2xl sm:text-4xl font-extrabold text-white mb-1">₹{thisMonthEarnings.toLocaleString()}</p>
                 <p className="text-sm font-medium text-emerald-100 uppercase tracking-wider">Earnings This Month</p>
               </div>
             </div>
@@ -191,11 +193,38 @@ export default function FarmerDashboard() {
         </Link>
       </div>
 
+      {/* Kisan Insights Teaser Banner */}
+      <div className="bg-linear-to-r from-emerald-900 to-primary-950 text-white p-6 rounded-3xl shadow-lg relative overflow-hidden animate-fade-up">
+        <div className="absolute right-0 top-0 bottom-0 w-1/3 bg-radial from-white/10 to-transparent pointer-events-none" />
+        <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+          <div className="space-y-2">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-800 text-white text-xs font-semibold border border-emerald-700">
+              <Sparkles className="w-3.5 h-3.5 text-emerald-400" /> Kisan Insights
+            </div>
+            <h3 className="text-xl sm:text-2xl font-bold tracking-tight">
+              Market Intelligence & Historical APMC Rates
+            </h3>
+            <p className="text-emerald-200/90 text-xs sm:text-sm max-w-xl leading-relaxed">
+              Track 90-day price trends for Tomato, Potato, Onion & Grains across regional mandis. Compare district benchmarks and analyze platform demand before setting your asking price.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3 shrink-0">
+            <Link
+              to="/farmer/insights"
+              className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-emerald-500 hover:bg-emerald-400 text-neutral-950 font-bold text-sm shadow-md transition-all hover:scale-105 active:scale-95"
+            >
+              Explore Insights <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         <div className="xl:col-span-2 space-y-6">
           <div className="bg-white rounded-3xl p-6 border border-neutral-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] animate-fade-up delay-400">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-bold text-neutral-900">Recent Orders</h2>
+              <h2 className="text-xl font-bold text-neutral-900">{t.farmer.recentOrders}</h2>
               <Link to="/farmer/orders" className="text-primary font-medium hover:text-primary/80 flex items-center text-sm">
                 View All <ChevronRight className="w-4 h-4 ml-1" />
               </Link>
@@ -207,7 +236,32 @@ export default function FarmerDashboard() {
                 <p className="text-neutral-500 font-medium">No recent orders yet.</p>
               </div>
             ) : (
-              <div className="overflow-x-auto">
+              <div className="space-y-0">
+              <div className="block sm:hidden space-y-3">
+                {recentOrders.map(order => (
+                  <Link key={order.id} to={`/farmer/orders/${order.id}`}
+                    className="flex items-center justify-between p-4 bg-neutral-50/60 rounded-2xl border border-neutral-100 hover:bg-neutral-50 active:bg-neutral-100 transition-colors">
+                    <div className="min-w-0">
+                      <p className="font-bold text-neutral-900 text-sm">#{order.id.slice(0, 8)}</p>
+                      <p className="text-xs text-neutral-500 mt-0.5 truncate">{order.buyerName} · {new Date(order.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</p>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0 ml-3">
+                      <span className={cn(
+                        "px-2.5 py-1 rounded-full text-xs font-bold",
+                        order.orderStatus === 'pending' ? 'bg-amber-100 text-amber-800' :
+                        order.orderStatus === 'delivered' ? 'bg-green-100 text-green-800' :
+                        order.orderStatus === 'cancelled' || order.orderStatus === 'rejected' ? 'bg-red-100 text-red-800' :
+                        'bg-blue-100 text-blue-800'
+                      )}>
+                        {order.orderStatus.charAt(0).toUpperCase() + order.orderStatus.slice(1)}
+                      </span>
+                      <span className="font-bold text-neutral-900 text-sm">₹{order.total.toLocaleString()}</span>
+                      <ChevronRight className="w-4 h-4 text-neutral-400" />
+                    </div>
+                  </Link>
+                ))}
+              </div>
+              <div className="hidden sm:block overflow-x-auto">
                 <table className="w-full text-left border-separate border-spacing-y-2">
                   <thead className="text-neutral-500 text-xs uppercase tracking-wider font-semibold">
                     <tr>
@@ -262,7 +316,9 @@ export default function FarmerDashboard() {
                   </tbody>
                 </table>
               </div>
+              </div>
             )}
+
           </div>
         </div>
 

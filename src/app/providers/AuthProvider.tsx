@@ -9,7 +9,7 @@ import { createUserDocument, getUserDocument } from '@/services/userService';
 import { createFarmerProfile } from '@/services/farmerService';
 import type { AppUser, UserRole } from '@/types';
 import type { RegisterFormData } from '@/schemas/auth.schema';
-import { isDemoMode, DEMO_USERS, getStoredUser, saveStoredUser } from '@/services/mockStore';
+import { isDemoMode, DEMO_USERS, getStoredUser, saveStoredUser, getStoredMockUsers, saveStoredMockUsers } from '@/services/mockStore';
 import { isUserAdmin } from '@/config/admin';
 import { AuthContext } from './AuthContext';
 
@@ -101,20 +101,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = useCallback(async (email: string, password: string) => {
     if (isDemoMode()) {
-      const found = Object.values(DEMO_USERS).find(u => u.email.toLowerCase() === email.toLowerCase());
-      const activeUser: AppUser = found || {
-        uid: 'user-' + Date.now(),
-        id: 'user-' + Date.now(),
-        name: email.split('@')[0],
-        email,
-        role: email.includes('farmer') ? 'farmer' : (email.includes('admin') ? 'admin' : 'buyer'),
-        isEmailVerified: true,
-        status: 'active',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-      setUser(activeUser);
-      saveStoredUser(activeUser);
+      const mockUsers = getStoredMockUsers();
+      const allDemoUsers = [...Object.values(DEMO_USERS), ...mockUsers];
+      const found = allDemoUsers.find(u => u.email.toLowerCase() === email.toLowerCase());
+      
+      if (!found) {
+        throw new Error('Account not found. Please check your credentials or create an account.');
+      }
+      setUser(found);
+      saveStoredUser(found);
       setLoading(false);
       return;
     }
@@ -124,7 +119,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await loadUserDocument(cred.user);
     } catch (err) {
       // If network fails, allow fallback to demo user
-      const found = Object.values(DEMO_USERS).find(u => u.email.toLowerCase() === email.toLowerCase());
+      const mockUsers = getStoredMockUsers();
+      const allDemoUsers = [...Object.values(DEMO_USERS), ...mockUsers];
+      const found = allDemoUsers.find(u => u.email.toLowerCase() === email.toLowerCase());
+      
       if (found) {
         setUser(found);
         saveStoredUser(found);
@@ -137,6 +135,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const register = useCallback(async (data: RegisterFormData) => {
     if (isDemoMode()) {
+      const mockUsers = getStoredMockUsers();
+      if (mockUsers.some(u => u.email.toLowerCase() === data.email.toLowerCase()) || 
+          Object.values(DEMO_USERS).some(u => u.email.toLowerCase() === data.email.toLowerCase())) {
+        throw new Error('Email already in use. Please sign in instead.');
+      }
+
       const newUser: AppUser = {
         uid: 'user-' + Date.now(),
         id: 'user-' + Date.now(),
@@ -149,6 +153,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         createdAt: new Date(),
         updatedAt: new Date(),
       };
+      
+      saveStoredMockUsers([...mockUsers, newUser]);
       setUser(newUser);
       saveStoredUser(newUser);
       setLoading(false);
@@ -170,6 +176,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await loadUserDocument(cred.user);
     } catch (err) {
       // Instant fallback if Firebase connection fails
+      const mockUsers = getStoredMockUsers();
+      if (mockUsers.some(u => u.email.toLowerCase() === data.email.toLowerCase()) || 
+          Object.values(DEMO_USERS).some(u => u.email.toLowerCase() === data.email.toLowerCase())) {
+        throw new Error('Email already in use. Please sign in instead.');
+      }
+      
       const newUser: AppUser = {
         uid: 'user-' + Date.now(),
         id: 'user-' + Date.now(),
@@ -182,6 +194,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         createdAt: new Date(),
         updatedAt: new Date(),
       };
+      saveStoredMockUsers([...mockUsers, newUser]);
       setUser(newUser);
       saveStoredUser(newUser);
       setLoading(false);

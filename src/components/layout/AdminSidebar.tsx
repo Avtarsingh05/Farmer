@@ -5,6 +5,7 @@ import { LayoutDashboard, Users, Sprout, Package, ShoppingBag, Tag, Flag, Settin
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { useAuth } from '@/hooks';
+import { useLanguage } from '@/i18n';
 
 const cn = (...args: (string | undefined | null | false)[]) => twMerge(clsx(args));
 
@@ -19,16 +20,17 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isCollapsed, onToggl
   const { user, logout } = useAuth();
   const { logoUrl } = getPlatformSettings();
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const navItems = [
-    { label: 'Dashboard', path: '/admin', icon: LayoutDashboard },
-    { label: 'Users', path: '/admin/users', icon: Users },
-    { label: 'Farmers', path: '/admin/farmers', icon: Sprout },
-    { label: 'Products', path: '/admin/products', icon: Package },
-    { label: 'Orders', path: '/admin/orders', icon: ShoppingBag },
-    { label: 'Categories', path: '/admin/categories', icon: Tag },
-    { label: 'Reports', path: '/admin/reports', icon: Flag },
-    { label: 'Settings', path: '/admin/settings', icon: Settings },
+    { label: t.nav.admin.dashboard, path: '/admin', icon: LayoutDashboard },
+    { label: t.nav.admin.users, path: '/admin/users', icon: Users },
+    { label: t.nav.admin.farmers, path: '/admin/farmers', icon: Sprout },
+    { label: t.nav.admin.products, path: '/admin/products', icon: Package },
+    { label: t.nav.admin.orders, path: '/admin/orders', icon: ShoppingBag },
+    { label: t.nav.admin.categories, path: '/admin/categories', icon: Tag },
+    { label: t.nav.admin.reports, path: '/admin/reports', icon: Flag },
+    { label: t.nav.admin.settings, path: '/admin/settings', icon: Settings },
   ];
 
   const handleLogout = async () => {
@@ -59,7 +61,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isCollapsed, onToggl
       )}
 
       <div className={cn(
-        "flex items-center h-20 cursor-pointer bg-neutral-950/50 border-white/5 backdrop-blur-md border-b transition-all duration-300",
+        "flex items-center h-20 cursor-pointer bg-neutral-950 border-neutral-800 border-b transition-all duration-300",
         isMobile 
           ? "justify-between px-6" 
           : (isCollapsed ? "justify-center px-0" : "justify-start px-6")
@@ -116,7 +118,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isCollapsed, onToggl
         })}
       </nav>
 
-      <div className={cn("p-4 bg-neutral-950/50 backdrop-blur-md border-t border-white/5 mt-auto", (!isMobile && isCollapsed) ? "items-center flex flex-col" : "")}>
+      <div className={cn("p-4 bg-neutral-950 border-t border-neutral-800 mt-auto", (!isMobile && isCollapsed) ? "items-center flex flex-col" : "")}>
         <div className={cn("flex items-center mb-4", (!isMobile && isCollapsed) ? "justify-center px-0" : "px-2")}>
           <div className="h-11 w-11 rounded-full bg-gradient-to-br from-primary to-primary-dark flex items-center justify-center text-white font-bold overflow-hidden shadow-md ring-2 ring-white/10 shrink-0">
             {user?.avatar ? (
@@ -139,7 +141,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isCollapsed, onToggl
             title={(!isMobile && isCollapsed) ? "Settings" : undefined}
           >
             <Settings className={cn("h-4 w-4 transition-transform duration-300 group-hover:rotate-90", (!isMobile && isCollapsed) ? "" : "mr-3")} />
-            {(isMobile || !isCollapsed) && <span>Settings</span>}
+            {(isMobile || !isCollapsed) && <span>{t.common.settings}</span>}
           </button>
           <button 
             onClick={handleLogout}
@@ -147,7 +149,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isCollapsed, onToggl
             title={(!isMobile && isCollapsed) ? "Logout" : undefined}
           >
             <LogOut className={cn("h-4 w-4 transition-transform duration-300", (!isMobile && isCollapsed) ? "" : "mr-3 group-hover:-translate-x-1")} />
-            {(isMobile || !isCollapsed) && <span>Logout</span>}
+            {(isMobile || !isCollapsed) && <span>{t.common.logout}</span>}
           </button>
         </div>
       </div>

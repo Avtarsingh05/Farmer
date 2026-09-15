@@ -1,10 +1,11 @@
 import { getPlatformSettings } from '@/services/settingsService';
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Package, ShoppingBag, Archive, IndianRupee, BarChart2, LogOut, Settings, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { LayoutDashboard, Package, ShoppingBag, Archive, IndianRupee, BarChart2, TrendingUp, LogOut, Settings, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { useAuth } from '@/hooks';
+import { useLanguage } from '@/i18n';
 
 const cn = (...args: (string | undefined | null | false)[]) => twMerge(clsx(args));
 
@@ -19,14 +20,16 @@ export const FarmerSidebar: React.FC<FarmerSidebarProps> = ({ isCollapsed, onTog
   const { user, logout } = useAuth();
   const { logoUrl } = getPlatformSettings();
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const navItems = [
-    { label: 'Dashboard', path: '/farmer', icon: LayoutDashboard },
-    { label: 'Products', path: '/farmer/products', icon: Package },
-    { label: 'Orders', path: '/farmer/orders', icon: ShoppingBag },
-    { label: 'Inventory', path: '/farmer/inventory', icon: Archive },
-    { label: 'Earnings', path: '/farmer/earnings', icon: IndianRupee },
-    { label: 'Analytics', path: '/farmer/analytics', icon: BarChart2 },
+    { label: t.nav.farmer.dashboard, path: '/farmer', icon: LayoutDashboard },
+    { label: t.nav.farmer.products, path: '/farmer/products', icon: Package },
+    { label: t.nav.farmer.orders, path: '/farmer/orders', icon: ShoppingBag },
+    { label: t.nav.farmer.inventory, path: '/farmer/inventory', icon: Archive },
+    { label: t.nav.farmer.earnings, path: '/farmer/earnings', icon: IndianRupee },
+    { label: 'Kisan Insights', path: '/farmer/insights', icon: TrendingUp },
+    { label: t.nav.farmer.analytics, path: '/farmer/analytics', icon: BarChart2 },
   ];
 
   const handleLogout = async () => {
@@ -57,7 +60,7 @@ export const FarmerSidebar: React.FC<FarmerSidebarProps> = ({ isCollapsed, onTog
       )}
 
       <div className={cn(
-        "flex items-center h-20 cursor-pointer bg-neutral-950/50 border-white/5 backdrop-blur-md border-b transition-all duration-300",
+        "flex items-center h-20 cursor-pointer bg-neutral-950 border-neutral-800 border-b transition-all duration-300",
         isMobile 
           ? "justify-between px-6" 
           : (isCollapsed ? "justify-center px-0" : "justify-start px-6")
@@ -114,7 +117,7 @@ export const FarmerSidebar: React.FC<FarmerSidebarProps> = ({ isCollapsed, onTog
         })}
       </nav>
 
-      <div className={cn("p-4 bg-neutral-950/50 backdrop-blur-md border-t border-white/5 mt-auto", (!isMobile && isCollapsed) ? "items-center flex flex-col" : "")}>
+      <div className={cn("p-4 bg-neutral-950 border-t border-neutral-800 mt-auto", (!isMobile && isCollapsed) ? "items-center flex flex-col" : "")}>
         <div className={cn("flex items-center mb-4", (!isMobile && isCollapsed) ? "justify-center px-0" : "px-2")}>
           <div className="h-11 w-11 rounded-full bg-gradient-to-br from-primary to-primary-dark flex items-center justify-center text-white font-bold overflow-hidden shadow-md ring-2 ring-white/10 shrink-0">
             {user?.avatar ? (
@@ -126,7 +129,7 @@ export const FarmerSidebar: React.FC<FarmerSidebarProps> = ({ isCollapsed, onTog
           {(isMobile || !isCollapsed) && (
             <div className="ml-3 flex-1 min-w-0">
               <p className="text-sm font-bold text-white truncate">{user?.name || 'Farmer'}</p>
-              <p className="text-xs text-neutral-400 font-medium truncate">Farmer Account</p>
+              <p className="text-xs text-neutral-400 font-medium truncate">{t.nav.farmer.profile}</p>
             </div>
           )}
         </div>
@@ -137,7 +140,7 @@ export const FarmerSidebar: React.FC<FarmerSidebarProps> = ({ isCollapsed, onTog
             title={(!isMobile && isCollapsed) ? "Settings" : undefined}
           >
             <Settings className={cn("h-4 w-4 transition-transform duration-300 group-hover:rotate-90", (!isMobile && isCollapsed) ? "" : "mr-3")} />
-            {(isMobile || !isCollapsed) && <span>Settings</span>}
+            {(isMobile || !isCollapsed) && <span>{t.common.settings}</span>}
           </button>
           <button 
             onClick={handleLogout}
@@ -145,7 +148,7 @@ export const FarmerSidebar: React.FC<FarmerSidebarProps> = ({ isCollapsed, onTog
             title={(!isMobile && isCollapsed) ? "Logout" : undefined}
           >
             <LogOut className={cn("h-4 w-4 transition-transform duration-300", (!isMobile && isCollapsed) ? "" : "mr-3 group-hover:-translate-x-1")} />
-            {(isMobile || !isCollapsed) && <span>Logout</span>}
+            {(isMobile || !isCollapsed) && <span>{t.common.logout}</span>}
           </button>
         </div>
       </div>

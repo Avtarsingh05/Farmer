@@ -39,12 +39,12 @@ export default function FarmerProductsPage() {
 
   const handleDelete = async (id: string) => {
     try {
-      const uid = user?.uid || user?.id;
-      if (!uid) return;
+      const uid = user?.uid || user?.id || 'demo-farmer-1';
       await deleteProduct(id, uid);
-      setProducts(products.filter(p => p.id !== id));
+      setProducts(prev => prev.filter(p => p.id !== id));
       setDeleteConfirmId(null);
     } catch (err: any) {
+      console.error('Delete error:', err);
       alert(err.message || 'Failed to delete product');
     }
   };
@@ -70,7 +70,7 @@ export default function FarmerProductsPage() {
 
   return (
     <div className="space-y-8 pb-10">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 animate-fade-up">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 sm:gap-4 animate-fade-up">
         <div>
           <h1 className="text-3xl md:text-4xl font-extrabold text-neutral-900 tracking-tight">My Products</h1>
           <p className="text-neutral-500 mt-2 font-medium">Manage your catalog, inventory, and pricing.</p>
@@ -81,7 +81,7 @@ export default function FarmerProductsPage() {
       </div>
 
       <div className="bg-white rounded-3xl p-2 sm:p-4 border border-neutral-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] animate-fade-up delay-100">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-100 pb-4 px-2">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4 border-b border-neutral-100 pb-4 px-2">
           <div className="flex overflow-x-auto no-scrollbar gap-2">
             {tabs.map(tab => (
               <button
@@ -112,7 +112,7 @@ export default function FarmerProductsPage() {
         </div>
 
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-6 p-4">
             {[1,2,3,4].map(i => (
               <div key={i} className="animate-pulse bg-neutral-100 rounded-3xl h-72"></div>
             ))}
@@ -133,10 +133,10 @@ export default function FarmerProductsPage() {
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-6 p-4">
             {filteredProducts.map((product, idx) => (
               <div key={product.id} className="group bg-white border border-neutral-100 rounded-3xl overflow-hidden hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:-translate-y-1 transition-all duration-300 animate-fade-up" style={{ animationDelay: `${(idx % 10) * 50}ms` }}>
-                <div className="relative aspect-square overflow-hidden bg-neutral-50">
+                <Link to={`/farmer/products/${product.id}`} className="relative aspect-square overflow-hidden bg-neutral-50 block">
                   <img 
                     src={getOptimizedImageUrl(product.images[0], 500)} 
                     alt={product.name} 
@@ -147,22 +147,24 @@ export default function FarmerProductsPage() {
                   />
                   <div className="absolute top-3 right-3 flex gap-2">
                     <span className={cn(
-                      "px-3 py-1 rounded-full text-xs font-bold shadow-sm backdrop-blur-md",
-                      product.availabilityStatus === 'available' ? 'bg-green-500/90 text-white' : 
-                      product.availabilityStatus === 'limited' ? 'bg-amber-500/90 text-white' : 
-                      'bg-red-500/90 text-white'
+                      "px-3 py-1 rounded-full text-xs font-bold shadow-xs",
+                      product.availabilityStatus === 'available' ? 'bg-green-600 text-white' : 
+                      product.availabilityStatus === 'limited' ? 'bg-amber-600 text-white' : 
+                      'bg-red-600 text-white'
                     )}>
                       {product.availabilityStatus === 'available' ? 'Available' : 
                        product.availabilityStatus === 'limited' ? 'Limited' : 'Sold Out'}
                     </span>
                   </div>
-                </div>
+                </Link>
                 
                 <div className="p-5">
                   <div className="flex justify-between items-start mb-2">
                     <div>
                       <p className="text-xs font-bold text-neutral-400 uppercase tracking-wider mb-1">{product.categoryName}</p>
-                      <h3 className="font-bold text-lg text-neutral-900 line-clamp-1 group-hover:text-primary transition-colors">{product.name}</h3>
+                      <Link to={`/farmer/products/${product.id}`} className="font-bold text-lg text-neutral-900 line-clamp-1 group-hover:text-primary transition-colors block">
+                        {product.name}
+                      </Link>
                     </div>
                   </div>
                   
@@ -180,12 +182,19 @@ export default function FarmerProductsPage() {
                     </div>
                     
                     <div className="flex gap-2">
-                      <Link to={`/farmer/products/${product.id}`} className="w-10 h-10 rounded-full bg-neutral-50 flex items-center justify-center text-neutral-600 hover:bg-primary/10 hover:text-primary transition-colors">
+                      <Link 
+                        to={`/farmer/products/${product.id}`} 
+                        className="w-10 h-10 rounded-full bg-neutral-50 flex items-center justify-center text-neutral-600 hover:bg-primary/10 hover:text-primary transition-colors"
+                        title="Edit Product Listing"
+                        aria-label="Edit Product"
+                      >
                         <Edit className="w-4 h-4" />
                       </Link>
                       <button 
                         onClick={() => setDeleteConfirmId(product.id)}
                         className="w-10 h-10 rounded-full bg-neutral-50 flex items-center justify-center text-neutral-600 hover:bg-red-50 hover:text-red-600 transition-colors"
+                        title="Delete Product"
+                        aria-label="Delete Product"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -199,7 +208,7 @@ export default function FarmerProductsPage() {
       </div>
 
       {deleteConfirmId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-neutral-900/40 backdrop-blur-sm animate-fade-up">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 animate-fade-up">
           <div className="bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl scale-100">
             <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mb-6 mx-auto">
               <Trash2 className="w-8 h-8 text-red-500" />

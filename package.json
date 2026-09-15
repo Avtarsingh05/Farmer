@@ -13,6 +13,7 @@
     "lint": "oxlint src/"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "@hookform/resolvers": "^5.9.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.4.0",

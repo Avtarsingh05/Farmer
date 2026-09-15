@@ -301,43 +301,58 @@
 
   
 
-  <!-- VALUE HIGHLIGHT BANNER -->
-  <section class="relative w-full bg-neutral-950 py-24 sm:py-32 overflow-hidden">
-    <div class="absolute inset-0">
-      <img src="https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=1800&auto=format&fit=crop&q=80" alt="Farmlands at golden hour" class="w-full h-full object-cover opacity-25" />
-      <div class="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/70 to-neutral-950/90"></div>
-    </div>
-    <div class="relative max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8 space-y-8 z-10">
-      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs sm:text-sm font-semibold tracking-wide">
-        <i data-lucide="shield" class="w-4 h-4"></i> Direct Farm Network
-      </div>
-      <h2 class="text-3xl sm:text-5xl md:text-6xl font-extrabold text-white tracking-tight leading-tight">
-        Transparent Pricing.<br />
-        <span class="text-emerald-400">Zero Middlemen.</span>
-      </h2>
-      <p class="text-base sm:text-lg text-neutral-300 max-w-2xl mx-auto leading-relaxed">
-        By removing layered intermediaries, KisanMitra returns maximum earnings to farmer families while delivering fresh, traceable produce at true market rates.
-      </p>
-      <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
-        <a href="market.html" class="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold shadow-lg shadow-emerald-900/30 transition-all inline-flex items-center justify-center gap-2">
-          Explore Market <i data-lucide="arrow-right" class="w-5 h-5"></i>
-        </a>
-        <a href="register.html?role=farmer" class="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold border border-white/20 backdrop-blur-md transition-all inline-flex items-center justify-center gap-2">
-          Sell Your Harvest
-        </a>
-      </div>
-      <div class="pt-8 grid grid-cols-3 gap-6 max-w-xl mx-auto border-t border-white/10 text-white">
-        <div>
-          <div class="text-2xl sm:text-3xl font-bold">100%</div>
-          <div class="text-xs sm:text-sm text-neutral-400 mt-1">Direct Farm Gate</div>
-        </div>
-        <div>
-          <div class="text-2xl sm:text-3xl font-bold text-emerald-400">₹0</div>
-          <div class="text-xs sm:text-sm text-neutral-400 mt-1">Broker Commissions</div>
-        </div>
-        <div>
-          <div class="text-2xl sm:text-3xl font-bold">Verified</div>
-          <div class="text-xs sm:text-sm text-neutral-400 mt-1">Farms & Quality</div>
+  <!-- SCROLL EXPAND COMPONENT -->
+  <section class="relative w-full bg-neutral-950" id="se-section">
+    <div class="scroll-expand" id="html-scroll-expand">
+      <div class="scroll-expand__track" id="html-se-track">
+        <div class="scroll-expand__stage" id="html-se-stage">
+          <div class="scroll-expand__frame" id="html-se-frame">
+            <img class="scroll-expand__media" id="html-se-media" src="https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=1800&auto=format&fit=crop&q=80" alt="Direct from Indian farms" draggable="false" />
+            <div class="scroll-expand__scrim" id="html-se-scrim"></div>
+            <div class="scroll-expand__overlay" id="html-se-overlay">
+              <div class="max-w-3xl mx-auto text-center space-y-6 px-4">
+                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/25 border border-emerald-500/40 text-emerald-300 text-xs sm:text-sm font-semibold tracking-wide backdrop-blur-md shadow-sm">
+                  <i data-lucide="shield" class="w-4 h-4 text-emerald-400"></i> Direct Farm Network
+                </div>
+                <h2 class="text-3xl sm:text-5xl md:text-6xl font-black text-white tracking-tight leading-tight drop-shadow-lg">
+                  Transparent Pricing.<br />
+                  <span class="text-emerald-400">Zero Middlemen.</span>
+                </h2>
+                <p class="text-base sm:text-lg text-neutral-100 max-w-2xl mx-auto leading-relaxed drop-shadow-md">
+                  By removing layered intermediaries, KisanMitra returns maximum earnings to farmer families while delivering fresh, traceable produce at true market rates.
+                </p>
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
+                  <a href="market.html" class="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold shadow-lg shadow-emerald-950/60 transition-all inline-flex items-center justify-center gap-2 active:scale-95 cursor-pointer">
+                    Explore Market <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                  </a>
+                  <a href="register.html?role=farmer" class="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-white/15 hover:bg-white/25 text-white font-bold border border-white/30 backdrop-blur-md transition-all inline-flex items-center justify-center gap-2 active:scale-95 cursor-pointer">
+                    Sell Your Harvest
+                  </a>
+                </div>
+                <div class="pt-6 mt-4 grid grid-cols-3 gap-6 max-w-xl mx-auto border-t border-white/20 text-white">
+                  <div>
+                    <div class="text-2xl sm:text-3xl font-extrabold text-white">100%</div>
+                    <div class="text-xs sm:text-sm text-neutral-300 mt-1 font-medium">Direct Farm Gate</div>
+                  </div>
+                  <div>
+                    <div class="text-2xl sm:text-3xl font-extrabold text-emerald-400">&#8377;0</div>
+                    <div class="text-xs sm:text-sm text-neutral-300 mt-1 font-medium">Broker Commissions</div>
+                  </div>
+                  <div>
+                    <div class="text-2xl sm:text-3xl font-extrabold text-white">Verified</div>
+                    <div class="text-xs sm:text-sm text-neutral-300 mt-1 font-medium">Farms & Quality</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="scroll-expand__title" id="html-se-title">
+            Direct from Source
+          </div>
+          <div class="scroll-expand__hint" id="html-se-hint">
+            <span>Scroll to expand</span>
+            <i data-lucide="chevron-down" class="w-4 h-4 animate-bounce"></i>
+          </div>
         </div>
       </div>
     </div>
@@ -806,5 +821,85 @@
       if (window.lucide) lucide.createIcons();
     });
   </script>
+
+  <script>
+  (function initScrollExpand() {
+    const track = document.getElementById('html-se-track');
+    const stage = document.getElementById('html-se-stage');
+    const frame = document.getElementById('html-se-frame');
+    const media = document.getElementById('html-se-media');
+    const scrim = document.getElementById('html-se-scrim');
+    const title = document.getElementById('html-se-title');
+    const hint = document.getElementById('html-se-hint');
+    const overlay = document.getElementById('html-se-overlay');
+    if (!track || !stage || !frame || !media) return;
+
+    function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
+    function smoothstep(e0, e1, x) {
+      const t = clamp((x - e0) / (e1 - e0 || 1e-6), 0, 1);
+      return t * t * (3 - 2 * t);
+    }
+
+    let stageH = window.innerHeight;
+    const scrollDist = 1.0;
+    const holdDist = 0.35;
+
+    function measure() {
+      stageH = window.innerHeight;
+      stage.style.height = stageH + 'px';
+      track.style.height = Math.round(stageH * (1 + scrollDist + holdDist)) + 'px';
+      const w = window.innerWidth;
+      stage.style.setProperty('--se-title-size', clamp(Math.round(w * 0.055), 24, 64) + 'px');
+    }
+
+    function onScroll() {
+      const span = stageH * scrollDist;
+      const top = track.getBoundingClientRect().top;
+      const p = clamp(-top / span, 0, 1);
+      const e = smoothstep(0, 1, p);
+
+      const isMobile = window.innerWidth < 640;
+      const startW = isMobile ? 88 : 60;
+      const startH = isMobile ? 62 : 66;
+
+      const w = startW + (100 - startW) * e;
+      const h = startH + (100 - startH) * e;
+      const ix = Math.max(0, (100 - w) / 2);
+      const iy = Math.max(0, (100 - h) / 2);
+      const r = 24 * (1 - e);
+
+      frame.style.clipPath = 'inset(' + iy.toFixed(2) + '% ' + ix.toFixed(2) + '% ' + iy.toFixed(2) + '% ' + ix.toFixed(2) + '% round ' + r.toFixed(1) + 'px)';
+      media.style.transform = 'scale(' + (1.25 - 0.25 * e).toFixed(3) + ')';
+
+      if (scrim) scrim.style.opacity = (0.45 + 0.40 * e).toFixed(2);
+
+      if (title) {
+        const out = smoothstep(0.08, 0.42, p);
+        title.style.opacity = (1 - out).toFixed(3);
+        title.style.transform = 'translate3d(0, ' + (-28 * out).toFixed(1) + 'px, 0) scale(' + (1 + 0.05 * out).toFixed(3) + ')';
+      }
+
+      if (hint) {
+        const gone = smoothstep(0.02, 0.20, p);
+        hint.style.opacity = (1 - gone).toFixed(3);
+        hint.style.transform = 'translate3d(0, ' + (10 * gone).toFixed(1) + 'px, 0)';
+      }
+
+      if (overlay) {
+        const inn = smoothstep(0.28, 0.75, p);
+        overlay.style.opacity = inn.toFixed(3);
+        overlay.style.transform = 'translate3d(0, ' + (20 * (1 - inn)).toFixed(1) + 'px, 0)';
+        if (inn > 0.25) overlay.classList.add('is-active');
+        else overlay.classList.remove('is-active');
+      }
+    }
+
+    window.addEventListener('resize', () => { measure(); onScroll(); });
+    window.addEventListener('scroll', onScroll, { passive: true });
+    measure();
+    onScroll();
+  })();
+  </script>
+
 </body>
 </html>

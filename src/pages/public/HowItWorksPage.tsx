@@ -85,7 +85,7 @@ const HowItWorksPage: React.FC = () => {
               { icon: Truck, title: "3. Track", desc: "Monitor your order status as the farmer prepares your fresh produce." },
               { icon: Box, title: "4. Receive", desc: "Get fresh, traceable produce delivered directly to you." }
             ].map((step, idx) => (
-              <div key={idx} className={`bg-white/5 backdrop-blur-sm p-8 rounded-2xl border border-white/10 relative z-10 text-center hover:bg-white/10 transition-colors duration-300 animate-fade-up animate-delay-${100 + idx*100}`}>
+              <div key={idx} className={`bg-neutral-900 p-8 rounded-2xl border border-neutral-800 relative z-10 text-center hover:border-neutral-700 transition-colors duration-300 animate-fade-up animate-delay-${100 + idx*100}`}>
                 <div className="w-20 h-20 bg-white/10 text-white rounded-full flex items-center justify-center mx-auto mb-6">
                   <step.icon className="w-10 h-10" />
                 </div>

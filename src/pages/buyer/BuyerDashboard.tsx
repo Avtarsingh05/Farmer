@@ -5,6 +5,7 @@ import { getBuyerOrders } from '@/services/orderService';
 import { getUserFavorites } from '@/services/favoritesService';
 import { getProduct } from '@/services/productService';
 import { Order, Product, OrderStatus } from '@/types';
+import { useLanguage } from '@/i18n';
 import { ShoppingCart, Heart, ClipboardList, Store, Loader2, ChevronRight, Search, Clock, ArrowRight } from 'lucide-react';
 import { format } from 'date-fns';
 import { clsx } from 'clsx';
@@ -13,6 +14,7 @@ import { twMerge } from 'tailwind-merge';
 const cn = (...args: (string | undefined | null | false)[]) => twMerge(clsx(args));
 
 const OrderStatusBadge = ({ status }: { status: OrderStatus }) => {
+  const { t } = useLanguage();
   const getBadgeClass = (s: OrderStatus) => {
     switch (s) {
       case 'pending': return 'bg-amber-100 text-amber-700 border-amber-200';
@@ -27,14 +29,17 @@ const OrderStatusBadge = ({ status }: { status: OrderStatus }) => {
     }
   };
 
+  const statusLabel = (t.status as any)[status] || status.replace(/_/g, ' ');
+
   return (
     <span className={cn('px-3 py-1 text-xs font-bold rounded-full capitalize border shadow-sm', getBadgeClass(status))}>
-      {status.replace(/_/g, ' ')}
+      {statusLabel}
     </span>
   );
 };
 
 export default function BuyerDashboard() {
+  const { t } = useLanguage();
   const { user } = useAuth();
   const [activeOrders, setActiveOrders] = useState<Order[]>([]);
   const [favorites, setFavorites] = useState<Product[]>([]);
@@ -118,7 +123,7 @@ export default function BuyerDashboard() {
       <div className="animate-fade-up" style={{ animationDelay: '200ms' }}>
         <div className="flex justify-between items-end mb-6 px-2">
           <div>
-            <h2 className="text-2xl font-extrabold text-neutral-900 tracking-tight">Active Orders</h2>
+            <h2 className="text-2xl font-extrabold text-neutral-900 tracking-tight">{t.buyer.activeOrders}</h2>
             <p className="text-neutral-500 text-sm mt-1">Track your ongoing deliveries</p>
           </div>
           <Link to="/buyer/orders" className="text-primary text-sm font-bold hover:text-primary/80 flex items-center gap-1 bg-primary/5 px-4 py-2 rounded-full transition-colors">
@@ -196,7 +201,7 @@ export default function BuyerDashboard() {
                     }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm p-2 rounded-full text-red-500 shadow-sm">
+                  <div className="absolute top-3 right-3 bg-white p-2 rounded-full text-red-500 shadow-xs border border-neutral-200">
                     <Heart className="w-4 h-4 fill-current" />
                   </div>
                 </div>

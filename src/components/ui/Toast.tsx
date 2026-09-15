@@ -78,7 +78,7 @@ const ToastItem: React.FC<{ toast: ToastMessage; onRemove: () => void }> = ({ to
   return (
     <div
       className={cn(
-        'pointer-events-auto flex w-full max-w-sm overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5',
+        'pointer-events-auto flex w-full max-w-sm overflow-hidden rounded-full shadow-lg ring-1 ring-black ring-opacity-5',
         bgs[toast.type] || 'bg-white'
       )}
     >

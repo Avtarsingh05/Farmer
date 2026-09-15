@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { getAllProducts, updateProduct } from '@/services/productService';
+import { Link } from 'react-router-dom';
+import { getAllProducts, updateProduct, deleteProduct } from '@/services/productService';
 import { Product } from '@/types';
-import { Loader2, Search, AlertCircle } from 'lucide-react';
+import { Loader2, Search, AlertCircle, Trash2, Edit } from 'lucide-react';
 import { format } from 'date-fns';
 
 export default function AdminProductsPage() {
@@ -44,6 +45,18 @@ export default function AdminProductsPage() {
     } catch (err) {
       console.error("Failed to deactivate product", err);
       alert("Failed to deactivate product");
+    }
+  };
+
+  const handleDelete = async (id: string, name: string) => {
+    if (!window.confirm(`Are you sure you want to permanently delete "${name}"? This action cannot be undone.`)) return;
+
+    try {
+      await deleteProduct(id);
+      setProducts(prev => prev.filter(p => p.id !== id));
+    } catch (err) {
+      console.error("Failed to delete product", err);
+      alert("Failed to delete product");
     }
   };
 
@@ -124,13 +137,31 @@ export default function AdminProductsPage() {
                     {format((product.createdAt as any)?.toDate ? (product.createdAt as any).toDate() : new Date(product.createdAt), 'MMM dd, yyyy')}
                   </td>
                   <td className="table-td text-right">
-                    <button 
-                      onClick={() => handleDeactivate(product.id, product.availabilityStatus)}
-                      disabled={product.availabilityStatus === 'inactive'}
-                      className={`btn-sm text-xs ${product.availabilityStatus !== 'inactive' ? 'btn-danger' : 'bg-neutral-100 text-neutral-400 cursor-not-allowed'}`}
-                    >
-                      Deactivate
-                    </button>
+                    <div className="flex items-center justify-end gap-2">
+                      <Link 
+                        to={`/farmer/products/${product.id}`}
+                        className="btn-sm btn-secondary text-xs flex items-center gap-1"
+                        title="Edit product listing"
+                      >
+                        <Edit className="w-3.5 h-3.5" />
+                        Edit
+                      </Link>
+                      <button 
+                        onClick={() => handleDeactivate(product.id, product.availabilityStatus)}
+                        disabled={product.availabilityStatus === 'inactive'}
+                        className={`btn-sm text-xs ${product.availabilityStatus !== 'inactive' ? 'btn-secondary' : 'bg-neutral-100 text-neutral-400 cursor-not-allowed'}`}
+                      >
+                        Deactivate
+                      </button>
+                      <button 
+                        onClick={() => handleDelete(product.id, product.name)}
+                        className="btn-sm btn-danger text-xs flex items-center gap-1"
+                        title="Permanently delete product"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                        Delete
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))

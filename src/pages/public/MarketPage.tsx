@@ -123,7 +123,7 @@ export default function MarketPage() {
 
         {/* Filter panel */}
         {showFilters && (
-          <div className="card p-5 mb-8 grid grid-cols-1 sm:grid-cols-3 gap-6 animate-fade-up">
+          <div className="card p-5 mb-8 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 sm:gap-6 animate-fade-up">
             <div>
               <label className="form-label text-sm font-medium text-neutral-700 mb-1.5 block">Category</label>
               <select
@@ -169,7 +169,7 @@ export default function MarketPage() {
 
         {/* Results */}
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-6">
             {Array.from({ length: 8 }).map((_, i) => (
               <SkeletonCard key={i} />
             ))}
@@ -199,7 +199,7 @@ export default function MarketPage() {
                 {filtered.length} {filtered.length === 1 ? 'product' : 'products'}
               </p>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-6">
               {filtered.map((p) => (
                 <ProductCard key={p.id} product={p} />
               ))}

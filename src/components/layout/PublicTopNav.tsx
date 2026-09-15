@@ -6,6 +6,8 @@ import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { GooeyNav, type GooeyNavItem } from '@/components/ui';
 import { useCart, useAuth } from '@/hooks';
+import { useLanguage } from '@/i18n';
+import { LanguageSelector } from '@/components/ui/LanguageSelector';
 
 const cn = (...args: (string | undefined | null | false)[]) => twMerge(clsx(args));
 
@@ -17,6 +19,7 @@ export const PublicTopNav: React.FC = () => {
   const { itemCount } = useCart();
   const { user } = useAuth();
   const { logoUrl } = getPlatformSettings();
+  const { t } = useLanguage();
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -25,11 +28,11 @@ export const PublicTopNav: React.FC = () => {
   }, []);
 
   const navLinks = [
-    { label: 'Home', path: '/' },
-    { label: 'Market', path: '/market' },
-    { label: 'Farmers', path: '/farmers' },
-    { label: 'How It Works', path: '/how-it-works' },
-    { label: 'About', path: '/about' },
+    { label: t.nav.public.home, path: '/' },
+    { label: t.nav.public.market, path: '/market' },
+    { label: t.nav.public.farmers, path: '/farmers' },
+    { label: t.nav.public.howItWorks, path: '/how-it-works' },
+    { label: t.nav.public.about, path: '/about' },
   ];
 
   const currentPath = location.pathname;
@@ -47,7 +50,7 @@ export const PublicTopNav: React.FC = () => {
   }));
 
   return (
-    <header className={cn('fixed top-0 left-0 right-0 z-50 transition-all duration-300', isScrolled ? 'bg-white/90 backdrop-blur-md shadow-sm border-b border-neutral-200/60' : 'bg-transparent border-b border-transparent')}>
+    <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-neutral-200 shadow-xs transition-all duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center space-x-2 cursor-pointer shrink-0" onClick={() => navigate('/')}>
@@ -102,8 +105,8 @@ export const PublicTopNav: React.FC = () => {
               </button>
             ) : (
               <>
-                <button className="btn-secondary bg-white/85 backdrop-blur-sm hover:bg-white border-neutral-200/80" onClick={() => navigate('/login')}>Login</button>
-                <button className="btn-primary shadow-sm" onClick={() => navigate('/register')}>Get Started</button>
+                <button className="btn-secondary bg-white border-neutral-300 text-neutral-800 hover:bg-neutral-50" onClick={() => navigate('/login')}>Login</button>
+                <button className="btn-primary shadow-sm" onClick={() => navigate('/register')}>{t.nav.public.getStarted}</button>
               </>
             )}
           </div>

@@ -1,0 +1,134 @@
+.scroll-expand {
+  position: relative;
+  width: 100%;
+}
+
+.scroll-expand--scroller {
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  overscroll-behavior: contain;
+}
+
+.scroll-expand--scroller::-webkit-scrollbar {
+  display: none;
+}
+
+.scroll-expand__track {
+  position: relative;
+  width: 100%;
+}
+
+.scroll-expand__stage {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  background: #080d09;
+  --se-title-size: 3.5rem;
+  z-index: 10;
+}
+
+.scroll-expand__frame {
+  position: absolute;
+  inset: 0;
+  clip-path: inset(18% 21% 18% 21% round 24px);
+  will-change: clip-path;
+  background: #080d09;
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.85);
+  border-radius: 24px;
+}
+
+.scroll-expand__media {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  will-change: transform;
+  transform-origin: center;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* High contrast background scrim over the photo to guarantee sharp readability */
+.scroll-expand__scrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(circle at center, rgba(10, 20, 12, 0.72) 0%, rgba(5, 10, 6, 0.90) 100%);
+  opacity: 0.5;
+  transition: opacity 0.15s ease-out;
+}
+
+/* Overlay content container */
+.scroll-expand__overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 5rem 1.5rem 2rem;
+  opacity: 0;
+  will-change: opacity, transform;
+  pointer-events: none;
+  z-index: 20;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.scroll-expand__overlay::-webkit-scrollbar {
+  display: none;
+}
+
+.scroll-expand__overlay.is-active {
+  pointer-events: auto;
+}
+
+/* Big resting headline */
+.scroll-expand__title {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0 1.5rem;
+  text-align: center;
+  font-size: var(--se-title-size);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+  color: #ffffff;
+  text-shadow: 0 4px 25px rgba(0, 0, 0, 0.95), 0 2px 8px rgba(0, 0, 0, 0.9);
+  pointer-events: none;
+  will-change: opacity, transform;
+  z-index: 15;
+}
+
+/* Bottom scroll cue */
+.scroll-expand__hint {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 2.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  text-align: center;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.92);
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.9);
+  pointer-events: none;
+  will-change: opacity, transform;
+  z-index: 15;
+}

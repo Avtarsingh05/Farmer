@@ -149,7 +149,7 @@ export default function BuyerSearchPage() {
   return (
     <div className="container-content py-6 space-y-6 pb-24">
       {/* Header Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold text-neutral-900 flex items-center gap-2">
             <span>Search Farm Produce</span>
@@ -363,7 +363,7 @@ export default function BuyerSearchPage() {
 
       {/* Loading Skeletons */}
       {loading && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-6">
           {Array.from({ length: 8 }).map((_, idx) => (
             <div key={idx} className="card overflow-hidden animate-pulse flex flex-col h-72">
               <div className="aspect-[3/2] bg-neutral-200 w-full" />
@@ -384,7 +384,7 @@ export default function BuyerSearchPage() {
 
       {/* Produce Grid */}
       {!loading && !error && filteredProducts.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-6">
           {filteredProducts.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
@@ -417,7 +417,7 @@ export default function BuyerSearchPage() {
 
       {/* Sticky Bottom Cart Bar on Mobile when items exist */}
       {itemCount > 0 && (
-        <div className="sm:hidden fixed bottom-16 left-0 right-0 p-3 bg-emerald-900/95 backdrop-blur-md text-white border-t border-emerald-800 shadow-xl z-40 flex items-center justify-between">
+        <div className="sm:hidden fixed bottom-16 left-0 right-0 p-3 bg-emerald-950 text-white border-t border-emerald-800 shadow-xl z-40 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-full bg-emerald-700 flex items-center justify-center font-bold text-xs">
               {itemCount}

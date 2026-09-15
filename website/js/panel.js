@@ -1,3 +1,103 @@
+
+// ==========================================
+// MULTI-LANGUAGE SYSTEM (EN / HI / MR)
+// ==========================================
+window.PANEL_TRANSLATIONS = {
+  en: {
+    dashboard: 'Dashboard',
+    products: 'Products',
+    orders: 'Orders',
+    inventory: 'Inventory',
+    earnings: 'Earnings',
+    analytics: 'Analytics',
+    profile: 'Profile',
+    settings: 'Settings',
+    logout: 'Logout',
+    browse: 'Browse Produce',
+    search: 'Search Produce',
+    cart: 'Cart',
+    favorites: 'Favorites',
+    users: 'Users',
+    farmers: 'Farmers',
+    categories: 'Categories',
+    reports: 'Reports',
+    management: 'Management',
+    buyerMenu: 'Buyer Menu',
+    farmerMenu: 'Farmer Menu',
+    adminRole: 'Administrator',
+    buyerRole: 'Buyer Account',
+    farmerRole: 'Farmer Account',
+    liveNetwork: 'Live Network',
+    searchPlaceholder: 'Search products, orders...',
+    selectLang: 'Language / भाषा',
+  },
+  hi: {
+    dashboard: 'डैशबोर्ड',
+    products: 'मेरी फसलें',
+    orders: 'ऑर्डर्स',
+    inventory: 'स्टॉक / भंडार',
+    earnings: 'कमाई का ब्यौरा',
+    analytics: 'विश्लेषण',
+    profile: 'खेत प्रोफ़ाइल',
+    settings: 'सेटिंग्स',
+    logout: 'लॉग आउट',
+    browse: 'मंडी में खरीदें',
+    search: 'फसल खोजें',
+    cart: 'मेरी टोकरी',
+    favorites: 'पसंदीदा फसलें',
+    users: 'उपयोगकर्ता',
+    farmers: 'किसान सत्यापन',
+    categories: 'श्रेणियां',
+    reports: 'रिपोर्ट्स',
+    management: 'प्रबंधन मेनू',
+    buyerMenu: 'खरीदार मेनू',
+    farmerMenu: 'किसान मेनू',
+    adminRole: 'एडमिनिस्ट्रेटर',
+    buyerRole: 'खरीदार खाता',
+    farmerRole: 'किसान खाता',
+    liveNetwork: 'लाइव नेटवर्क',
+    searchPlaceholder: 'फसलें, ऑर्डर खोजें...',
+    selectLang: 'भाषा चुनें',
+  },
+  mr: {
+    dashboard: 'डॅशबोर्ड',
+    products: 'माझा शेतमाल',
+    orders: 'ऑर्डर्स',
+    inventory: 'साठा / इन्व्हेंटरी',
+    earnings: 'एकूण उत्पन्न',
+    analytics: 'विश्लेषण',
+    profile: 'शेतकरी प्रोफाइल',
+    settings: 'सेटिंग्ज',
+    logout: 'लॉग आउट',
+    browse: 'शेतमाल खरेदी',
+    search: 'माल शोधा',
+    cart: 'खरेदी टोपली',
+    favorites: 'पसंतीची यादी',
+    users: 'वापरकर्ते',
+    farmers: 'शेतकरी पडताळणी',
+    categories: 'शेतमाल वर्ग',
+    reports: 'तक्रार व अहवाल',
+    management: 'व्यवस्थापन मेनू',
+    buyerMenu: 'खरेदीदार मेनू',
+    farmerMenu: 'शेतकरी मेनू',
+    adminRole: 'प्रशासक खाते',
+    buyerRole: 'खरेदीदार खाते',
+    farmerRole: 'शेतकरी खाते',
+    liveNetwork: 'थेट नेटवर्क',
+    searchPlaceholder: 'शेतमाल, ऑर्डर शोधा...',
+    selectLang: 'भाषा निवडा',
+  }
+};
+
+window.getPanelLang = function() {
+  return localStorage.getItem('kisanmitra_lang') || 'en';
+};
+
+window.setPanelLanguage = function(lang) {
+  localStorage.setItem('kisanmitra_lang', lang);
+  window.location.reload();
+};
+
 /**
  * KisanMitra Unified Panel System (HTML/CSS/JS)
  * Shared high-fidelity Shell for Farmer, Buyer, and Admin Panels
@@ -118,9 +218,41 @@ window.initPanel = function({ role = 'farmer', currentPage = 'dashboard', title 
     }
   } catch(e) {}
 
-  const navItems = NAV_CONFIG[role] || NAV_CONFIG.farmer;
-  const menuCategory = role === 'admin' ? 'Management' : (role === 'buyer' ? 'Buyer Menu' : 'Farmer Menu');
-  const roleTitle = role === 'admin' ? 'Administrator' : (role === 'buyer' ? 'Buyer Account' : 'Farmer Account');
+  const currentLang = window.getPanelLang();
+  const t = window.PANEL_TRANSLATIONS[currentLang] || window.PANEL_TRANSLATIONS.en;
+
+  const localizedNavConfig = {
+    farmer: [
+      { id: 'dashboard', label: t.dashboard, path: 'farmer-dashboard.html', icon: 'layout-dashboard' },
+      { id: 'products', label: t.products, path: 'farmer-products.html', icon: 'package' },
+      { id: 'orders', label: t.orders, path: 'farmer-orders.html', icon: 'shopping-bag' },
+      { id: 'inventory', label: t.inventory, path: 'farmer-inventory.html', icon: 'archive' },
+      { id: 'earnings', label: t.earnings, path: 'farmer-earnings.html', icon: 'indian-rupee' },
+      { id: 'analytics', label: t.analytics, path: 'farmer-analytics.html', icon: 'bar-chart-2' },
+    ],
+    buyer: [
+      { id: 'dashboard', label: t.dashboard, path: 'buyer-dashboard.html', icon: 'layout-dashboard' },
+      { id: 'search', label: t.search, path: 'buyer-search.html', icon: 'search' },
+      { id: 'cart', label: t.cart, path: 'cart.html', icon: 'shopping-cart', hasBadge: true },
+      { id: 'orders', label: t.orders, path: 'buyer-orders.html', icon: 'clipboard-list' },
+      { id: 'favorites', label: t.favorites, path: 'favorites.html', icon: 'heart' },
+      { id: 'profile', label: t.profile, path: 'buyer-profile.html', icon: 'user' },
+    ],
+    admin: [
+      { id: 'dashboard', label: t.dashboard, path: 'admin-dashboard.html', icon: 'layout-dashboard' },
+      { id: 'users', label: t.users, path: 'admin-users.html', icon: 'users' },
+      { id: 'farmers', label: t.farmers, path: 'admin-farmers.html', icon: 'sprout' },
+      { id: 'products', label: t.products, path: 'admin-products.html', icon: 'package' },
+      { id: 'orders', label: t.orders, path: 'admin-orders.html', icon: 'shopping-bag' },
+      { id: 'categories', label: t.categories, path: 'admin-categories.html', icon: 'tag' },
+      { id: 'reports', label: t.reports, path: 'admin-reports.html', icon: 'flag' },
+      { id: 'settings', label: t.settings, path: 'admin-settings.html', icon: 'settings' },
+    ]
+  };
+
+  const navItems = localizedNavConfig[role] || localizedNavConfig.farmer;
+  const menuCategory = role === 'admin' ? t.management : (role === 'buyer' ? t.buyerMenu : t.farmerMenu);
+  const roleTitle = role === 'admin' ? t.adminRole : (role === 'buyer' ? t.buyerRole : t.farmerRole);
 
   // 1. Render Sidebar HTML
   const sidebarHTML = `
@@ -235,6 +367,17 @@ window.initPanel = function({ role = 'farmer', currentPage = 'dashboard', title 
         <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
         <span>Live Network</span>
       </div>
+      
+      <!-- Language Selector -->
+      <div class="relative inline-flex items-center">
+        <select onchange="window.setPanelLanguage(this.value)" 
+                class="bg-neutral-100 hover:bg-neutral-200 text-neutral-800 text-xs font-bold py-1.5 px-3 rounded-xl border border-neutral-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all">
+          <option value="en" ${currentLang === 'en' ? 'selected' : ''}>English</option>
+          <option value="hi" ${currentLang === 'hi' ? 'selected' : ''}>हिंदी</option>
+          <option value="mr" ${currentLang === 'mr' ? 'selected' : ''}>मराठी</option>
+        </select>
+      </div>
+
       <button class="relative p-2 text-neutral-500 hover:text-primary rounded-xl hover:bg-primary/5 transition-colors" title="Notifications">
         <i data-lucide="bell" class="w-5 h-5"></i>
         <span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white"></span>

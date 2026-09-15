@@ -15,7 +15,7 @@ const AboutPage: React.FC = () => {
           <div className="absolute inset-0 bg-neutral-900/70" />
         </div>
         <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center animate-fade-up">
-          <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-white border border-white/20 backdrop-blur-sm text-sm font-medium mb-6">
+          <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neutral-800 text-white border border-neutral-700 text-sm font-medium mb-6">
              Our Mission
           </span>
           <h1 className="text-4xl md:text-6xl font-bold text-white mb-8 leading-tight">

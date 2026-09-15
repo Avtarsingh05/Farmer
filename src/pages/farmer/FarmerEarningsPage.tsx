@@ -92,7 +92,7 @@ export default function FarmerEarningsPage() {
           <div className="absolute -right-6 -bottom-6 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
           <div className="relative z-10 h-full flex flex-col justify-between">
             <div className="flex justify-between items-start mb-4">
-              <div className="w-12 h-12 rounded-2xl bg-white/20 text-white flex items-center justify-center backdrop-blur-sm">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-700 text-white flex items-center justify-center shadow-xs">
                 <Wallet className="w-6 h-6" />
               </div>
             </div>

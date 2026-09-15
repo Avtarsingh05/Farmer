@@ -49,7 +49,7 @@ export default function FarmerProfilePage() {
               </div>
             </div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 lg:grid-cols-4 gap-2 sm:gap-6">
             {[...Array(4)].map((_, i) => (
                <div key={i} className="skeleton h-[350px] rounded-2xl" />
             ))}
@@ -103,7 +103,7 @@ export default function FarmerProfilePage() {
             </div>
             
             <div className="flex-1 w-full">
-              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-4">
+              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 sm:gap-4 mb-4">
                 <div>
                   <h1 className="text-3xl md:text-4xl font-bold text-neutral-900 mb-2">
                     {farmer.displayName || 'Independent Farmer'}
@@ -171,7 +171,7 @@ export default function FarmerProfilePage() {
               <p className="text-neutral-500 text-lg max-w-md mx-auto">This farmer currently doesn't have any produce listed for sale. Check back later!</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-6">
               {products.map((product) => (
                 <div key={product.id} className="h-full">
                   <ProductCard product={product} />
